@@ -12,7 +12,10 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <BudgetProvider>
-          <Stack screenOptions={{ headerShown: false }} />
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="add-transaction" options={{ presentation: 'modal' }} />
+          </Stack>
           <StatusBar style="auto" />
         </BudgetProvider>
       </SafeAreaProvider>

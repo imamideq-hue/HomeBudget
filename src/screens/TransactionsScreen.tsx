@@ -1,6 +1,7 @@
 import { SectionList, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { AddTransactionButton } from '@/components/AddTransactionButton';
 import { TransactionItem } from '@/components/TransactionItem';
 import { useBudget } from '@/hooks/useBudget';
 import { groupByDay } from '@/lib/format';
@@ -36,6 +37,7 @@ export function TransactionsScreen() {
           </View>
         }
       />
+      <AddTransactionButton />
     </SafeAreaView>
   );
 }

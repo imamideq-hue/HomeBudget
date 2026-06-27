@@ -2,6 +2,7 @@ import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PieChart } from 'react-native-gifted-charts';
 
+import { AddTransactionButton } from '@/components/AddTransactionButton';
 import { BalanceCard } from '@/components/BalanceCard';
 import { TransactionItem } from '@/components/TransactionItem';
 import { useBudget } from '@/hooks/useBudget';
@@ -77,6 +78,7 @@ export function OverviewScreen() {
           ))}
         </View>
       </ScrollView>
+      <AddTransactionButton />
     </SafeAreaView>
   );
 }
