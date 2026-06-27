@@ -4,9 +4,10 @@ A shared budget tracking app inspired by [Cashew](https://cashewapp.web.app/), b
 **React Native (Expo)**, **Expo Router**, **TypeScript**, and **NativeWind** (Tailwind for
 React Native).
 
-> Current status: **scaffold**. The app runs with seeded local data so you can see the UI,
-> charts, and navigation. Real multi-user sync/auth is intentionally deferred — data is stored
-> locally for now (React Context + AsyncStorage).
+> Current status: **working web app**. Dashboard with budget rings, transaction entry,
+> month-scoped budgets (with editing), account details, and savings goals — all running on
+> seeded local data (React Context + AsyncStorage). Real multi-user sync/auth is deferred;
+> native iOS/Android come later from this same codebase.
 
 ## Getting started
 
@@ -17,6 +18,49 @@ npm start          # Expo dev server (press w for web, i / a for simulators)
 npm run web
 npm run ios
 npm run android
+```
+
+## Deploying the web app (Vercel)
+
+The web build is a single-page app (`web.output: "single"` in `app.json`), and
+`vercel.json` is preconfigured:
+
+- **Build command:** `npx expo export --platform web` (also `npm run build:web`)
+- **Output directory:** `dist`
+- **Rewrites:** all paths → `/` so client-side deep links (e.g. `/account/123`) work
+
+To go live:
+
+```bash
+# one-time
+npm i -g vercel
+
+# from the repo root
+vercel          # preview deploy → gives you a URL
+vercel --prod   # production deploy
+```
+
+Or connect the GitHub repo at vercel.com → "New Project" and it picks up
+`vercel.json` automatically; every push then publishes a deploy.
+
+To preview the production build locally:
+
+```bash
+npm run build:web
+npx serve dist   # or any static file server
+```
+
+## Mobile app (iOS / Android) — same codebase, later
+
+This is one Expo codebase: the same screens/logic that run on web compile to
+native iOS and Android with no rewrite. When we're ready:
+
+```bash
+npx expo run:ios       # local dev build (needs macOS/Xcode)
+npx expo run:android   # local dev build (needs Android SDK)
+# or cloud builds + store submission via EAS:
+npx eas build --platform ios
+npx eas build --platform android
 ```
 
 ## Tech stack
