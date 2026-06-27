@@ -52,6 +52,10 @@ export function useBudgetTracker() {
   const getGroupBudget = (groupId: string): GroupBudgetSummary | undefined =>
     groupBudgets.find((g) => g.group.id === groupId);
 
+  /** Set (or clear, when `limit <= 0`) a group's monthly budget limit. */
+  const setBudgetLimit = (groupId: string, limit: number) =>
+    dispatch({ type: 'SET_BUDGET_LIMIT', payload: { groupId, limit } });
+
   function addTransaction(input: NewTransactionInput): AddTransactionResult {
     const nowIso = new Date().toISOString();
     const transaction: Transaction = {
@@ -79,5 +83,5 @@ export function useBudgetTracker() {
     return { transaction, groupBudget };
   }
 
-  return { groupBudgets, getGroupBudget, addTransaction };
+  return { groupBudgets, getGroupBudget, setBudgetLimit, addTransaction };
 }

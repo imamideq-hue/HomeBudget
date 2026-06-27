@@ -16,7 +16,8 @@ const STORAGE_KEY = 'homebudget:state:v2';
 export type BudgetAction =
   | { type: 'HYDRATE'; payload: BudgetData }
   | { type: 'ADD_TRANSACTION'; payload: Transaction }
-  | { type: 'DELETE_TRANSACTION'; payload: { id: string } };
+  | { type: 'DELETE_TRANSACTION'; payload: { id: string } }
+  | { type: 'SET_BUDGET_LIMIT'; payload: { groupId: string; limit: number } };
 
 function reducer(state: BudgetData, action: BudgetAction): BudgetData {
   switch (action.type) {
@@ -28,6 +29,15 @@ function reducer(state: BudgetData, action: BudgetAction): BudgetData {
       return {
         ...state,
         transactions: state.transactions.filter((t) => t.id !== action.payload.id),
+      };
+    case 'SET_BUDGET_LIMIT':
+      return {
+        ...state,
+        groupCategories: state.groupCategories.map((g) =>
+          g.id === action.payload.groupId
+            ? { ...g, budgetLimit: action.payload.limit > 0 ? action.payload.limit : undefined }
+            : g,
+        ),
       };
     default:
       return state;

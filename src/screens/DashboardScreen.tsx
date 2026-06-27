@@ -117,7 +117,13 @@ export function DashboardScreen() {
           {budgeted.length > 0 ? (
             <View className="gap-3">
               {budgeted.map((budget) => (
-                <BudgetProgressRow key={budget.group.id} budget={budget} />
+                <BudgetProgressRow
+                  key={budget.group.id}
+                  budget={budget}
+                  onPress={() =>
+                    router.push({ pathname: '/edit-budget', params: { groupId: budget.group.id } })
+                  }
+                />
               ))}
             </View>
           ) : (

@@ -15,6 +15,7 @@ export default function RootLayout() {
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="add-transaction" options={{ presentation: 'modal' }} />
+            <Stack.Screen name="edit-budget" options={{ presentation: 'modal' }} />
           </Stack>
           <StatusBar style="auto" />
         </BudgetProvider>

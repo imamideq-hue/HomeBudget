@@ -1,15 +1,22 @@
-import { Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
 import { CategoryPill } from '@/components/CategoryPill';
 import type { GroupBudgetSummary } from '@/lib/budget';
 import { formatCurrency } from '@/lib/format';
 
+interface Props {
+  budget: GroupBudgetSummary;
+  onPress?: (budget: GroupBudgetSummary) => void;
+}
+
 /** A group-category's monthly budget as an icon + spent/limit + progress bar. */
-export function BudgetProgressRow({ budget }: { budget: GroupBudgetSummary }) {
+export function BudgetProgressRow({ budget, onPress }: Props) {
   const ratio = Math.min(budget.percentUsed, 1);
 
   return (
-    <View className="rounded-2xl bg-card p-4">
+    <Pressable
+      onPress={onPress ? () => onPress(budget) : undefined}
+      className="rounded-2xl bg-card p-4 active:opacity-70">
       <View className="flex-row items-center gap-3">
         <CategoryPill icon={budget.group.icon} color={budget.group.color} size={36} />
         <Text className="flex-1 text-base font-medium text-surface-dark">{budget.group.name}</Text>
@@ -35,6 +42,6 @@ export function BudgetProgressRow({ budget }: { budget: GroupBudgetSummary }) {
           ? `${formatCurrency(Math.abs(budget.remaining))} over budget`
           : `${formatCurrency(budget.remaining)} remaining`}
       </Text>
-    </View>
+    </Pressable>
   );
 }
