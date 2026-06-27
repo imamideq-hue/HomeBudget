@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import { ScrollView, Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CategoryPill } from '@/components/CategoryPill';
@@ -16,6 +17,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 }
 
 export function SettingsScreen() {
+  const router = useRouter();
   const { currentSpace, accounts, goals, loans, accountBalance } = useBudget();
 
   const activeGoals = goals.filter((g) => g.status === 'active');
@@ -47,16 +49,18 @@ export function SettingsScreen() {
         {/* Accounts */}
         <Section title="Accounts">
           {accounts.map((acc) => (
-            <View
+            <Pressable
               key={acc.id}
-              className="flex-row items-center gap-3 rounded-2xl bg-card px-4 py-3"
+              onPress={() => router.push({ pathname: '/account/[id]', params: { id: acc.id } })}
+              className="flex-row items-center gap-3 rounded-2xl bg-card px-4 py-3 active:opacity-70"
             >
               <CategoryPill icon={acc.icon} color={acc.color} size={36} />
               <Text className="flex-1 text-base text-surface-dark">{acc.name}</Text>
               <Text className="text-sm font-semibold text-surface-dark">
                 {formatCurrency(accountBalance(acc.id))}
               </Text>
-            </View>
+              <Ionicons name="chevron-forward" size={16} color="#8A8A9E" />
+            </Pressable>
           ))}
         </Section>
 

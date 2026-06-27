@@ -101,6 +101,9 @@ export function DashboardScreen() {
                 key={account.id}
                 account={account}
                 balance={accountBalance(account.id)}
+                onPress={() =>
+                  router.push({ pathname: '/account/[id]', params: { id: account.id } })
+                }
               />
             ))}
           </ScrollView>
