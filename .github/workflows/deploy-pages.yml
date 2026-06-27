@@ -1,8 +1,8 @@
 name: Deploy web to GitHub Pages
 
+# Manual trigger only: run this after enabling Pages in repo Settings
+# (Settings → Pages → Source: GitHub Actions), otherwise the deploy step fails.
 on:
-  push:
-    branches: [claude/budget-app-setup-kgdytu]
   workflow_dispatch:
 
 permissions:
