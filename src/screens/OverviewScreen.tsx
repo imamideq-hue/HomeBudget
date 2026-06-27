@@ -6,15 +6,14 @@ import { AddTransactionButton } from '@/components/AddTransactionButton';
 import { BalanceCard } from '@/components/BalanceCard';
 import { TransactionItem } from '@/components/TransactionItem';
 import { useBudget } from '@/hooks/useBudget';
-import { getCategory } from '@/lib/categories';
 import { formatCurrency } from '@/lib/format';
 
 export function OverviewScreen() {
-  const { totals, spendByCategory, transactions } = useBudget();
+  const { totals, spendByGroup, transactions } = useBudget();
 
-  const pieData = spendByCategory.map((s) => ({
+  const pieData = spendByGroup.map((s) => ({
     value: s.total,
-    color: getCategory(s.categoryId).color,
+    color: s.group.color,
   }));
 
   const recent = transactions.slice(0, 4);
@@ -49,21 +48,18 @@ export function OverviewScreen() {
                 )}
               />
               <View className="mt-5 w-full gap-2">
-                {spendByCategory.map((s) => {
-                  const c = getCategory(s.categoryId);
-                  return (
-                    <View key={s.categoryId} className="flex-row items-center gap-2">
-                      <View
-                        className="h-3 w-3 rounded-full"
-                        style={{ backgroundColor: c.color }}
-                      />
-                      <Text className="flex-1 text-sm text-surface-dark">{c.name}</Text>
-                      <Text className="text-sm font-medium text-muted">
-                        {formatCurrency(s.total)}
-                      </Text>
-                    </View>
-                  );
-                })}
+                {spendByGroup.map((s) => (
+                  <View key={s.group.id} className="flex-row items-center gap-2">
+                    <View
+                      className="h-3 w-3 rounded-full"
+                      style={{ backgroundColor: s.group.color }}
+                    />
+                    <Text className="flex-1 text-sm text-surface-dark">{s.group.name}</Text>
+                    <Text className="text-sm font-medium text-muted">
+                      {formatCurrency(s.total)}
+                    </Text>
+                  </View>
+                ))}
               </View>
             </View>
           ) : (

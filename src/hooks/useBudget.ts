@@ -1,15 +1,16 @@
 import { useContext, useMemo } from 'react';
 
 import { BudgetContext } from '@/context/BudgetContext';
-import type { Budget, Transaction } from '@/lib/types';
+import { getGroupForSub } from '@/lib/categories';
+import type { GroupCategory, Transaction } from '@/models';
 
-export interface CategorySpend {
-  categoryId: string;
+export interface GroupSpend {
+  group: GroupCategory;
   total: number;
 }
 
 /**
- * Access the shared budget store plus a few derived values.
+ * Access the shared budget store plus derived, rolled-up values.
  * Throws if used outside <BudgetProvider>.
  */
 export function useBudget() {
@@ -18,7 +19,17 @@ export function useBudget() {
     throw new Error('useBudget must be used within a <BudgetProvider>');
   }
   const { state, dispatch } = ctx;
-  const { transactions, budgets } = state;
+  const { transactions, accounts, goals, loans, groupCategories } = state;
+
+  const currentUser = useMemo(
+    () => state.users.find((u) => u.id === state.currentUserId),
+    [state.users, state.currentUserId],
+  );
+
+  const currentSpace = useMemo(
+    () => state.spaces.find((s) => s.id === state.currentSpaceId),
+    [state.spaces, state.currentSpaceId],
+  );
 
   const totals = useMemo(() => {
     let income = 0;
@@ -30,16 +41,29 @@ export function useBudget() {
     return { income, expense, balance: income - expense };
   }, [transactions]);
 
-  const spendByCategory = useMemo<CategorySpend[]>(() => {
-    const map = new Map<string, number>();
+  /** Expense totals rolled up from sub-categories to their group, desc. */
+  const spendByGroup = useMemo<GroupSpend[]>(() => {
+    const totalByGroup = new Map<string, number>();
     for (const t of transactions) {
       if (t.type !== 'expense') continue;
-      map.set(t.categoryId, (map.get(t.categoryId) ?? 0) + t.amount);
+      const group = getGroupForSub(t.subCategoryId);
+      totalByGroup.set(group.id, (totalByGroup.get(group.id) ?? 0) + t.amount);
     }
-    return [...map.entries()]
-      .map(([categoryId, total]) => ({ categoryId, total }))
+    return groupCategories
+      .map((group) => ({ group, total: totalByGroup.get(group.id) ?? 0 }))
+      .filter((g) => g.total > 0)
       .sort((a, b) => b.total - a.total);
-  }, [transactions]);
+  }, [transactions, groupCategories]);
+
+  /** Live balance for an account: opening balance + its transactions. */
+  const accountBalance = (accountId: string) => {
+    const account = accounts.find((a) => a.id === accountId);
+    if (!account) return 0;
+    return transactions.reduce((sum, t) => {
+      if (t.accountId !== accountId) return sum;
+      return sum + (t.type === 'income' ? t.amount : -t.amount);
+    }, account.startingBalance);
+  };
 
   // --- Action helpers -------------------------------------------------------
   const addTransaction = (t: Transaction) =>
@@ -48,15 +72,22 @@ export function useBudget() {
   const deleteTransaction = (id: string) =>
     dispatch({ type: 'DELETE_TRANSACTION', payload: { id } });
 
-  const setBudget = (b: Budget) => dispatch({ type: 'SET_BUDGET', payload: b });
-
   return {
+    // collections
     transactions,
-    budgets,
+    accounts,
+    goals,
+    loans,
+    groupCategories,
+    // context
+    currentUser,
+    currentSpace,
+    // derived
     totals,
-    spendByCategory,
+    spendByGroup,
+    accountBalance,
+    // actions
     addTransaction,
     deleteTransaction,
-    setBudget,
   };
 }

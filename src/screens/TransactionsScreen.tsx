@@ -1,19 +1,37 @@
-import { SectionList, Text, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { Pressable, SectionList, Text, View } from 'react-native';
+import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AddTransactionButton } from '@/components/AddTransactionButton';
 import { TransactionItem } from '@/components/TransactionItem';
 import { useBudget } from '@/hooks/useBudget';
 import { groupByDay } from '@/lib/format';
+import type { Transaction } from '@/models';
 
 export function TransactionsScreen() {
   const { transactions, deleteTransaction } = useBudget();
   const groups = groupByDay(transactions);
 
-  const sections = groups.map((g) => ({
-    title: g.label,
-    data: g.transactions,
-  }));
+  const sections = groups.map((g) => ({ title: g.label, data: g.transactions }));
+
+  const renderItem = ({ item }: { item: Transaction }) => (
+    <ReanimatedSwipeable
+      friction={2}
+      rightThreshold={40}
+      renderRightActions={() => (
+        <Pressable
+          onPress={() => deleteTransaction(item.id)}
+          className="w-20 items-center justify-center bg-expense active:opacity-80"
+        >
+          <Ionicons name="trash" size={20} color="#FFFFFF" />
+          <Text className="mt-1 text-xs font-medium text-white">Delete</Text>
+        </Pressable>
+      )}
+    >
+      <TransactionItem transaction={item} />
+    </ReanimatedSwipeable>
+  );
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-white">
@@ -28,9 +46,7 @@ export function TransactionsScreen() {
             {section.title}
           </Text>
         )}
-        renderItem={({ item }) => (
-          <TransactionItem transaction={item} onPress={(t) => deleteTransaction(t.id)} />
-        )}
+        renderItem={renderItem}
         ListEmptyComponent={
           <View className="items-center px-5 pt-16">
             <Text className="text-base text-muted">No transactions yet.</Text>

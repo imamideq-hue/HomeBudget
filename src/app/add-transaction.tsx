@@ -14,37 +14,64 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CategoryPill } from '@/components/CategoryPill';
 import { useBudget } from '@/hooks/useBudget';
-import { CATEGORIES } from '@/lib/categories';
-import { CURRENCY } from '@/lib/format';
+import { GROUP_CATEGORIES, getSubsForGroup } from '@/lib/categories';
+import { CURRENCY, formatDayLabel } from '@/lib/format';
 import { newId } from '@/lib/id';
-import type { TransactionType } from '@/lib/types';
+import type { TransactionType } from '@/models';
+
+function isToday(d: Date): boolean {
+  const t = new Date();
+  return d.toDateString() === t.toDateString();
+}
 
 export default function AddTransactionModal() {
   const router = useRouter();
-  const { addTransaction } = useBudget();
+  const { accounts, currentUser, currentSpace, addTransaction } = useBudget();
 
   const [type, setType] = useState<TransactionType>('expense');
   const [amount, setAmount] = useState('');
-  const [categoryId, setCategoryId] = useState<string | null>(null);
+  const [subCategoryId, setSubCategoryId] = useState<string | null>(null);
+  const [accountId, setAccountId] = useState<string | null>(accounts[0]?.id ?? null);
   const [note, setNote] = useState('');
+  const [date, setDate] = useState(() => new Date());
 
   const parsedAmount = useMemo(() => {
     const n = parseFloat(amount.replace(',', '.'));
     return Number.isFinite(n) ? n : 0;
   }, [amount]);
 
-  const canSave = parsedAmount > 0 && categoryId !== null;
+  // Only show category groups that match the selected direction.
+  const groups = useMemo(
+    () => GROUP_CATEGORIES.filter((g) => g.kind === type),
+    [type],
+  );
+
+  const canSave =
+    parsedAmount > 0 && subCategoryId !== null && accountId !== null;
+
+  const shiftDate = (days: number) => {
+    setDate((prev) => {
+      const next = new Date(prev);
+      next.setDate(prev.getDate() + days);
+      if (next > new Date()) return prev; // don't allow the future
+      return next;
+    });
+  };
 
   const handleSave = () => {
-    if (!canSave || categoryId === null) return;
+    if (!canSave || subCategoryId === null || accountId === null) return;
+    const now = new Date().toISOString();
     addTransaction({
       id: newId(),
-      amount: parsedAmount,
+      spaceId: currentSpace?.id ?? '',
+      accountId,
+      subCategoryId,
       type,
-      categoryId,
+      amount: parsedAmount,
       note: note.trim() || undefined,
-      date: new Date().toISOString(),
-      member: 'You',
+      date: date.toISOString(),
+      createdBy: currentUser?.id ?? '',
+      createdAt: now,
     });
     router.back();
   };
@@ -73,7 +100,10 @@ export default function AddTransactionModal() {
                 return (
                   <Pressable
                     key={t}
-                    onPress={() => setType(t)}
+                    onPress={() => {
+                      setType(t);
+                      setSubCategoryId(null);
+                    }}
                     className={`flex-1 items-center rounded-xl py-2.5 ${active ? 'bg-white shadow-sm' : ''}`}
                   >
                     <Text
@@ -103,33 +133,102 @@ export default function AddTransactionModal() {
               />
             </View>
 
-            {/* Category picker */}
+            {/* Account selector */}
+            {accounts.length > 0 ? (
+              <View>
+                <Text className="mb-2 text-sm font-semibold text-surface-dark">Account</Text>
+                <View className="flex-row flex-wrap gap-2">
+                  {accounts.map((acc) => {
+                    const selected = acc.id === accountId;
+                    return (
+                      <Pressable
+                        key={acc.id}
+                        onPress={() => setAccountId(acc.id)}
+                        className={`flex-row items-center gap-2 rounded-full border px-3 py-2 ${
+                          selected ? 'border-primary bg-primary/10' : 'border-transparent bg-card'
+                        }`}
+                      >
+                        <Ionicons
+                          name={acc.icon as keyof typeof Ionicons.glyphMap}
+                          size={16}
+                          color={acc.color}
+                        />
+                        <Text
+                          className={`text-sm ${selected ? 'font-semibold text-surface-dark' : 'text-muted'}`}
+                        >
+                          {acc.name}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              </View>
+            ) : null}
+
+            {/* Date stepper */}
+            <View>
+              <Text className="mb-2 text-sm font-semibold text-surface-dark">Date</Text>
+              <View className="flex-row items-center justify-between rounded-2xl bg-card px-3 py-2">
+                <Pressable
+                  onPress={() => shiftDate(-1)}
+                  hitSlop={8}
+                  className="h-9 w-9 items-center justify-center rounded-full bg-white active:opacity-70"
+                >
+                  <Ionicons name="chevron-back" size={18} color="#7C5CFC" />
+                </Pressable>
+                <Text className="text-base font-medium text-surface-dark">
+                  {formatDayLabel(date.toISOString())}
+                </Text>
+                <Pressable
+                  onPress={() => shiftDate(1)}
+                  hitSlop={8}
+                  disabled={isToday(date)}
+                  className={`h-9 w-9 items-center justify-center rounded-full bg-white ${
+                    isToday(date) ? 'opacity-40' : 'active:opacity-70'
+                  }`}
+                >
+                  <Ionicons name="chevron-forward" size={18} color="#7C5CFC" />
+                </Pressable>
+              </View>
+            </View>
+
+            {/* Category picker (sub-categories grouped by group) */}
             <View>
               <Text className="mb-3 text-sm font-semibold text-surface-dark">Category</Text>
-              <View className="flex-row flex-wrap gap-3">
-                {CATEGORIES.map((c) => {
-                  const selected = c.id === categoryId;
-                  return (
-                    <Pressable
-                      key={c.id}
-                      onPress={() => setCategoryId(c.id)}
-                      className="w-[22%] items-center gap-1"
-                    >
-                      <View
-                        className="rounded-full"
-                        style={selected ? { borderWidth: 2, borderColor: c.color } : undefined}
-                      >
-                        <CategoryPill category={c} size={48} />
-                      </View>
-                      <Text
-                        numberOfLines={1}
-                        className={`text-xs ${selected ? 'font-semibold text-surface-dark' : 'text-muted'}`}
-                      >
-                        {c.name}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
+              <View className="gap-4">
+                {groups.map((group) => (
+                  <View key={group.id}>
+                    <Text className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted">
+                      {group.name}
+                    </Text>
+                    <View className="flex-row flex-wrap gap-3">
+                      {getSubsForGroup(group.id).map((sub) => {
+                        const selected = sub.id === subCategoryId;
+                        const color = sub.color ?? group.color;
+                        return (
+                          <Pressable
+                            key={sub.id}
+                            onPress={() => setSubCategoryId(sub.id)}
+                            className="w-[22%] items-center gap-1"
+                          >
+                            <View
+                              className="rounded-full"
+                              style={selected ? { borderWidth: 2, borderColor: color } : undefined}
+                            >
+                              <CategoryPill icon={sub.icon ?? group.icon} color={color} size={48} />
+                            </View>
+                            <Text
+                              numberOfLines={1}
+                              className={`text-xs ${selected ? 'font-semibold text-surface-dark' : 'text-muted'}`}
+                            >
+                              {sub.name}
+                            </Text>
+                          </Pressable>
+                        );
+                      })}
+                    </View>
+                  </View>
+                ))}
               </View>
             </View>
 
