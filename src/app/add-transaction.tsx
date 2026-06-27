@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import {
+  Alert,
   Keyboard,
   Pressable,
   ScrollView,
@@ -14,9 +15,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CategoryPill } from '@/components/CategoryPill';
 import { useBudget } from '@/hooks/useBudget';
+import { useBudgetTracker } from '@/hooks/useBudgetTracker';
 import { GROUP_CATEGORIES, getSubsForGroup } from '@/lib/categories';
-import { CURRENCY, formatDayLabel } from '@/lib/format';
-import { newId } from '@/lib/id';
+import { CURRENCY, formatCurrency, formatDayLabel } from '@/lib/format';
 import type { TransactionType } from '@/models';
 
 function isToday(d: Date): boolean {
@@ -26,7 +27,8 @@ function isToday(d: Date): boolean {
 
 export default function AddTransactionModal() {
   const router = useRouter();
-  const { accounts, currentUser, currentSpace, addTransaction } = useBudget();
+  const { accounts } = useBudget();
+  const { addTransaction } = useBudgetTracker();
 
   const [type, setType] = useState<TransactionType>('expense');
   const [amount, setAmount] = useState('');
@@ -60,19 +62,27 @@ export default function AddTransactionModal() {
 
   const handleSave = () => {
     if (!canSave || subCategoryId === null || accountId === null) return;
-    const now = new Date().toISOString();
-    addTransaction({
-      id: newId(),
-      spaceId: currentSpace?.id ?? '',
-      accountId,
+
+    // Adding the item rolls up into its parent group and recalculates that
+    // group's monthly budget; `groupBudget` reflects the new total/remaining.
+    const { groupBudget } = addTransaction({
       subCategoryId,
-      type,
+      accountId,
       amount: parsedAmount,
-      note: note.trim() || undefined,
+      type,
+      note,
       date: date.toISOString(),
-      createdBy: currentUser?.id ?? '',
-      createdAt: now,
     });
+
+    if (groupBudget.isOverBudget) {
+      Alert.alert(
+        'Over budget',
+        `This puts ${groupBudget.group.name} ${formatCurrency(
+          Math.abs(groupBudget.remaining),
+        )} over its ${formatCurrency(groupBudget.budgetLimit)} monthly budget.`,
+      );
+    }
+
     router.back();
   };
 

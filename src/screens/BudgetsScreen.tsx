@@ -2,37 +2,32 @@ import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CategoryPill } from '@/components/CategoryPill';
-import { useBudget } from '@/hooks/useBudget';
+import { useBudgetTracker } from '@/hooks/useBudgetTracker';
 import { formatCurrency } from '@/lib/format';
 
+const MONTH = new Date().toLocaleDateString('en-US', { month: 'long' });
+
 export function BudgetsScreen() {
-  const { groupCategories, spendByGroup } = useBudget();
-
-  const spentFor = (groupId: string) =>
-    spendByGroup.find((s) => s.group.id === groupId)?.total ?? 0;
-
-  const budgeted = groupCategories.filter((g) => g.budgetLimit && g.budgetLimit > 0);
+  const { groupBudgets } = useBudgetTracker();
+  const budgeted = groupBudgets.filter((b) => b.hasBudget);
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-white">
       <ScrollView contentContainerClassName="gap-3 px-5 pb-12 pt-2">
-        <Text className="mb-1 text-2xl font-bold text-surface-dark">Budgets</Text>
+        <Text className="text-2xl font-bold text-surface-dark">Budgets</Text>
+        <Text className="mb-1 text-sm text-muted">Monthly · {MONTH}</Text>
 
-        {budgeted.map((group) => {
-          const limit = group.budgetLimit ?? 0;
-          const spent = spentFor(group.id);
-          const ratio = limit > 0 ? Math.min(spent / limit, 1) : 0;
-          const over = spent > limit;
-
+        {budgeted.map((b) => {
+          const ratio = Math.min(b.percentUsed, 1);
           return (
-            <View key={group.id} className="rounded-2xl bg-card p-4">
+            <View key={b.group.id} className="rounded-2xl bg-card p-4">
               <View className="flex-row items-center gap-3">
-                <CategoryPill icon={group.icon} color={group.color} size={36} />
+                <CategoryPill icon={b.group.icon} color={b.group.color} size={36} />
                 <Text className="flex-1 text-base font-medium text-surface-dark">
-                  {group.name}
+                  {b.group.name}
                 </Text>
-                <Text className={`text-sm font-semibold ${over ? 'text-expense' : 'text-muted'}`}>
-                  {formatCurrency(spent)} / {formatCurrency(limit)}
+                <Text className={`text-sm font-semibold ${b.isOverBudget ? 'text-expense' : 'text-muted'}`}>
+                  {formatCurrency(b.totalSpent)} / {formatCurrency(b.budgetLimit)}
                 </Text>
               </View>
 
@@ -41,10 +36,18 @@ export function BudgetsScreen() {
                   className="h-full rounded-full"
                   style={{
                     width: `${ratio * 100}%`,
-                    backgroundColor: over ? '#FF6B6B' : group.color,
+                    backgroundColor: b.isOverBudget ? '#FF6B6B' : b.group.color,
                   }}
                 />
               </View>
+
+              <Text
+                className={`mt-2 text-xs ${b.isOverBudget ? 'text-expense' : 'text-muted'}`}
+              >
+                {b.isOverBudget
+                  ? `${formatCurrency(Math.abs(b.remaining))} over budget`
+                  : `${formatCurrency(b.remaining)} remaining`}
+              </Text>
             </View>
           );
         })}
