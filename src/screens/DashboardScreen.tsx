@@ -10,6 +10,10 @@ import { BudgetProgressRow } from '@/components/BudgetProgressRow';
 import { TransactionItem } from '@/components/TransactionItem';
 import { useBudget } from '@/hooks/useBudget';
 import { useBudgetTracker } from '@/hooks/useBudgetTracker';
+import { resolveSubVisual } from '@/lib/categories';
+
+/** Common sub-categories surfaced as one-tap shortcuts. */
+const QUICK_ADD = ['sub_groceries', 'sub_dining', 'sub_transit', 'sub_coffee', 'sub_shopping'];
 
 export function DashboardScreen() {
   const router = useRouter();
@@ -43,6 +47,46 @@ export function DashboardScreen() {
 
         {/* Balance hero */}
         <BalanceCard balance={totals.balance} income={totals.income} expense={totals.expense} />
+
+        {/* Quick add shortcuts */}
+        <View className="gap-3">
+          <Text className="text-lg font-semibold text-surface-dark">Quick add</Text>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerClassName="gap-3 pr-2"
+          >
+            {QUICK_ADD.map((subId) => {
+              const visual = resolveSubVisual(subId);
+              return (
+                <Pressable
+                  key={subId}
+                  onPress={() =>
+                    router.push({
+                      pathname: '/add-transaction',
+                      params: { subCategoryId: subId, type: 'expense' },
+                    })
+                  }
+                  className="w-20 items-center gap-1 active:opacity-70"
+                >
+                  <View
+                    className="h-14 w-14 items-center justify-center rounded-2xl"
+                    style={{ backgroundColor: `${visual.color}22` }}
+                  >
+                    <Ionicons
+                      name={visual.icon as keyof typeof Ionicons.glyphMap}
+                      size={24}
+                      color={visual.color}
+                    />
+                  </View>
+                  <Text className="text-xs text-muted" numberOfLines={1}>
+                    {visual.name}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+        </View>
 
         {/* Accounts */}
         <View className="gap-3">

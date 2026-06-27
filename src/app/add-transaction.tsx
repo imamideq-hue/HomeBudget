@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import {
   Alert,
@@ -16,7 +16,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { CategoryPill } from '@/components/CategoryPill';
 import { useBudget } from '@/hooks/useBudget';
 import { useBudgetTracker } from '@/hooks/useBudgetTracker';
-import { GROUP_CATEGORIES, getSubsForGroup } from '@/lib/categories';
+import { GROUP_CATEGORIES, getSubCategory, getSubsForGroup } from '@/lib/categories';
 import { CURRENCY, formatCurrency, formatDayLabel } from '@/lib/format';
 import type { TransactionType } from '@/models';
 
@@ -30,9 +30,15 @@ export default function AddTransactionModal() {
   const { accounts } = useBudget();
   const { addTransaction } = useBudgetTracker();
 
-  const [type, setType] = useState<TransactionType>('expense');
+  // Optional pre-fill from a quick-add shortcut.
+  const params = useLocalSearchParams<{ subCategoryId?: string; type?: string }>();
+  const presetSub =
+    params.subCategoryId && getSubCategory(params.subCategoryId) ? params.subCategoryId : null;
+  const presetType: TransactionType = params.type === 'income' ? 'income' : 'expense';
+
+  const [type, setType] = useState<TransactionType>(presetType);
   const [amount, setAmount] = useState('');
-  const [subCategoryId, setSubCategoryId] = useState<string | null>(null);
+  const [subCategoryId, setSubCategoryId] = useState<string | null>(presetSub);
   const [accountId, setAccountId] = useState<string | null>(accounts[0]?.id ?? null);
   const [note, setNote] = useState('');
   const [date, setDate] = useState(() => new Date());
