@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { AccountCard } from '@/components/AccountCard';
 import { AddTransactionButton } from '@/components/AddTransactionButton';
 import { BalanceCard } from '@/components/BalanceCard';
-import { BudgetProgressRow } from '@/components/BudgetProgressRow';
+import { BudgetRing } from '@/components/BudgetRing';
 import { TransactionItem } from '@/components/TransactionItem';
 import { useBudget } from '@/hooks/useBudget';
 import { useBudgetTracker } from '@/hooks/useBudgetTracker';
@@ -115,9 +115,13 @@ export function DashboardScreen() {
             </Pressable>
           </View>
           {budgeted.length > 0 ? (
-            <View className="gap-3">
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerClassName="gap-2 pr-2"
+            >
               {budgeted.map((budget) => (
-                <BudgetProgressRow
+                <BudgetRing
                   key={budget.group.id}
                   budget={budget}
                   onPress={() =>
@@ -125,7 +129,7 @@ export function DashboardScreen() {
                   }
                 />
               ))}
-            </View>
+            </ScrollView>
           ) : (
             <Text className="text-sm text-muted">No budgets set yet.</Text>
           )}
