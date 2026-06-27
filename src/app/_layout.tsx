@@ -1,0 +1,21 @@
+import '@/global.css';
+
+import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+import { BudgetProvider } from '@/context/BudgetContext';
+
+export default function RootLayout() {
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <BudgetProvider>
+          <Stack screenOptions={{ headerShown: false }} />
+          <StatusBar style="auto" />
+        </BudgetProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
+  );
+}
