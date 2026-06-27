@@ -16,6 +16,7 @@ export default function RootLayout() {
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="add-transaction" options={{ presentation: 'modal' }} />
             <Stack.Screen name="edit-budget" options={{ presentation: 'modal' }} />
+            <Stack.Screen name="contribute-goal" options={{ presentation: 'modal' }} />
             <Stack.Screen name="account/[id]" />
           </Stack>
           <StatusBar style="auto" />

@@ -3,9 +3,9 @@
  *
  * Relationships:
  *   User ──< SpaceMember >── Space
- *   Space ──< Account, GroupCategory, Goal, Loan
+ *   Space ──< Account, GroupCategory, Goal
  *   GroupCategory ──< SubCategory          (sub-categories roll up to groups)
- *   Transaction ── Account, SubCategory, User   (and optionally Goal / Loan)
+ *   Transaction ── Account, SubCategory, User   (and optionally Goal)
  */
 export * from '@/models/common';
 export * from '@/models/user';
@@ -14,13 +14,11 @@ export * from '@/models/account';
 export * from '@/models/category';
 export * from '@/models/transaction';
 export * from '@/models/goal';
-export * from '@/models/loan';
 
 import type { Account } from '@/models/account';
 import type { GroupCategory, SubCategory } from '@/models/category';
 import type { ID } from '@/models/common';
 import type { Goal } from '@/models/goal';
-import type { Loan } from '@/models/loan';
 import type { Space } from '@/models/space';
 import type { Transaction } from '@/models/transaction';
 import type { User } from '@/models/user';
@@ -39,5 +37,4 @@ export interface BudgetData {
   subCategories: SubCategory[];
   transactions: Transaction[];
   goals: Goal[];
-  loans: Loan[];
 }

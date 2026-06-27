@@ -10,8 +10,8 @@ export interface SpaceMember {
 }
 
 /**
- * A shared budgeting workspace. Accounts, categories, transactions, goals and
- * loans all belong to a Space so several people can collaborate on one budget.
+ * A shared budgeting workspace. Accounts, categories, transactions and goals
+ * all belong to a Space so several people can collaborate on one budget.
  */
 export interface Space extends BaseEntity {
   name: string;

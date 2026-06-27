@@ -20,7 +20,6 @@ export interface NewTransactionInput {
   /** Defaults to now. */
   date?: string;
   goalId?: string;
-  loanId?: string;
 }
 
 export interface AddTransactionResult {
@@ -70,7 +69,6 @@ export function useBudgetTracker() {
       createdBy: state.currentUserId,
       createdAt: nowIso,
       goalId: input.goalId,
-      loanId: input.loanId,
     };
 
     dispatch({ type: 'ADD_TRANSACTION', payload: transaction });

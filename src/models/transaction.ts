@@ -17,7 +17,6 @@ export interface Transaction extends BaseEntity {
   date: ISODateString;
   /** FK -> User.id — who logged it. */
   createdBy: ID;
-  /** Optional links when this item funds a goal or repays a loan. */
+  /** Optional link when this item is a contribution toward a goal. */
   goalId?: ID;
-  loanId?: ID;
 }

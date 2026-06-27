@@ -92,10 +92,6 @@ export const SEED_DATA: BudgetData = {
   goals: [
     { id: 'goal_vacation', spaceId: SPACE_ID, name: 'Vacation Fund', targetAmount: 3000, currentAmount: 750, accountId: ACC_SAVINGS, targetDate: daysAgo(-120), color: '#22B8CF', icon: 'airplane', status: 'active', createdAt: EPOCH },
     { id: 'goal_emergency', spaceId: SPACE_ID, name: 'Emergency Fund', targetAmount: 5000, currentAmount: 1800, accountId: ACC_SAVINGS, color: '#7C5CFC', icon: 'shield-checkmark', status: 'active', createdAt: EPOCH },
-  ],
-
-  loans: [
-    { id: 'loan_car', spaceId: SPACE_ID, name: 'Car loan', counterparty: 'AutoBank', direction: 'borrowed', principal: 12000, outstanding: 8400, interestRate: 4.5, accountId: ACC_CHECKING, startDate: daysAgo(300), dueDate: daysAgo(-800), status: 'open', createdAt: EPOCH },
-    { id: 'loan_alex', spaceId: SPACE_ID, name: 'Lent to Sam', counterparty: 'Sam', direction: 'lent', principal: 200, outstanding: 120, startDate: daysAgo(20), status: 'open', createdAt: EPOCH },
+    { id: 'goal_laptop', spaceId: SPACE_ID, name: 'New Laptop', targetAmount: 2000, currentAmount: 2000, accountId: ACC_SAVINGS, color: '#FFA94D', icon: 'laptop', status: 'reached', createdAt: EPOCH },
   ],
 };

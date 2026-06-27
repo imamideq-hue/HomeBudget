@@ -19,7 +19,7 @@ export function useBudget() {
     throw new Error('useBudget must be used within a <BudgetProvider>');
   }
   const { state, dispatch } = ctx;
-  const { transactions, accounts, goals, loans, groupCategories } = state;
+  const { transactions, accounts, goals, groupCategories } = state;
 
   const currentUser = useMemo(
     () => state.users.find((u) => u.id === state.currentUserId),
@@ -77,7 +77,6 @@ export function useBudget() {
     transactions,
     accounts,
     goals,
-    loans,
     groupCategories,
     // context
     currentUser,

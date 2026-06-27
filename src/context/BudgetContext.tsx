@@ -10,14 +10,15 @@ import {
 import { SEED_DATA } from '@/lib/seed';
 import type { BudgetData, Transaction } from '@/models';
 
-const STORAGE_KEY = 'homebudget:state:v2';
+const STORAGE_KEY = 'homebudget:state:v3';
 
 // --- Reducer ----------------------------------------------------------------
 export type BudgetAction =
   | { type: 'HYDRATE'; payload: BudgetData }
   | { type: 'ADD_TRANSACTION'; payload: Transaction }
   | { type: 'DELETE_TRANSACTION'; payload: { id: string } }
-  | { type: 'SET_BUDGET_LIMIT'; payload: { groupId: string; limit: number } };
+  | { type: 'SET_BUDGET_LIMIT'; payload: { groupId: string; limit: number } }
+  | { type: 'CONTRIBUTE_TO_GOAL'; payload: { goalId: string; amount: number } };
 
 function reducer(state: BudgetData, action: BudgetAction): BudgetData {
   switch (action.type) {
@@ -38,6 +39,19 @@ function reducer(state: BudgetData, action: BudgetAction): BudgetData {
             ? { ...g, budgetLimit: action.payload.limit > 0 ? action.payload.limit : undefined }
             : g,
         ),
+      };
+    case 'CONTRIBUTE_TO_GOAL':
+      return {
+        ...state,
+        goals: state.goals.map((goal) => {
+          if (goal.id !== action.payload.goalId) return goal;
+          const currentAmount = goal.currentAmount + action.payload.amount;
+          return {
+            ...goal,
+            currentAmount,
+            status: currentAmount >= goal.targetAmount ? 'reached' : 'active',
+          };
+        }),
       };
     default:
       return state;

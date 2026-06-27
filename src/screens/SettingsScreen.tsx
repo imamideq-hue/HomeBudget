@@ -18,10 +18,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 export function SettingsScreen() {
   const router = useRouter();
-  const { currentSpace, accounts, goals, loans, accountBalance } = useBudget();
-
-  const activeGoals = goals.filter((g) => g.status === 'active');
-  const openLoans = loans.filter((l) => l.status === 'open');
+  const { currentSpace, accounts, accountBalance } = useBudget();
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-white">
@@ -61,57 +58,6 @@ export function SettingsScreen() {
               </Text>
               <Ionicons name="chevron-forward" size={16} color="#8A8A9E" />
             </Pressable>
-          ))}
-        </Section>
-
-        {/* Goals */}
-        <Section title="Goals">
-          {activeGoals.map((goal) => {
-            const ratio = goal.targetAmount > 0 ? goal.currentAmount / goal.targetAmount : 0;
-            return (
-              <View key={goal.id} className="rounded-2xl bg-card px-4 py-3">
-                <View className="flex-row items-center gap-3">
-                  <CategoryPill icon={goal.icon} color={goal.color} size={36} />
-                  <Text className="flex-1 text-base text-surface-dark">{goal.name}</Text>
-                  <Text className="text-sm text-muted">
-                    {formatCurrency(goal.currentAmount)} / {formatCurrency(goal.targetAmount)}
-                  </Text>
-                </View>
-                <View className="mt-3 h-2 overflow-hidden rounded-full bg-black/10">
-                  <View
-                    className="h-full rounded-full"
-                    style={{ width: `${Math.min(ratio, 1) * 100}%`, backgroundColor: goal.color }}
-                  />
-                </View>
-              </View>
-            );
-          })}
-        </Section>
-
-        {/* Loans */}
-        <Section title="Loans">
-          {openLoans.map((loan) => (
-            <View
-              key={loan.id}
-              className="flex-row items-center gap-3 rounded-2xl bg-card px-4 py-3"
-            >
-              <View className="h-9 w-9 items-center justify-center rounded-full bg-black/5">
-                <Ionicons
-                  name={loan.direction === 'borrowed' ? 'arrow-down' : 'arrow-up'}
-                  size={18}
-                  color={loan.direction === 'borrowed' ? '#FF6B6B' : '#34C77B'}
-                />
-              </View>
-              <View className="flex-1">
-                <Text className="text-base text-surface-dark">{loan.name}</Text>
-                <Text className="text-xs text-muted capitalize">
-                  {loan.direction} · {loan.counterparty}
-                </Text>
-              </View>
-              <Text className="text-sm font-semibold text-surface-dark">
-                {formatCurrency(loan.outstanding)}
-              </Text>
-            </View>
           ))}
         </Section>
 
