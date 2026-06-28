@@ -2,7 +2,14 @@ import { useContext, useMemo } from 'react';
 
 import { BudgetContext } from '@/context/BudgetContext';
 import { getGroupForSub } from '@/lib/categories';
-import type { GroupCategory, Transaction } from '@/models';
+import { newId } from '@/lib/id';
+import type { GroupCategory, Transaction, User } from '@/models';
+
+export interface NewMemberInput {
+  name: string;
+  email?: string;
+  color: string;
+}
 
 export interface GroupSpend {
   group: GroupCategory;
@@ -72,12 +79,26 @@ export function useBudget() {
   const deleteTransaction = (id: string) =>
     dispatch({ type: 'DELETE_TRANSACTION', payload: { id } });
 
+  /** Add a person to the current space (as an editor). */
+  const addMember = (input: NewMemberInput): User => {
+    const user: User = {
+      id: newId(),
+      name: input.name.trim(),
+      email: input.email?.trim() || undefined,
+      color: input.color,
+      createdAt: new Date().toISOString(),
+    };
+    dispatch({ type: 'ADD_MEMBER', payload: user });
+    return user;
+  };
+
   return {
     // collections
     transactions,
     accounts,
     goals,
     groupCategories,
+    users: state.users,
     // context
     currentUser,
     currentSpace,
@@ -88,5 +109,6 @@ export function useBudget() {
     // actions
     addTransaction,
     deleteTransaction,
+    addMember,
   };
 }

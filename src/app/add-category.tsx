@@ -32,27 +32,39 @@ const COLORS = [
 
 export default function AddCategoryModal() {
   const router = useRouter();
-  const { groupCategories, addSubCategory } = useCategories();
-  const params = useLocalSearchParams<{ groupId?: string; kind?: string }>();
+  const { groupCategories, getSubCategory, getGroupForSub, addSubCategory, editSubCategory } =
+    useCategories();
+  const params = useLocalSearchParams<{ groupId?: string; kind?: string; categoryId?: string }>();
 
-  const kind: TransactionType = params.kind === 'income' ? 'income' : 'expense';
+  const editing = params.categoryId ? getSubCategory(params.categoryId) : undefined;
+
+  // When editing, derive the kind from the category's current group.
+  const kind: TransactionType = editing
+    ? getGroupForSub(editing.id).kind
+    : params.kind === 'income'
+      ? 'income'
+      : 'expense';
   const groupsForKind = useMemo(
     () => groupCategories.filter((g) => g.kind === kind),
     [groupCategories, kind],
   );
 
-  const [name, setName] = useState('');
+  const [name, setName] = useState(editing?.name ?? '');
   const [groupId, setGroupId] = useState<string>(
-    params.groupId ?? groupsForKind[0]?.id ?? groupCategories[0]?.id ?? '',
+    editing?.groupId ?? params.groupId ?? groupsForKind[0]?.id ?? groupCategories[0]?.id ?? '',
   );
-  const [icon, setIcon] = useState(ICONS[0]);
-  const [color, setColor] = useState(COLORS[0]);
+  const [icon, setIcon] = useState(editing?.icon ?? ICONS[0]);
+  const [color, setColor] = useState(editing?.color ?? COLORS[0]);
 
   const canSave = name.trim().length > 0 && groupId.length > 0;
 
   const save = () => {
     if (!canSave) return;
-    addSubCategory({ groupId, name, icon, color });
+    if (editing) {
+      editSubCategory(editing.id, { groupId, name: name.trim(), icon, color });
+    } else {
+      addSubCategory({ groupId, name, icon, color });
+    }
     router.back();
   };
 
@@ -65,7 +77,9 @@ export default function AddCategoryModal() {
             <Pressable onPress={() => router.back()} hitSlop={8} className="active:opacity-60">
               <Text className="text-base text-muted">Cancel</Text>
             </Pressable>
-            <Text className="text-base font-semibold text-surface-dark">New category</Text>
+            <Text className="text-base font-semibold text-surface-dark">
+              {editing ? 'Edit category' : 'New category'}
+            </Text>
             <View className="w-14" />
           </View>
 
@@ -166,7 +180,9 @@ export default function AddCategoryModal() {
               }`}
             >
               <Ionicons name="checkmark" size={20} color="#FFFFFF" />
-              <Text className="text-base font-semibold text-white">Create category</Text>
+              <Text className="text-base font-semibold text-white">
+                {editing ? 'Save changes' : 'Create category'}
+              </Text>
             </Pressable>
           </ScrollView>
         </View>

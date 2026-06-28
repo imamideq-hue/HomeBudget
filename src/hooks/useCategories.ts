@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 
-import { BudgetContext } from '@/context/BudgetContext';
+import { BudgetContext, type SubCategoryEdit } from '@/context/BudgetContext';
 import {
   getGroupCategory as getGroupCategoryPure,
   getGroupForSub as getGroupForSubPure,
@@ -52,6 +52,9 @@ export function useCategories() {
     return sub;
   };
 
+  const editSubCategory = (id: string, changes: SubCategoryEdit) =>
+    dispatch({ type: 'EDIT_SUBCATEGORY', payload: { id, changes } });
+
   const addGroupCategory = (input: NewGroupCategoryInput): GroupCategory => {
     const group: GroupCategory = {
       id: newId(),
@@ -77,6 +80,7 @@ export function useCategories() {
     resolveSubVisual: (subId: string) =>
       resolveSubVisualPure(groupCategories, subCategories, subId),
     addSubCategory,
+    editSubCategory,
     addGroupCategory,
   };
 }

@@ -36,13 +36,13 @@ export function DashboardScreen() {
             </Text>
           </View>
           <Pressable
-            onPress={() => router.push('/add-transaction')}
+            onPress={() => router.push('/add-member')}
             accessibilityRole="button"
-            accessibilityLabel="Quick add transaction"
+            accessibilityLabel="Add member"
             className="flex-row items-center gap-1 rounded-full bg-primary px-4 py-2 active:opacity-80"
           >
-            <Ionicons name="add" size={18} color="#FFFFFF" />
-            <Text className="text-sm font-semibold text-white">Add</Text>
+            <Ionicons name="person-add" size={16} color="#FFFFFF" />
+            <Text className="text-sm font-semibold text-white">Add user</Text>
           </Pressable>
         </View>
 

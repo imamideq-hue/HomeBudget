@@ -4,13 +4,10 @@ name: Build Android APK
 # No Expo account needed — the release build is signed with the generated
 # debug keystore (fine for testing / sideloading).
 
+# Manual only — run from the Actions tab (or on request) so day-to-day pushes
+# don't trigger a ~28-min build.
 on:
   workflow_dispatch:
-  push:
-    branches: [claude/budget-app-setup-kgdytu]
-    paths-ignore:
-      - '**.md'
-      - '.github/workflows/deploy-pages.yml'
 
 jobs:
   build:

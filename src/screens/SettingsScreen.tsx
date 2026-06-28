@@ -64,11 +64,11 @@ export function SettingsScreen() {
         {/* Categories */}
         <Section title="Categories">
           <Pressable
-            onPress={() => router.push('/add-category')}
+            onPress={() => router.push('/categories')}
             className="flex-row items-center gap-3 rounded-2xl bg-card px-4 py-4 active:opacity-70"
           >
             <Ionicons name="pricetag-outline" size={22} color="#7C5CFC" />
-            <Text className="flex-1 text-base text-surface-dark">Add a category</Text>
+            <Text className="flex-1 text-base text-surface-dark">Manage categories</Text>
             <Ionicons name="chevron-forward" size={16} color="#8A8A9E" />
           </Pressable>
         </Section>

@@ -13,9 +13,13 @@ import type {
   GroupCategory,
   SubCategory,
   Transaction,
+  User,
 } from '@/models';
 
 const STORAGE_KEY = 'homebudget:state:v3';
+
+/** Editable fields of a sub-category. */
+export type SubCategoryEdit = Partial<Pick<SubCategory, 'name' | 'icon' | 'color' | 'groupId'>>;
 
 // --- Reducer ----------------------------------------------------------------
 export type BudgetAction =
@@ -25,8 +29,10 @@ export type BudgetAction =
   | { type: 'SET_BUDGET_LIMIT'; payload: { groupId: string; limit: number } }
   | { type: 'CONTRIBUTE_TO_GOAL'; payload: { goalId: string; amount: number } }
   | { type: 'ADD_SUBCATEGORY'; payload: SubCategory }
+  | { type: 'EDIT_SUBCATEGORY'; payload: { id: string; changes: SubCategoryEdit } }
   | { type: 'ADD_GROUP_CATEGORY'; payload: GroupCategory }
-  | { type: 'SET_GOAL_DEADLINE'; payload: { goalId: string; deadline?: string } };
+  | { type: 'SET_GOAL_DEADLINE'; payload: { goalId: string; deadline?: string } }
+  | { type: 'ADD_MEMBER'; payload: User };
 
 function reducer(state: BudgetData, action: BudgetAction): BudgetData {
   switch (action.type) {
@@ -65,6 +71,13 @@ function reducer(state: BudgetData, action: BudgetAction): BudgetData {
       return { ...state, groupCategories: [...state.groupCategories, action.payload] };
     case 'ADD_SUBCATEGORY':
       return { ...state, subCategories: [...state.subCategories, action.payload] };
+    case 'EDIT_SUBCATEGORY':
+      return {
+        ...state,
+        subCategories: state.subCategories.map((s) =>
+          s.id === action.payload.id ? { ...s, ...action.payload.changes } : s,
+        ),
+      };
     case 'SET_GOAL_DEADLINE':
       return {
         ...state,
@@ -72,6 +85,26 @@ function reducer(state: BudgetData, action: BudgetAction): BudgetData {
           goal.id === action.payload.goalId
             ? { ...goal, targetDate: action.payload.deadline }
             : goal,
+        ),
+      };
+    case 'ADD_MEMBER':
+      return {
+        ...state,
+        users: [...state.users, action.payload],
+        spaces: state.spaces.map((space) =>
+          space.id === state.currentSpaceId
+            ? {
+                ...space,
+                members: [
+                  ...space.members,
+                  {
+                    userId: action.payload.id,
+                    role: 'editor',
+                    joinedAt: action.payload.createdAt,
+                  },
+                ],
+              }
+            : space,
         ),
       };
     default:
