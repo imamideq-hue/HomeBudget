@@ -1,7 +1,15 @@
 import { useContext } from 'react';
 
 import { BudgetContext } from '@/context/BudgetContext';
+import { newId } from '@/lib/id';
 import type { Goal } from '@/models';
+
+export interface NewGoalInput {
+  name: string;
+  targetAmount: number;
+  color: string;
+  icon: string;
+}
 
 export interface GoalProgress {
   goal: Goal;
@@ -45,6 +53,23 @@ export function useGoals() {
   const setDeadline = (goalId: string, deadline?: string) =>
     dispatch({ type: 'SET_GOAL_DEADLINE', payload: { goalId, deadline } });
 
+  /** Create a new savings goal (starts at zero progress). */
+  const addGoal = (input: NewGoalInput): Goal => {
+    const goal: Goal = {
+      id: newId(),
+      spaceId: state.currentSpaceId,
+      name: input.name.trim(),
+      targetAmount: input.targetAmount,
+      currentAmount: 0,
+      color: input.color,
+      icon: input.icon,
+      status: 'active',
+      createdAt: new Date().toISOString(),
+    };
+    dispatch({ type: 'ADD_GOAL', payload: goal });
+    return goal;
+  };
+
   return {
     goals,
     progress: goals.map(progressFor),
@@ -52,5 +77,6 @@ export function useGoals() {
     getGoal,
     contribute,
     setDeadline,
+    addGoal,
   };
 }

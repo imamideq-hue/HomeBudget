@@ -11,13 +11,14 @@ import { setCurrencyCode } from '@/lib/format';
 import { SEED_DATA } from '@/lib/seed';
 import type {
   BudgetData,
+  Goal,
   GroupCategory,
   SubCategory,
   Transaction,
   User,
 } from '@/models';
 
-const STORAGE_KEY = 'homebudget:state:v3';
+const STORAGE_KEY = 'homebudget:state:v4';
 
 /** Editable fields of a sub-category. */
 export type SubCategoryEdit = Partial<Pick<SubCategory, 'name' | 'icon' | 'color' | 'groupId'>>;
@@ -29,6 +30,7 @@ export type BudgetAction =
   | { type: 'DELETE_TRANSACTION'; payload: { id: string } }
   | { type: 'SET_BUDGET_LIMIT'; payload: { groupId: string; limit: number } }
   | { type: 'CONTRIBUTE_TO_GOAL'; payload: { goalId: string; amount: number } }
+  | { type: 'ADD_GOAL'; payload: Goal }
   | { type: 'ADD_SUBCATEGORY'; payload: SubCategory }
   | { type: 'EDIT_SUBCATEGORY'; payload: { id: string; changes: SubCategoryEdit } }
   | { type: 'ADD_GROUP_CATEGORY'; payload: GroupCategory }
@@ -75,6 +77,8 @@ function reducer(state: BudgetData, action: BudgetAction): BudgetData {
           };
         }),
       };
+    case 'ADD_GOAL':
+      return { ...state, goals: [...state.goals, action.payload] };
     case 'ADD_GROUP_CATEGORY':
       return { ...state, groupCategories: [...state.groupCategories, action.payload] };
     case 'ADD_SUBCATEGORY':

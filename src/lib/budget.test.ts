@@ -15,7 +15,8 @@ const inMay = '2026-05-28T09:00:00.000Z';
 
 const GROUPS = DEFAULT_GROUP_CATEGORIES;
 const SUBS = DEFAULT_SUB_CATEGORIES;
-const FOOD = GROUPS.find((g) => g.id === 'grp_food')!; // budgetLimit 600
+// Seed groups have no budget by default; give Food a limit for these tests.
+const FOOD = { ...GROUPS.find((g) => g.id === 'grp_food')!, budgetLimit: 600 };
 
 let seq = 0;
 function tx(partial: Partial<Transaction> & { subCategoryId: string; amount: number }): Transaction {

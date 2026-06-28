@@ -21,6 +21,7 @@ export default function RootLayout() {
             <Stack.Screen name="contribute-goal" options={{ presentation: 'modal' }} />
             <Stack.Screen name="add-category" options={{ presentation: 'modal' }} />
             <Stack.Screen name="goal-deadline" options={{ presentation: 'modal' }} />
+            <Stack.Screen name="add-goal" options={{ presentation: 'modal' }} />
             <Stack.Screen name="add-member" options={{ presentation: 'modal' }} />
             <Stack.Screen name="categories" />
             <Stack.Screen name="account/[id]" />

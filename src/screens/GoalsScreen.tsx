@@ -14,7 +14,17 @@ export function GoalsScreen() {
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-white">
       <ScrollView contentContainerClassName="gap-4 px-5 pb-12 pt-2">
-        <Text className="text-2xl font-bold text-surface-dark">Goals</Text>
+        <View className="flex-row items-center justify-between">
+          <Text className="text-2xl font-bold text-surface-dark">Goals</Text>
+          <Pressable
+            onPress={() => router.push('/add-goal')}
+            hitSlop={8}
+            className="flex-row items-center gap-1 rounded-full bg-primary px-3 py-2 active:opacity-80"
+          >
+            <Ionicons name="add" size={16} color="#FFFFFF" />
+            <Text className="text-sm font-semibold text-white">New</Text>
+          </Pressable>
+        </View>
 
         {progress.map(({ goal, ratio, remaining, isReached }) => (
           <View key={goal.id} className="rounded-3xl bg-card p-5">
@@ -86,7 +96,17 @@ export function GoalsScreen() {
         ))}
 
         {progress.length === 0 ? (
-          <Text className="text-sm text-muted">No goals yet.</Text>
+          <View className="items-center gap-3 pt-16">
+            <Ionicons name="flag-outline" size={40} color="#C4C4D0" />
+            <Text className="text-base text-muted">No goals yet</Text>
+            <Pressable
+              onPress={() => router.push('/add-goal')}
+              className="flex-row items-center gap-1 rounded-full bg-primary px-4 py-2 active:opacity-80"
+            >
+              <Ionicons name="add" size={16} color="#FFFFFF" />
+              <Text className="text-sm font-semibold text-white">Create a goal</Text>
+            </Pressable>
+          </View>
         ) : null}
       </ScrollView>
     </SafeAreaView>
