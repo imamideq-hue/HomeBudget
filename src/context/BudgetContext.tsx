@@ -7,6 +7,7 @@ import {
   type ReactNode,
 } from 'react';
 
+import { setCurrencyCode } from '@/lib/format';
 import { SEED_DATA } from '@/lib/seed';
 import type {
   BudgetData,
@@ -32,11 +33,18 @@ export type BudgetAction =
   | { type: 'EDIT_SUBCATEGORY'; payload: { id: string; changes: SubCategoryEdit } }
   | { type: 'ADD_GROUP_CATEGORY'; payload: GroupCategory }
   | { type: 'SET_GOAL_DEADLINE'; payload: { goalId: string; deadline?: string } }
-  | { type: 'ADD_MEMBER'; payload: User };
+  | { type: 'ADD_MEMBER'; payload: User }
+  | { type: 'SET_CURRENCY'; payload: { code: string } };
+
+function currencyOf(data: BudgetData): string {
+  return data.spaces.find((s) => s.id === data.currentSpaceId)?.currency ?? 'USD';
+}
 
 function reducer(state: BudgetData, action: BudgetAction): BudgetData {
   switch (action.type) {
     case 'HYDRATE':
+      // Sync the currency formatter before the resulting render.
+      setCurrencyCode(currencyOf(action.payload));
       return action.payload;
     case 'ADD_TRANSACTION':
       return { ...state, transactions: [action.payload, ...state.transactions] };
@@ -85,6 +93,16 @@ function reducer(state: BudgetData, action: BudgetAction): BudgetData {
           goal.id === action.payload.goalId
             ? { ...goal, targetDate: action.payload.deadline }
             : goal,
+        ),
+      };
+    case 'SET_CURRENCY':
+      setCurrencyCode(action.payload.code);
+      return {
+        ...state,
+        spaces: state.spaces.map((space) =>
+          space.id === state.currentSpaceId
+            ? { ...space, currency: action.payload.code }
+            : space,
         ),
       };
     case 'ADD_MEMBER':

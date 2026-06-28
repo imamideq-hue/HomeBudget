@@ -4,17 +4,13 @@ import { useMemo, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { Calendar } from '@/components/Calendar';
 import { CategoryPill } from '@/components/CategoryPill';
 import { useBudget } from '@/hooks/useBudget';
 import { useBudgetTracker } from '@/hooks/useBudgetTracker';
 import { useCategories } from '@/hooks/useCategories';
-import { CURRENCY, formatCurrency, formatDayLabel } from '@/lib/format';
+import { formatCurrency, formatDayLabel, getCurrency } from '@/lib/format';
 import type { TransactionType } from '@/models';
-
-function isToday(d: Date): boolean {
-  const t = new Date();
-  return d.toDateString() === t.toDateString();
-}
 
 export default function AddTransactionModal() {
   const router = useRouter();
@@ -34,6 +30,7 @@ export default function AddTransactionModal() {
   const [accountId, setAccountId] = useState<string | null>(accounts[0]?.id ?? null);
   const [note, setNote] = useState('');
   const [date, setDate] = useState(() => new Date());
+  const [showCalendar, setShowCalendar] = useState(false);
 
   const parsedAmount = useMemo(() => {
     const n = parseFloat(amount.replace(',', '.'));
@@ -48,15 +45,6 @@ export default function AddTransactionModal() {
 
   const canSave =
     parsedAmount > 0 && subCategoryId !== null && accountId !== null;
-
-  const shiftDate = (days: number) => {
-    setDate((prev) => {
-      const next = new Date(prev);
-      next.setDate(prev.getDate() + days);
-      if (next > new Date()) return prev; // don't allow the future
-      return next;
-    });
-  };
 
   const handleSave = () => {
     if (!canSave || subCategoryId === null || accountId === null) return;
@@ -129,7 +117,7 @@ export default function AddTransactionModal() {
             {/* Amount */}
             <View className="items-center py-2">
               <Text className="mb-1 text-xs uppercase tracking-wide text-muted">
-                Amount ({CURRENCY})
+                Amount ({getCurrency()})
               </Text>
               <TextInput
                 value={amount}
@@ -173,31 +161,37 @@ export default function AddTransactionModal() {
               </View>
             ) : null}
 
-            {/* Date stepper */}
+            {/* Date — tap to open a calendar */}
             <View>
               <Text className="mb-2 text-sm font-semibold text-surface-dark">Date</Text>
-              <View className="flex-row items-center justify-between rounded-2xl bg-card px-3 py-2">
-                <Pressable
-                  onPress={() => shiftDate(-1)}
-                  hitSlop={8}
-                  className="h-9 w-9 items-center justify-center rounded-full bg-white active:opacity-70"
-                >
-                  <Ionicons name="chevron-back" size={18} color="#7C5CFC" />
-                </Pressable>
-                <Text className="text-base font-medium text-surface-dark">
-                  {formatDayLabel(date.toISOString())}
-                </Text>
-                <Pressable
-                  onPress={() => shiftDate(1)}
-                  hitSlop={8}
-                  disabled={isToday(date)}
-                  className={`h-9 w-9 items-center justify-center rounded-full bg-white ${
-                    isToday(date) ? 'opacity-40' : 'active:opacity-70'
-                  }`}
-                >
-                  <Ionicons name="chevron-forward" size={18} color="#7C5CFC" />
-                </Pressable>
-              </View>
+              <Pressable
+                onPress={() => setShowCalendar((v) => !v)}
+                className="flex-row items-center justify-between rounded-2xl bg-card px-4 py-3 active:opacity-70"
+              >
+                <View className="flex-row items-center gap-2">
+                  <Ionicons name="calendar-outline" size={18} color="#7C5CFC" />
+                  <Text className="text-base text-surface-dark">
+                    {formatDayLabel(date.toISOString())}
+                  </Text>
+                </View>
+                <Ionicons
+                  name={showCalendar ? 'chevron-up' : 'chevron-down'}
+                  size={18}
+                  color="#8A8A9E"
+                />
+              </Pressable>
+              {showCalendar ? (
+                <View className="mt-2">
+                  <Calendar
+                    value={date}
+                    maxDate={new Date()}
+                    onChange={(d) => {
+                      setDate(d);
+                      setShowCalendar(false);
+                    }}
+                  />
+                </View>
+              ) : null}
             </View>
 
             {/* Category picker (sub-categories grouped by group) */}

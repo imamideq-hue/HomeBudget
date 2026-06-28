@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CategoryPill } from '@/components/CategoryPill';
 import { useBudgetTracker } from '@/hooks/useBudgetTracker';
-import { CURRENCY, formatCurrency } from '@/lib/format';
+import { formatCurrency, getCurrency } from '@/lib/format';
 
 export default function EditBudgetModal() {
   const router = useRouter();
@@ -67,7 +67,7 @@ export default function EditBudgetModal() {
           {/* Limit input */}
           <View className="mt-8 items-center">
             <Text className="mb-1 text-xs uppercase tracking-wide text-muted">
-              Monthly limit ({CURRENCY})
+              Monthly limit ({getCurrency()})
             </Text>
             <TextInput
               value={limit}

@@ -1,13 +1,36 @@
 import type { Transaction } from '@/lib/types';
 
-/** Base currency for the scaffold. Make this user-configurable later. */
-export const CURRENCY = 'USD';
+/** Currencies the user can choose from. */
+export const SUPPORTED_CURRENCIES = [
+  { code: 'USD', symbol: '$', label: 'US Dollar' },
+  { code: 'EUR', symbol: '€', label: 'Euro' },
+] as const;
 
-const currencyFormatter = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: CURRENCY,
-  maximumFractionDigits: 2,
-});
+export type CurrencyCode = (typeof SUPPORTED_CURRENCIES)[number]['code'];
+
+function makeFormatter(code: string) {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: code,
+    maximumFractionDigits: 2,
+  });
+}
+
+// Active currency is module state kept in sync with the current space's
+// currency (see BudgetProvider). It lets formatCurrency stay a plain import.
+let currentCurrency: string = 'USD';
+let currencyFormatter = makeFormatter(currentCurrency);
+
+/** Update the active currency used by formatCurrency / getCurrency. */
+export function setCurrencyCode(code: string): void {
+  if (code === currentCurrency) return;
+  currentCurrency = code;
+  currencyFormatter = makeFormatter(code);
+}
+
+export function getCurrency(): string {
+  return currentCurrency;
+}
 
 export function formatCurrency(amount: number): string {
   return currencyFormatter.format(amount);

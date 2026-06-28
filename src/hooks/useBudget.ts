@@ -92,6 +92,10 @@ export function useBudget() {
     return user;
   };
 
+  /** Change the active currency (the provider re-syncs the formatter). */
+  const setCurrency = (code: string) =>
+    dispatch({ type: 'SET_CURRENCY', payload: { code } });
+
   return {
     // collections
     transactions,
@@ -110,5 +114,6 @@ export function useBudget() {
     addTransaction,
     deleteTransaction,
     addMember,
+    setCurrency,
   };
 }

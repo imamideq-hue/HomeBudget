@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CategoryPill } from '@/components/CategoryPill';
 import { useBudget } from '@/hooks/useBudget';
-import { CURRENCY, formatCurrency } from '@/lib/format';
+import { formatCurrency, SUPPORTED_CURRENCIES } from '@/lib/format';
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -18,7 +18,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 export function SettingsScreen() {
   const router = useRouter();
-  const { currentSpace, accounts, accountBalance } = useBudget();
+  const { currentSpace, accounts, accountBalance, setCurrency } = useBudget();
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-white">
@@ -80,10 +80,34 @@ export function SettingsScreen() {
             <Text className="flex-1 text-base text-surface-dark">Sync</Text>
             <Text className="text-sm text-muted">Local only</Text>
           </View>
-          <View className="flex-row items-center gap-3 rounded-2xl bg-card px-4 py-4">
-            <Ionicons name="cash-outline" size={22} color="#7C5CFC" />
-            <Text className="flex-1 text-base text-surface-dark">Currency</Text>
-            <Text className="text-sm text-muted">{CURRENCY}</Text>
+          <View className="rounded-2xl bg-card px-4 py-4">
+            <View className="flex-row items-center gap-3">
+              <Ionicons name="cash-outline" size={22} color="#7C5CFC" />
+              <Text className="flex-1 text-base text-surface-dark">Currency</Text>
+            </View>
+            <View className="mt-3 flex-row gap-2">
+              {SUPPORTED_CURRENCIES.map((c) => {
+                const selected = currentSpace?.currency === c.code;
+                return (
+                  <Pressable
+                    key={c.code}
+                    onPress={() => setCurrency(c.code)}
+                    className={`flex-1 flex-row items-center justify-center gap-1 rounded-xl border py-2 ${
+                      selected ? 'border-primary bg-primary/10' : 'border-transparent bg-white'
+                    }`}
+                  >
+                    <Text
+                      className={`text-base font-semibold ${selected ? 'text-surface-dark' : 'text-muted'}`}
+                    >
+                      {c.symbol}
+                    </Text>
+                    <Text className={`text-sm ${selected ? 'text-surface-dark' : 'text-muted'}`}>
+                      {c.code}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
           </View>
         </Section>
 

@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CategoryPill } from '@/components/CategoryPill';
 import { useGoals } from '@/hooks/useGoals';
-import { CURRENCY, formatCurrency } from '@/lib/format';
+import { formatCurrency, getCurrency } from '@/lib/format';
 
 export default function ContributeGoalModal() {
   const router = useRouter();
@@ -63,7 +63,7 @@ export default function ContributeGoalModal() {
           {/* Amount */}
           <View className="mt-8 items-center">
             <Text className="mb-1 text-xs uppercase tracking-wide text-muted">
-              Add amount ({CURRENCY})
+              Add amount ({getCurrency()})
             </Text>
             <TextInput
               value={amount}
