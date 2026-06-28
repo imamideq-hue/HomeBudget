@@ -1,11 +1,17 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Alert, Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CategoryPill } from '@/components/CategoryPill';
+import { GoogleSignInButton } from '@/components/GoogleSignInButton';
+import { useAuth } from '@/context/AuthContext';
 import { useBudget } from '@/hooks/useBudget';
 import { formatCurrency, SUPPORTED_CURRENCIES } from '@/lib/format';
+import { GOOGLE_CONFIGURED } from '@/lib/googleConfig';
+
+const SETUP_MESSAGE =
+  'Add your Google OAuth client IDs (EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID, etc.) — see the README. Then this button will sign you in.';
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -19,11 +25,55 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 export function SettingsScreen() {
   const router = useRouter();
   const { currentSpace, accounts, accountBalance, setCurrency } = useBudget();
+  const { user, signOut } = useAuth();
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-white">
       <ScrollView contentContainerClassName="gap-6 px-5 pb-12 pt-2">
         <Text className="text-2xl font-bold text-surface-dark">Settings</Text>
+
+        {/* Account / Google sign-in */}
+        <Section title="Account">
+          {user ? (
+            <View className="flex-row items-center gap-3 rounded-2xl bg-card px-4 py-4">
+              {user.picture ? (
+                <Image source={{ uri: user.picture }} className="h-11 w-11 rounded-full" />
+              ) : (
+                <View className="h-11 w-11 items-center justify-center rounded-full bg-primary">
+                  <Text className="text-base font-bold text-white">
+                    {user.name.slice(0, 1).toUpperCase()}
+                  </Text>
+                </View>
+              )}
+              <View className="flex-1">
+                <Text className="text-base font-semibold text-surface-dark">{user.name}</Text>
+                {user.email ? (
+                  <Text className="text-sm text-muted">{user.email}</Text>
+                ) : null}
+              </View>
+              <Pressable onPress={signOut} hitSlop={8} className="active:opacity-60">
+                <Text className="text-sm font-medium text-expense">Sign out</Text>
+              </Pressable>
+            </View>
+          ) : GOOGLE_CONFIGURED ? (
+            <GoogleSignInButton />
+          ) : (
+            <>
+              <Pressable
+                onPress={() => Alert.alert('Google sign-in needs setup', SETUP_MESSAGE)}
+                className="flex-row items-center justify-center gap-2 rounded-2xl border border-black/10 bg-white px-4 py-4 active:opacity-80"
+              >
+                <Ionicons name="logo-google" size={18} color="#EA4335" />
+                <Text className="text-base font-semibold text-surface-dark">
+                  Sign in with Google
+                </Text>
+              </Pressable>
+              <Text className="px-1 text-xs text-muted">
+                Setup required — add Google OAuth client IDs (see README).
+              </Text>
+            </>
+          )}
+        </Section>
 
         {/* Space */}
         {currentSpace ? (

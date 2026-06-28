@@ -63,6 +63,31 @@ npx eas build --platform ios
 npx eas build --platform android
 ```
 
+## Sign in with Google (optional)
+
+The Settings → Account section has a **Sign in with Google** button. It's
+gated behind config: until you add Google OAuth client IDs it shows a
+"Setup required" hint and doesn't attempt the flow.
+
+To enable it:
+
+1. In the [Google Cloud Console](https://console.cloud.google.com) → **APIs &
+   Services → Credentials**, create OAuth client IDs (a **Web** client, and
+   **Android**/**iOS** clients if you build those). Register the redirect URIs
+   Expo prints (and the app scheme `homebudget://` for native).
+2. Copy `.env.example` to `.env` and fill in:
+   ```
+   EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID=...
+   EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID=...
+   EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID=...
+   ```
+3. Rebuild. The button now runs the Google flow (`expo-auth-session`) and
+   stores the profile locally.
+
+> Note: this is **identity only** — it signs you in but budget data still lives
+> locally per device. Real shared/synced budgets need a backend (e.g. Supabase
+> or Firebase); Google sign-in is the first piece of that.
+
 ## Tech stack
 
 | Concern      | Choice                                             |
