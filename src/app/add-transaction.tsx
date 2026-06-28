@@ -1,16 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import {
-  Alert,
-  Keyboard,
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native';
+import { Alert, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CategoryPill } from '@/components/CategoryPill';
@@ -95,21 +86,21 @@ export default function AddTransactionModal() {
 
   return (
     <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-white">
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <View className="flex-1">
-          {/* Header */}
-          <View className="flex-row items-center justify-between px-5 py-3">
-            <Pressable onPress={() => router.back()} hitSlop={8} className="active:opacity-60">
-              <Text className="text-base text-muted">Cancel</Text>
-            </Pressable>
-            <Text className="text-base font-semibold text-surface-dark">New transaction</Text>
-            <View className="w-14" />
-          </View>
+      <View className="flex-1">
+        {/* Header */}
+        <View className="flex-row items-center justify-between px-5 py-3">
+          <Pressable onPress={() => router.back()} hitSlop={8} className="active:opacity-60">
+            <Text className="text-base text-muted">Cancel</Text>
+          </Pressable>
+          <Text className="text-base font-semibold text-surface-dark">New transaction</Text>
+          <View className="w-14" />
+        </View>
 
-          <ScrollView
-            contentContainerClassName="gap-6 px-5 pb-10 pt-2"
-            keyboardShouldPersistTaps="handled"
-          >
+        <ScrollView
+          contentContainerClassName="gap-6 px-5 pb-10 pt-2"
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+        >
             {/* Type toggle */}
             <View className="flex-row rounded-2xl bg-card p-1">
               {(['expense', 'income'] as const).map((t) => {
@@ -282,9 +273,8 @@ export default function AddTransactionModal() {
               <Ionicons name="checkmark" size={20} color="#FFFFFF" />
               <Text className="text-base font-semibold text-white">Save transaction</Text>
             </Pressable>
-          </ScrollView>
-        </View>
-      </TouchableWithoutFeedback>
+        </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }

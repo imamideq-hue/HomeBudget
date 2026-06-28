@@ -1,15 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import {
-  Keyboard,
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native';
+import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useBudget } from '@/hooks/useBudget';
@@ -43,18 +35,21 @@ export default function AddMemberModal() {
 
   return (
     <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-white">
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <View className="flex-1">
-          {/* Header */}
-          <View className="flex-row items-center justify-between px-5 py-3">
-            <Pressable onPress={() => router.back()} hitSlop={8} className="active:opacity-60">
-              <Text className="text-base text-muted">Cancel</Text>
-            </Pressable>
-            <Text className="text-base font-semibold text-surface-dark">Add member</Text>
-            <View className="w-14" />
-          </View>
+      <View className="flex-1">
+        {/* Header */}
+        <View className="flex-row items-center justify-between px-5 py-3">
+          <Pressable onPress={() => router.back()} hitSlop={8} className="active:opacity-60">
+            <Text className="text-base text-muted">Cancel</Text>
+          </Pressable>
+          <Text className="text-base font-semibold text-surface-dark">Add member</Text>
+          <View className="w-14" />
+        </View>
 
-          <ScrollView contentContainerClassName="gap-6 px-5 pb-10 pt-2" keyboardShouldPersistTaps="handled">
+        <ScrollView
+          contentContainerClassName="gap-6 px-5 pb-10 pt-2"
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+        >
             {/* Avatar preview */}
             <View className="items-center gap-2">
               <View
@@ -124,9 +119,8 @@ export default function AddMemberModal() {
               <Ionicons name="person-add" size={20} color="#FFFFFF" />
               <Text className="text-base font-semibold text-white">Add member</Text>
             </Pressable>
-          </ScrollView>
-        </View>
-      </TouchableWithoutFeedback>
+        </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
