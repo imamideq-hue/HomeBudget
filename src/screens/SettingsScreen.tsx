@@ -61,6 +61,18 @@ export function SettingsScreen() {
           ))}
         </Section>
 
+        {/* Categories */}
+        <Section title="Categories">
+          <Pressable
+            onPress={() => router.push('/add-category')}
+            className="flex-row items-center gap-3 rounded-2xl bg-card px-4 py-4 active:opacity-70"
+          >
+            <Ionicons name="pricetag-outline" size={22} color="#7C5CFC" />
+            <Text className="flex-1 text-base text-surface-dark">Add a category</Text>
+            <Ionicons name="chevron-forward" size={16} color="#8A8A9E" />
+          </Pressable>
+        </Section>
+
         {/* App */}
         <Section title="App">
           <View className="flex-row items-center gap-3 rounded-2xl bg-card px-4 py-4">

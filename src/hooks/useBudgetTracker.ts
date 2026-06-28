@@ -40,12 +40,12 @@ export function useBudgetTracker() {
     throw new Error('useBudgetTracker must be used within a <BudgetProvider>');
   }
   const { state, dispatch } = ctx;
-  const { transactions, groupCategories } = state;
+  const { transactions, groupCategories, subCategories } = state;
 
-  // Recomputed automatically whenever transactions change.
+  // Recomputed automatically whenever transactions/categories change.
   const groupBudgets = useMemo(
-    () => calculateGroupBudgets(groupCategories, transactions),
-    [groupCategories, transactions],
+    () => calculateGroupBudgets(groupCategories, transactions, subCategories),
+    [groupCategories, transactions, subCategories],
   );
 
   const getGroupBudget = (groupId: string): GroupBudgetSummary | undefined =>
@@ -75,8 +75,12 @@ export function useBudgetTracker() {
 
     // dispatch is applied on the next render, so project the recalculated
     // budget from the current transactions plus the new item.
-    const group = getGroupForSub(transaction.subCategoryId);
-    const groupBudget = calculateGroupBudget(group, [transaction, ...transactions]);
+    const group = getGroupForSub(groupCategories, subCategories, transaction.subCategoryId);
+    const groupBudget = calculateGroupBudget(
+      group,
+      [transaction, ...transactions],
+      subCategories,
+    );
 
     return { transaction, groupBudget };
   }

@@ -41,11 +41,16 @@ export function useGoals() {
     if (amount > 0) dispatch({ type: 'CONTRIBUTE_TO_GOAL', payload: { goalId, amount } });
   };
 
+  /** Set or clear (pass undefined) a goal's optional deadline. */
+  const setDeadline = (goalId: string, deadline?: string) =>
+    dispatch({ type: 'SET_GOAL_DEADLINE', payload: { goalId, deadline } });
+
   return {
     goals,
     progress: goals.map(progressFor),
     progressFor,
     getGoal,
     contribute,
+    setDeadline,
   };
 }

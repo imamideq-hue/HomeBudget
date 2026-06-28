@@ -19,6 +19,33 @@ export function formatSigned(t: Transaction): string {
   return `${sign}${formatCurrency(Math.abs(t.amount))}`;
 }
 
+/** Full date label, e.g. "Jun 27, 2026". */
+export function formatFullDate(iso: string): string {
+  return new Date(iso).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}
+
+/** Whole days from today to `iso` (negative if in the past). */
+export function daysUntil(iso: string): number {
+  const target = new Date(iso);
+  target.setHours(0, 0, 0, 0);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return Math.round((target.getTime() - today.getTime()) / 86_400_000);
+}
+
+/** Deadline status, e.g. "5 days left", "Due today", "Overdue by 3 days". */
+export function formatDeadline(iso: string): string {
+  const d = daysUntil(iso);
+  if (d === 0) return 'Due today';
+  if (d > 0) return `${d} day${d === 1 ? '' : 's'} left`;
+  const overdue = -d;
+  return `Overdue by ${overdue} day${overdue === 1 ? '' : 's'}`;
+}
+
 /** Human-friendly day label, e.g. "Today", "Yesterday", or "Jun 27". */
 export function formatDayLabel(iso: string): string {
   const date = new Date(iso);

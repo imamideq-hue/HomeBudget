@@ -19,7 +19,7 @@ export function useBudget() {
     throw new Error('useBudget must be used within a <BudgetProvider>');
   }
   const { state, dispatch } = ctx;
-  const { transactions, accounts, goals, groupCategories } = state;
+  const { transactions, accounts, goals, groupCategories, subCategories } = state;
 
   const currentUser = useMemo(
     () => state.users.find((u) => u.id === state.currentUserId),
@@ -46,14 +46,14 @@ export function useBudget() {
     const totalByGroup = new Map<string, number>();
     for (const t of transactions) {
       if (t.type !== 'expense') continue;
-      const group = getGroupForSub(t.subCategoryId);
+      const group = getGroupForSub(groupCategories, subCategories, t.subCategoryId);
       totalByGroup.set(group.id, (totalByGroup.get(group.id) ?? 0) + t.amount);
     }
     return groupCategories
       .map((group) => ({ group, total: totalByGroup.get(group.id) ?? 0 }))
       .filter((g) => g.total > 0)
       .sort((a, b) => b.total - a.total);
-  }, [transactions, groupCategories]);
+  }, [transactions, groupCategories, subCategories]);
 
   /** Live balance for an account: opening balance + its transactions. */
   const accountBalance = (accountId: string) => {

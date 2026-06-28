@@ -16,7 +16,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { CategoryPill } from '@/components/CategoryPill';
 import { useBudget } from '@/hooks/useBudget';
 import { useBudgetTracker } from '@/hooks/useBudgetTracker';
-import { GROUP_CATEGORIES, getSubCategory, getSubsForGroup } from '@/lib/categories';
+import { useCategories } from '@/hooks/useCategories';
 import { CURRENCY, formatCurrency, formatDayLabel } from '@/lib/format';
 import type { TransactionType } from '@/models';
 
@@ -29,6 +29,7 @@ export default function AddTransactionModal() {
   const router = useRouter();
   const { accounts } = useBudget();
   const { addTransaction } = useBudgetTracker();
+  const { groupCategories, getSubsForGroup, getSubCategory } = useCategories();
 
   // Optional pre-fill from a quick-add shortcut.
   const params = useLocalSearchParams<{ subCategoryId?: string; type?: string }>();
@@ -50,8 +51,8 @@ export default function AddTransactionModal() {
 
   // Only show category groups that match the selected direction.
   const groups = useMemo(
-    () => GROUP_CATEGORIES.filter((g) => g.kind === type),
-    [type],
+    () => groupCategories.filter((g) => g.kind === type),
+    [groupCategories, type],
   );
 
   const canSave =
@@ -210,7 +211,17 @@ export default function AddTransactionModal() {
 
             {/* Category picker (sub-categories grouped by group) */}
             <View>
-              <Text className="mb-3 text-sm font-semibold text-surface-dark">Category</Text>
+              <View className="mb-3 flex-row items-center justify-between">
+                <Text className="text-sm font-semibold text-surface-dark">Category</Text>
+                <Pressable
+                  onPress={() => router.push({ pathname: '/add-category', params: { kind: type } })}
+                  hitSlop={8}
+                  className="flex-row items-center gap-1 active:opacity-60"
+                >
+                  <Ionicons name="add-circle-outline" size={16} color="#7C5CFC" />
+                  <Text className="text-sm font-medium text-primary">New</Text>
+                </Pressable>
+              </View>
               <View className="gap-4">
                 {groups.map((group) => (
                   <View key={group.id}>

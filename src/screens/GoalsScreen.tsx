@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CategoryPill } from '@/components/CategoryPill';
 import { useGoals } from '@/hooks/useGoals';
-import { formatCurrency } from '@/lib/format';
+import { daysUntil, formatCurrency, formatDeadline } from '@/lib/format';
 
 export function GoalsScreen() {
   const router = useRouter();
@@ -44,6 +44,29 @@ export function GoalsScreen() {
                 style={{ width: `${ratio * 100}%`, backgroundColor: goal.color }}
               />
             </View>
+
+            {/* Deadline (optional) */}
+            <Pressable
+              onPress={() =>
+                router.push({ pathname: '/goal-deadline', params: { goalId: goal.id } })
+              }
+              className="mt-3 flex-row items-center gap-2 active:opacity-60"
+            >
+              <Ionicons
+                name={goal.targetDate ? 'calendar' : 'calendar-outline'}
+                size={15}
+                color={goal.targetDate && daysUntil(goal.targetDate) < 0 ? '#FF6B6B' : '#8A8A9E'}
+              />
+              <Text
+                className={`text-sm ${
+                  goal.targetDate && daysUntil(goal.targetDate) < 0
+                    ? 'text-expense'
+                    : 'text-muted'
+                }`}
+              >
+                {goal.targetDate ? formatDeadline(goal.targetDate) : 'Set a deadline'}
+              </Text>
+            </Pressable>
 
             <View className="mt-4 flex-row items-center justify-between">
               <Text className="text-sm text-muted">

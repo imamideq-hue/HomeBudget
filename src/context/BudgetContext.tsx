@@ -8,7 +8,12 @@ import {
 } from 'react';
 
 import { SEED_DATA } from '@/lib/seed';
-import type { BudgetData, Transaction } from '@/models';
+import type {
+  BudgetData,
+  GroupCategory,
+  SubCategory,
+  Transaction,
+} from '@/models';
 
 const STORAGE_KEY = 'homebudget:state:v3';
 
@@ -18,7 +23,10 @@ export type BudgetAction =
   | { type: 'ADD_TRANSACTION'; payload: Transaction }
   | { type: 'DELETE_TRANSACTION'; payload: { id: string } }
   | { type: 'SET_BUDGET_LIMIT'; payload: { groupId: string; limit: number } }
-  | { type: 'CONTRIBUTE_TO_GOAL'; payload: { goalId: string; amount: number } };
+  | { type: 'CONTRIBUTE_TO_GOAL'; payload: { goalId: string; amount: number } }
+  | { type: 'ADD_SUBCATEGORY'; payload: SubCategory }
+  | { type: 'ADD_GROUP_CATEGORY'; payload: GroupCategory }
+  | { type: 'SET_GOAL_DEADLINE'; payload: { goalId: string; deadline?: string } };
 
 function reducer(state: BudgetData, action: BudgetAction): BudgetData {
   switch (action.type) {
@@ -52,6 +60,19 @@ function reducer(state: BudgetData, action: BudgetAction): BudgetData {
             status: currentAmount >= goal.targetAmount ? 'reached' : 'active',
           };
         }),
+      };
+    case 'ADD_GROUP_CATEGORY':
+      return { ...state, groupCategories: [...state.groupCategories, action.payload] };
+    case 'ADD_SUBCATEGORY':
+      return { ...state, subCategories: [...state.subCategories, action.payload] };
+    case 'SET_GOAL_DEADLINE':
+      return {
+        ...state,
+        goals: state.goals.map((goal) =>
+          goal.id === action.payload.goalId
+            ? { ...goal, targetDate: action.payload.deadline }
+            : goal,
+        ),
       };
     default:
       return state;

@@ -6,14 +6,16 @@ import {
   isSameMonth,
   spentForGroup,
 } from '@/lib/budget';
-import { GROUP_CATEGORIES } from '@/lib/categories';
+import { DEFAULT_GROUP_CATEGORIES, DEFAULT_SUB_CATEGORIES } from '@/lib/categories';
 import type { Transaction } from '@/models';
 
 const REF = new Date('2026-06-15T12:00:00.000Z');
 const inJune = '2026-06-10T09:00:00.000Z';
 const inMay = '2026-05-28T09:00:00.000Z';
 
-const FOOD = GROUP_CATEGORIES.find((g) => g.id === 'grp_food')!; // budgetLimit 600
+const GROUPS = DEFAULT_GROUP_CATEGORIES;
+const SUBS = DEFAULT_SUB_CATEGORIES;
+const FOOD = GROUPS.find((g) => g.id === 'grp_food')!; // budgetLimit 600
 
 let seq = 0;
 function tx(partial: Partial<Transaction> & { subCategoryId: string; amount: number }): Transaction {
@@ -47,7 +49,7 @@ describe('spentForGroup (sub -> group roll-up, month-scoped)', () => {
       tx({ subCategoryId: 'sub_dining', amount: 50 }), //     -> grp_food
       tx({ subCategoryId: 'sub_transit', amount: 30 }), //    -> grp_transport (excluded)
     ];
-    expect(spentForGroup('grp_food', txs, REF)).toBe(150);
+    expect(spentForGroup('grp_food', txs, SUBS, REF)).toBe(150);
   });
 
   it('ignores transactions from other months', () => {
@@ -55,7 +57,7 @@ describe('spentForGroup (sub -> group roll-up, month-scoped)', () => {
       tx({ subCategoryId: 'sub_groceries', amount: 100, date: inJune }),
       tx({ subCategoryId: 'sub_coffee', amount: 999, date: inMay }), // wrong month
     ];
-    expect(spentForGroup('grp_food', txs, REF)).toBe(100);
+    expect(spentForGroup('grp_food', txs, SUBS, REF)).toBe(100);
   });
 
   it('ignores income transactions', () => {
@@ -63,14 +65,14 @@ describe('spentForGroup (sub -> group roll-up, month-scoped)', () => {
       tx({ subCategoryId: 'sub_groceries', amount: 100 }),
       tx({ subCategoryId: 'sub_groceries', amount: 500, type: 'income' }),
     ];
-    expect(spentForGroup('grp_food', txs, REF)).toBe(100);
+    expect(spentForGroup('grp_food', txs, SUBS, REF)).toBe(100);
   });
 });
 
 describe('calculateGroupBudget', () => {
   it('computes remaining and stays under budget', () => {
     const txs = [tx({ subCategoryId: 'sub_groceries', amount: 150 })];
-    const result = calculateGroupBudget(FOOD, txs, REF);
+    const result = calculateGroupBudget(FOOD, txs, SUBS, REF);
 
     expect(result.budgetLimit).toBe(600);
     expect(result.totalSpent).toBe(150);
@@ -82,7 +84,7 @@ describe('calculateGroupBudget', () => {
 
   it('flags over-budget with a negative remaining', () => {
     const txs = [tx({ subCategoryId: 'sub_groceries', amount: 700 })];
-    const result = calculateGroupBudget(FOOD, txs, REF);
+    const result = calculateGroupBudget(FOOD, txs, SUBS, REF);
 
     expect(result.totalSpent).toBe(700);
     expect(result.remaining).toBe(-100);
@@ -92,9 +94,9 @@ describe('calculateGroupBudget', () => {
 
 describe('calculateGroupBudgets', () => {
   it('returns one summary per group, in input order', () => {
-    const summaries = calculateGroupBudgets(GROUP_CATEGORIES, [], REF);
-    expect(summaries).toHaveLength(GROUP_CATEGORIES.length);
-    expect(summaries.map((s) => s.group.id)).toEqual(GROUP_CATEGORIES.map((g) => g.id));
+    const summaries = calculateGroupBudgets(GROUPS, [], SUBS, REF);
+    expect(summaries).toHaveLength(GROUPS.length);
+    expect(summaries.map((s) => s.group.id)).toEqual(GROUPS.map((g) => g.id));
   });
 
   it('rolls each transaction up to the correct group', () => {
@@ -103,7 +105,7 @@ describe('calculateGroupBudgets', () => {
       tx({ subCategoryId: 'sub_fuel', amount: 40 }), //      grp_transport
     ];
     const byId = Object.fromEntries(
-      calculateGroupBudgets(GROUP_CATEGORIES, txs, REF).map((s) => [s.group.id, s.totalSpent]),
+      calculateGroupBudgets(GROUPS, txs, SUBS, REF).map((s) => [s.group.id, s.totalSpent]),
     );
     expect(byId.grp_food).toBe(80);
     expect(byId.grp_transport).toBe(40);

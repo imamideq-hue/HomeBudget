@@ -1,7 +1,7 @@
 import { Pressable, Text, View } from 'react-native';
 
 import { CategoryPill } from '@/components/CategoryPill';
-import { getGroupForSub, resolveSubVisual } from '@/lib/categories';
+import { useCategories } from '@/hooks/useCategories';
 import { formatSigned } from '@/lib/format';
 import type { Transaction } from '@/models';
 
@@ -11,6 +11,7 @@ interface Props {
 }
 
 export function TransactionItem({ transaction, onPress }: Props) {
+  const { resolveSubVisual, getGroupForSub } = useCategories();
   const visual = resolveSubVisual(transaction.subCategoryId);
   const group = getGroupForSub(transaction.subCategoryId);
   const isIncome = transaction.type === 'income';

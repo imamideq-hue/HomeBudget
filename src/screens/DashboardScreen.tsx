@@ -10,7 +10,7 @@ import { BudgetRing } from '@/components/BudgetRing';
 import { TransactionItem } from '@/components/TransactionItem';
 import { useBudget } from '@/hooks/useBudget';
 import { useBudgetTracker } from '@/hooks/useBudgetTracker';
-import { resolveSubVisual } from '@/lib/categories';
+import { useCategories } from '@/hooks/useCategories';
 
 /** Common sub-categories surfaced as one-tap shortcuts. */
 const QUICK_ADD = ['sub_groceries', 'sub_dining', 'sub_transit', 'sub_coffee', 'sub_shopping'];
@@ -19,6 +19,7 @@ export function DashboardScreen() {
   const router = useRouter();
   const { accounts, accountBalance, totals, transactions, currentUser } = useBudget();
   const { groupBudgets } = useBudgetTracker();
+  const { resolveSubVisual } = useCategories();
 
   const budgeted = groupBudgets.filter((b) => b.hasBudget);
   const recent = transactions.slice(0, 3);
