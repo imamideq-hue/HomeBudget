@@ -1,36 +1,25 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  defaultOwnerForScope,
   filterTransactionsByScope,
   goalInScope,
   ownerInScope,
   SCOPE_ALL,
   SCOPE_JOINT,
 } from '@/lib/scope';
-import type { Account, Goal, Transaction } from '@/models';
+import type { Goal, Transaction } from '@/models';
 
-const acc = (id: string, ownerId?: string): Account => ({
+const tx = (id: string, ownerId?: string): Transaction => ({
   id,
   spaceId: 'space_home',
-  name: id,
-  type: 'cash',
-  startingBalance: 0,
-  currency: 'USD',
-  color: '#000',
-  icon: 'cash',
-  ownerId,
-  createdAt: '2026-06-01T00:00:00.000Z',
-});
-
-const tx = (id: string, accountId: string): Transaction => ({
-  id,
-  spaceId: 'space_home',
-  accountId,
+  accountId: 'acc_cash',
   subCategoryId: 'sub_groceries',
   type: 'expense',
   amount: 10,
   date: '2026-06-10T00:00:00.000Z',
   createdBy: 'user_me',
+  ownerId,
   createdAt: '2026-06-10T00:00:00.000Z',
 });
 
@@ -53,21 +42,31 @@ describe('ownerInScope', () => {
 });
 
 describe('filterTransactionsByScope', () => {
-  const accounts = [acc('joint_acc'), acc('a_acc', 'user_a'), acc('b_acc', 'user_b')];
-  const txs = [tx('t1', 'joint_acc'), tx('t2', 'a_acc'), tx('t3', 'b_acc')];
+  const txs = [tx('t1'), tx('t2', 'user_a'), tx('t3', 'user_b')];
 
   it('returns everything for the All scope', () => {
-    expect(filterTransactionsByScope(txs, accounts, SCOPE_ALL)).toHaveLength(3);
+    expect(filterTransactionsByScope(txs, SCOPE_ALL)).toHaveLength(3);
   });
 
-  it('keeps only joint-account transactions for Joint', () => {
-    const result = filterTransactionsByScope(txs, accounts, SCOPE_JOINT);
+  it('keeps only joint (un-owned) transactions for Joint', () => {
+    const result = filterTransactionsByScope(txs, SCOPE_JOINT);
     expect(result.map((t) => t.id)).toEqual(['t1']);
   });
 
   it("keeps only a person's transactions for their scope", () => {
-    const result = filterTransactionsByScope(txs, accounts, 'user_a');
+    const result = filterTransactionsByScope(txs, 'user_a');
     expect(result.map((t) => t.id)).toEqual(['t2']);
+  });
+});
+
+describe('defaultOwnerForScope', () => {
+  it('files new items as Joint under Everyone and Joint', () => {
+    expect(defaultOwnerForScope(SCOPE_ALL)).toBeUndefined();
+    expect(defaultOwnerForScope(SCOPE_JOINT)).toBeUndefined();
+  });
+
+  it('files new items under the active person', () => {
+    expect(defaultOwnerForScope('user_a')).toBe('user_a');
   });
 });
 

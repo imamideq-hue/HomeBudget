@@ -71,4 +71,5 @@ export const SEED_DATA: BudgetData = {
   // No history — the user creates goals and logs transactions.
   transactions: [],
   goals: [],
+  contributions: [],
 };

@@ -47,8 +47,17 @@ export function DashboardScreen() {
           </Pressable>
         </View>
 
-        {/* Whose finances to show: Everyone / Joint / a person */}
-        <ScopeFilter users={users} currentUserId={currentUser?.id ?? ''} />
+        {/* Active section: drives the view and where new entries are filed */}
+        <View className="gap-2">
+          <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
+            Showing
+          </Text>
+          <ScopeFilter
+            users={users}
+            currentUserId={currentUser?.id ?? ''}
+            variant="prominent"
+          />
+        </View>
 
         {/* Balance hero */}
         <BalanceCard balance={totals.balance} income={totals.income} expense={totals.expense} />

@@ -14,10 +14,12 @@ export * from '@/models/account';
 export * from '@/models/category';
 export * from '@/models/transaction';
 export * from '@/models/goal';
+export * from '@/models/contribution';
 
 import type { Account } from '@/models/account';
 import type { GroupCategory, SubCategory } from '@/models/category';
 import type { ID } from '@/models/common';
+import type { GoalContribution } from '@/models/contribution';
 import type { Goal } from '@/models/goal';
 import type { Space } from '@/models/space';
 import type { Transaction } from '@/models/transaction';
@@ -37,4 +39,6 @@ export interface BudgetData {
   subCategories: SubCategory[];
   transactions: Transaction[];
   goals: Goal[];
+  /** History of deposits made toward goals (who, how much, when). */
+  contributions: GoalContribution[];
 }

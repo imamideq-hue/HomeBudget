@@ -21,6 +21,8 @@ export interface NewTransactionInput {
   note?: string;
   /** Defaults to now. */
   date?: string;
+  /** Which section it's filed under: a user id, or undefined for Joint. */
+  ownerId?: string;
   goalId?: string;
 }
 
@@ -42,13 +44,13 @@ export function useBudgetTracker() {
     throw new Error('useBudgetTracker must be used within a <BudgetProvider>');
   }
   const { state, dispatch } = ctx;
-  const { transactions, accounts, groupCategories, subCategories } = state;
+  const { transactions, groupCategories, subCategories } = state;
   const { scope } = useScope();
 
   // Budgets reflect the finances currently in view (Everyone / Joint / a person).
   const scopedTransactions = useMemo(
-    () => filterTransactionsByScope(transactions, accounts, scope),
-    [transactions, accounts, scope],
+    () => filterTransactionsByScope(transactions, scope),
+    [transactions, scope],
   );
 
   // Recomputed automatically whenever transactions/categories/scope change.
@@ -77,6 +79,7 @@ export function useBudgetTracker() {
       date: input.date ?? nowIso,
       createdBy: state.currentUserId,
       createdAt: nowIso,
+      ownerId: input.ownerId,
       goalId: input.goalId,
     };
 
@@ -111,6 +114,7 @@ export function useBudgetTracker() {
           type: input.type,
           note: input.note?.trim() || undefined,
           date: input.date,
+          ownerId: input.ownerId,
         },
       },
     });

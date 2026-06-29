@@ -4,7 +4,7 @@ import { BudgetContext } from '@/context/BudgetContext';
 import { useScope } from '@/context/ScopeContext';
 import { getGroupForSub } from '@/lib/categories';
 import { newId } from '@/lib/id';
-import { accountInScope, filterTransactionsByScope, goalInScope } from '@/lib/scope';
+import { filterTransactionsByScope, goalInScope } from '@/lib/scope';
 import type { GroupCategory, Transaction, User } from '@/models';
 
 export interface NewMemberInput {
@@ -37,14 +37,12 @@ export function useBudget() {
   } = state;
   const { scope } = useScope();
 
+  // Accounts are shared payment sources, shown regardless of the active section.
+  const accounts = allAccounts;
   // Scoped views: which finances are currently shown (Everyone / Joint / a person).
-  const accounts = useMemo(
-    () => allAccounts.filter((a) => accountInScope(a, scope)),
-    [allAccounts, scope],
-  );
   const transactions = useMemo(
-    () => filterTransactionsByScope(allTransactions, allAccounts, scope),
-    [allTransactions, allAccounts, scope],
+    () => filterTransactionsByScope(allTransactions, scope),
+    [allTransactions, scope],
   );
   const goals = useMemo(
     () => allGoals.filter((g) => goalInScope(g, scope)),
@@ -122,10 +120,6 @@ export function useBudget() {
   const setCurrency = (code: string) =>
     dispatch({ type: 'SET_CURRENCY', payload: { code } });
 
-  /** Assign an account to a person, or to Joint/Shared (pass undefined). */
-  const setAccountOwner = (accountId: string, ownerId?: string) =>
-    dispatch({ type: 'SET_ACCOUNT_OWNER', payload: { accountId, ownerId } });
-
   return {
     // collections (scoped to the current view)
     transactions,
@@ -149,6 +143,5 @@ export function useBudget() {
     deleteTransaction,
     addMember,
     setCurrency,
-    setAccountOwner,
   };
 }

@@ -1,4 +1,5 @@
-import type { Account, Goal, Transaction } from '@/models';
+import type { Goal, Transaction } from '@/models';
+import type { ID } from '@/models/common';
 
 /**
  * A view-level filter that decides whose finances are shown:
@@ -18,22 +19,26 @@ export function ownerInScope(ownerId: string | undefined, scope: ScopeFilter): b
   return ownerId === scope;
 }
 
-export const accountInScope = (account: Account, scope: ScopeFilter): boolean =>
-  ownerInScope(account.ownerId, scope);
-
 export const goalInScope = (goal: Goal, scope: ScopeFilter): boolean =>
   ownerInScope(goal.ownerId, scope);
 
 /**
- * A transaction belongs to a scope when its account does — money is "personal"
- * or "joint" based on where it lives.
+ * A transaction belongs to a scope based on its own owner (the section it was
+ * filed under): a user id for personal, `undefined` for Joint/Shared.
  */
 export function filterTransactionsByScope(
   transactions: Transaction[],
-  accounts: Account[],
   scope: ScopeFilter,
 ): Transaction[] {
   if (scope === SCOPE_ALL) return transactions;
-  const ownerByAccount = new Map(accounts.map((a) => [a.id, a.ownerId]));
-  return transactions.filter((t) => ownerInScope(ownerByAccount.get(t.accountId), scope));
+  return transactions.filter((t) => ownerInScope(t.ownerId, scope));
+}
+
+/**
+ * The owner to file a *new* entry under, given the section currently in view.
+ * "Everyone" has no single owner, so new items default to Joint/Shared.
+ */
+export function defaultOwnerForScope(scope: ScopeFilter): ID | undefined {
+  if (scope === SCOPE_ALL || scope === SCOPE_JOINT) return undefined;
+  return scope;
 }

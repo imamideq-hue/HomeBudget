@@ -17,6 +17,11 @@ export interface Transaction extends BaseEntity {
   date: ISODateString;
   /** FK -> User.id — who logged it. */
   createdBy: ID;
+  /**
+   * Which "bucket" this item belongs to: a user id for personal, or `undefined`
+   * for Joint/Shared. Set from the active section when adding.
+   */
+  ownerId?: ID;
   /** Optional link when this item is a contribution toward a goal. */
   goalId?: ID;
 }

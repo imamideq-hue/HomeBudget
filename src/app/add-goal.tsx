@@ -5,9 +5,11 @@ import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CategoryPill } from '@/components/CategoryPill';
+import { useScope } from '@/context/ScopeContext';
 import { useBudget } from '@/hooks/useBudget';
 import { useGoals } from '@/hooks/useGoals';
 import { getCurrency } from '@/lib/format';
+import { defaultOwnerForScope } from '@/lib/scope';
 
 const ICONS = [
   'airplane', 'shield-checkmark', 'laptop', 'home', 'car-sport', 'gift',
@@ -24,12 +26,14 @@ export default function AddGoalModal() {
   const router = useRouter();
   const { addGoal } = useGoals();
   const { users, currentUser } = useBudget();
+  const { scope } = useScope();
 
   const [name, setName] = useState('');
   const [target, setTarget] = useState('');
   const [icon, setIcon] = useState(ICONS[0]);
   const [color, setColor] = useState(COLORS[0]);
-  const [ownerId, setOwnerId] = useState<string | undefined>(undefined); // undefined = Joint
+  // Defaults to the section in view on the Dashboard (undefined = Joint).
+  const [ownerId, setOwnerId] = useState<string | undefined>(defaultOwnerForScope(scope));
 
   const targetAmount = useMemo(() => {
     const n = parseFloat(target.replace(',', '.'));

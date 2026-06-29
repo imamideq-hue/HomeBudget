@@ -6,17 +6,20 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Calendar } from '@/components/Calendar';
 import { CategoryPill } from '@/components/CategoryPill';
+import { useScope } from '@/context/ScopeContext';
 import { useBudget } from '@/hooks/useBudget';
 import { useBudgetTracker } from '@/hooks/useBudgetTracker';
 import { useCategories } from '@/hooks/useCategories';
 import { formatCurrency, formatDayLabel, getCurrency } from '@/lib/format';
+import { defaultOwnerForScope } from '@/lib/scope';
 import type { TransactionType } from '@/models';
 
 export default function AddTransactionModal() {
   const router = useRouter();
-  const { allAccounts: accounts, allTransactions: transactions } = useBudget();
+  const { allAccounts: accounts, allTransactions: transactions, users, currentUser } = useBudget();
   const { addTransaction, editTransaction } = useBudgetTracker();
   const { groupCategories, getSubsForGroup, getSubCategory } = useCategories();
+  const { scope } = useScope();
 
   // Optional pre-fill from a quick-add shortcut, or full prefill when editing.
   const params = useLocalSearchParams<{
@@ -43,6 +46,10 @@ export default function AddTransactionModal() {
   const [note, setNote] = useState(editing?.note ?? '');
   const [date, setDate] = useState(() => (editing ? new Date(editing.date) : new Date()));
   const [showCalendar, setShowCalendar] = useState(false);
+  // New items default to the section currently in view on the Dashboard.
+  const [ownerId, setOwnerId] = useState<string | undefined>(
+    editing ? editing.ownerId : defaultOwnerForScope(scope),
+  );
 
   const parsedAmount = useMemo(() => {
     const n = parseFloat(amount.replace(',', '.'));
@@ -68,6 +75,7 @@ export default function AddTransactionModal() {
       type,
       note,
       date: date.toISOString(),
+      ownerId,
     };
 
     if (editing) {
@@ -183,6 +191,40 @@ export default function AddTransactionModal() {
                 </View>
               </View>
             ) : null}
+
+            {/* Section: Joint or a specific person */}
+            <View>
+              <Text className="mb-2 text-sm font-semibold text-surface-dark">Belongs to</Text>
+              <View className="flex-row flex-wrap gap-2">
+                {[{ id: undefined, name: 'Joint', color: '#7C5CFC' }, ...users].map((owner) => {
+                  const selected = ownerId === owner.id;
+                  const label = owner.id && owner.id === currentUser?.id ? 'You' : owner.name;
+                  return (
+                    <Pressable
+                      key={owner.id ?? 'joint'}
+                      onPress={() => setOwnerId(owner.id)}
+                      className={`flex-row items-center gap-2 rounded-full border px-3 py-2 ${
+                        selected ? 'border-primary bg-primary/10' : 'border-transparent bg-card'
+                      }`}
+                    >
+                      {owner.id ? (
+                        <View
+                          className="h-2.5 w-2.5 rounded-full"
+                          style={{ backgroundColor: owner.color }}
+                        />
+                      ) : (
+                        <Ionicons name="people" size={14} color="#7C5CFC" />
+                      )}
+                      <Text
+                        className={`text-sm ${selected ? 'font-semibold text-surface-dark' : 'text-muted'}`}
+                      >
+                        {label}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </View>
 
             {/* Date — tap to open a calendar */}
             <View>

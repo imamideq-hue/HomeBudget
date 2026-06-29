@@ -7,6 +7,8 @@ import type { User } from '@/models';
 interface Props {
   users: User[];
   currentUserId: string;
+  /** `prominent` renders big segmented buttons (used on the Dashboard). */
+  variant?: 'chips' | 'prominent';
 }
 
 interface Chip {
@@ -16,10 +18,11 @@ interface Chip {
 }
 
 /**
- * Row of chips that switches whose finances are in view: Everyone, Joint, or a
- * specific person. Lets joint and personal money stay separate in one app.
+ * Switches whose finances are in view: Everyone, Joint, or a specific person.
+ * On the Dashboard this also sets the default section for new entries, so Joint
+ * and personal money stay separate in one app.
  */
-export function ScopeFilter({ users, currentUserId }: Props) {
+export function ScopeFilter({ users, currentUserId, variant = 'chips' }: Props) {
   const { scope, setScope } = useScope();
 
   const chips: Chip[] = [
@@ -31,6 +34,41 @@ export function ScopeFilter({ users, currentUserId }: Props) {
       color: u.color,
     })),
   ];
+
+  if (variant === 'prominent') {
+    return (
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerClassName="gap-2 pr-1"
+      >
+        {chips.map((chip) => {
+          const active = scope === chip.key;
+          return (
+            <Pressable
+              key={chip.key}
+              onPress={() => setScope(chip.key)}
+              className={`flex-row items-center gap-2 rounded-2xl px-5 py-3 ${
+                active ? 'bg-primary shadow-sm' : 'bg-card'
+              }`}
+            >
+              {chip.color ? (
+                <View
+                  className="h-3 w-3 rounded-full"
+                  style={{ backgroundColor: active ? '#FFFFFF' : chip.color }}
+                />
+              ) : null}
+              <Text
+                className={`text-base font-bold ${active ? 'text-white' : 'text-surface-dark'}`}
+              >
+                {chip.label}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </ScrollView>
+    );
+  }
 
   return (
     <ScrollView

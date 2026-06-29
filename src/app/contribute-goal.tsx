@@ -1,25 +1,32 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { Keyboard, Pressable, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
+import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CategoryPill } from '@/components/CategoryPill';
+import { useBudget } from '@/hooks/useBudget';
 import { useGoals } from '@/hooks/useGoals';
-import { formatCurrency, getCurrency } from '@/lib/format';
+import { formatCurrency, formatFullDate, getCurrency } from '@/lib/format';
 
 export default function ContributeGoalModal() {
   const router = useRouter();
   const { goalId } = useLocalSearchParams<{ goalId: string }>();
-  const { getGoal, progressFor, contribute } = useGoals();
+  const { getGoal, progressFor, contribute, contributionsFor } = useGoals();
+  const { users, currentUser } = useBudget();
 
   const goal = goalId ? getGoal(goalId) : undefined;
   const [amount, setAmount] = useState('');
+  const [fromId, setFromId] = useState<string | undefined>(currentUser?.id);
 
   const parsed = useMemo(() => {
     const n = parseFloat(amount.replace(',', '.'));
     return Number.isFinite(n) && n > 0 ? n : 0;
   }, [amount]);
+
+  const history = goal ? contributionsFor(goal.id) : [];
+  const nameOf = (userId: string) =>
+    userId === currentUser?.id ? 'You' : users.find((u) => u.id === userId)?.name ?? 'Someone';
 
   if (!goal) {
     return (
@@ -33,25 +40,29 @@ export default function ContributeGoalModal() {
   const projected = Math.min(goal.currentAmount + parsed, goal.targetAmount);
 
   const save = () => {
-    contribute(goal.id, parsed);
+    contribute(goal.id, parsed, fromId);
     router.back();
   };
 
   return (
     <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-white">
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <View className="flex-1 px-5">
-          {/* Header */}
-          <View className="flex-row items-center justify-between py-3">
-            <Pressable onPress={() => router.back()} hitSlop={8} className="active:opacity-60">
-              <Text className="text-base text-muted">Cancel</Text>
-            </Pressable>
-            <Text className="text-base font-semibold text-surface-dark">Contribute</Text>
-            <View className="w-14" />
-          </View>
+      <View className="flex-1">
+        {/* Header */}
+        <View className="flex-row items-center justify-between px-5 py-3">
+          <Pressable onPress={() => router.back()} hitSlop={8} className="active:opacity-60">
+            <Text className="text-base text-muted">Cancel</Text>
+          </Pressable>
+          <Text className="text-base font-semibold text-surface-dark">Contribute</Text>
+          <View className="w-14" />
+        </View>
 
+        <ScrollView
+          contentContainerClassName="px-5 pb-4"
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+        >
           {/* Goal identity */}
-          <View className="mt-4 items-center gap-2">
+          <View className="mt-2 items-center gap-2">
             <CategoryPill icon={goal.icon} color={goal.color} size={64} />
             <Text className="text-xl font-bold text-surface-dark">{goal.name}</Text>
             <Text className="text-sm text-muted">
@@ -81,21 +92,75 @@ export default function ContributeGoalModal() {
             ) : null}
           </View>
 
-          {/* Save */}
-          <View className="mt-auto pb-2">
-            <Pressable
-              onPress={save}
-              disabled={parsed <= 0}
-              className={`flex-row items-center justify-center gap-2 rounded-2xl py-4 ${
-                parsed > 0 ? 'bg-primary active:opacity-80' : 'bg-primary/40'
-              }`}
-            >
-              <Ionicons name="add" size={20} color="#FFFFFF" />
-              <Text className="text-base font-semibold text-white">Add contribution</Text>
-            </Pressable>
+          {/* From: who is contributing */}
+          <View className="mt-8">
+            <Text className="mb-2 text-sm font-semibold text-surface-dark">From</Text>
+            <View className="flex-row flex-wrap gap-2">
+              {users.map((u) => {
+                const selected = fromId === u.id;
+                return (
+                  <Pressable
+                    key={u.id}
+                    onPress={() => setFromId(u.id)}
+                    className={`flex-row items-center gap-2 rounded-full border px-3 py-2 ${
+                      selected ? 'border-primary bg-primary/10' : 'border-transparent bg-card'
+                    }`}
+                  >
+                    <View
+                      className="h-2.5 w-2.5 rounded-full"
+                      style={{ backgroundColor: u.color }}
+                    />
+                    <Text
+                      className={`text-sm ${selected ? 'font-semibold text-surface-dark' : 'text-muted'}`}
+                    >
+                      {u.id === currentUser?.id ? 'You' : u.name}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
           </View>
+
+          {/* History: who added how much, and when */}
+          {history.length > 0 ? (
+            <View className="mt-8">
+              <Text className="mb-2 text-sm font-semibold text-surface-dark">History</Text>
+              <View className="gap-1">
+                {history.map((c) => (
+                  <View
+                    key={c.id}
+                    className="flex-row items-center justify-between rounded-2xl bg-card px-4 py-3"
+                  >
+                    <View>
+                      <Text className="text-sm font-medium text-surface-dark">
+                        {nameOf(c.userId)}
+                      </Text>
+                      <Text className="text-xs text-muted">{formatFullDate(c.createdAt)}</Text>
+                    </View>
+                    <Text className="text-sm font-semibold text-income">
+                      +{formatCurrency(c.amount)}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+          ) : null}
+        </ScrollView>
+
+        {/* Save */}
+        <View className="px-5 pb-2 pt-2">
+          <Pressable
+            onPress={save}
+            disabled={parsed <= 0}
+            className={`flex-row items-center justify-center gap-2 rounded-2xl py-4 ${
+              parsed > 0 ? 'bg-primary active:opacity-80' : 'bg-primary/40'
+            }`}
+          >
+            <Ionicons name="add" size={20} color="#FFFFFF" />
+            <Text className="text-base font-semibold text-white">Add contribution</Text>
+          </Pressable>
         </View>
-      </TouchableWithoutFeedback>
+      </View>
     </SafeAreaView>
   );
 }

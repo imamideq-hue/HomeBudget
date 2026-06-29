@@ -12,6 +12,7 @@ import { SEED_DATA } from '@/lib/seed';
 import type {
   BudgetData,
   Goal,
+  GoalContribution,
   GroupCategory,
   SubCategory,
   Transaction,
@@ -25,7 +26,7 @@ export type SubCategoryEdit = Partial<Pick<SubCategory, 'name' | 'icon' | 'color
 
 /** Editable fields of a transaction (e.g. correcting the account or amount). */
 export type TransactionEdit = Partial<
-  Pick<Transaction, 'accountId' | 'subCategoryId' | 'type' | 'amount' | 'note' | 'date'>
+  Pick<Transaction, 'accountId' | 'subCategoryId' | 'type' | 'amount' | 'note' | 'date' | 'ownerId'>
 >;
 
 // --- Reducer ----------------------------------------------------------------
@@ -35,14 +36,13 @@ export type BudgetAction =
   | { type: 'EDIT_TRANSACTION'; payload: { id: string; changes: TransactionEdit } }
   | { type: 'DELETE_TRANSACTION'; payload: { id: string } }
   | { type: 'SET_BUDGET_LIMIT'; payload: { groupId: string; limit: number } }
-  | { type: 'CONTRIBUTE_TO_GOAL'; payload: { goalId: string; amount: number } }
+  | { type: 'CONTRIBUTE_TO_GOAL'; payload: { contribution: GoalContribution } }
   | { type: 'ADD_GOAL'; payload: Goal }
   | { type: 'ADD_SUBCATEGORY'; payload: SubCategory }
   | { type: 'EDIT_SUBCATEGORY'; payload: { id: string; changes: SubCategoryEdit } }
   | { type: 'ADD_GROUP_CATEGORY'; payload: GroupCategory }
   | { type: 'SET_GOAL_DEADLINE'; payload: { goalId: string; deadline?: string } }
   | { type: 'ADD_MEMBER'; payload: User }
-  | { type: 'SET_ACCOUNT_OWNER'; payload: { accountId: string; ownerId?: string } }
   | { type: 'SET_GOAL_OWNER'; payload: { goalId: string; ownerId?: string } }
   | { type: 'SET_CURRENCY'; payload: { code: string } };
 
@@ -55,7 +55,8 @@ function reducer(state: BudgetData, action: BudgetAction): BudgetData {
     case 'HYDRATE':
       // Sync the currency formatter before the resulting render.
       setCurrencyCode(currencyOf(action.payload));
-      return action.payload;
+      // Backfill collections added in newer versions so older saved state loads.
+      return { ...action.payload, contributions: action.payload.contributions ?? [] };
     case 'ADD_TRANSACTION':
       return { ...state, transactions: [action.payload, ...state.transactions] };
     case 'EDIT_TRANSACTION':
@@ -79,12 +80,14 @@ function reducer(state: BudgetData, action: BudgetAction): BudgetData {
             : g,
         ),
       };
-    case 'CONTRIBUTE_TO_GOAL':
+    case 'CONTRIBUTE_TO_GOAL': {
+      const { contribution } = action.payload;
       return {
         ...state,
+        contributions: [contribution, ...state.contributions],
         goals: state.goals.map((goal) => {
-          if (goal.id !== action.payload.goalId) return goal;
-          const currentAmount = goal.currentAmount + action.payload.amount;
+          if (goal.id !== contribution.goalId) return goal;
+          const currentAmount = goal.currentAmount + contribution.amount;
           return {
             ...goal,
             currentAmount,
@@ -92,6 +95,7 @@ function reducer(state: BudgetData, action: BudgetAction): BudgetData {
           };
         }),
       };
+    }
     case 'ADD_GOAL':
       return { ...state, goals: [...state.goals, action.payload] };
     case 'ADD_GROUP_CATEGORY':
@@ -112,13 +116,6 @@ function reducer(state: BudgetData, action: BudgetAction): BudgetData {
           goal.id === action.payload.goalId
             ? { ...goal, targetDate: action.payload.deadline }
             : goal,
-        ),
-      };
-    case 'SET_ACCOUNT_OWNER':
-      return {
-        ...state,
-        accounts: state.accounts.map((a) =>
-          a.id === action.payload.accountId ? { ...a, ownerId: action.payload.ownerId } : a,
         ),
       };
     case 'SET_GOAL_OWNER':

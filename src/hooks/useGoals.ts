@@ -55,9 +55,31 @@ export function useGoals() {
   // regardless of the current scope filter.
   const getGoal = (goalId: string) => state.goals.find((g) => g.id === goalId);
 
-  /** Add `amount` toward a goal (no-op for non-positive amounts). */
-  const contribute = (goalId: string, amount: number) => {
-    if (amount > 0) dispatch({ type: 'CONTRIBUTE_TO_GOAL', payload: { goalId, amount } });
+  /** Contributions for a goal, newest first. */
+  const contributionsFor = (goalId: string) =>
+    state.contributions
+      .filter((c) => c.goalId === goalId)
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+
+  /**
+   * Add `amount` toward a goal, recording who contributed (defaults to the
+   * current user). No-op for non-positive amounts.
+   */
+  const contribute = (goalId: string, amount: number, userId?: string) => {
+    if (amount <= 0) return;
+    dispatch({
+      type: 'CONTRIBUTE_TO_GOAL',
+      payload: {
+        contribution: {
+          id: newId(),
+          spaceId: state.currentSpaceId,
+          goalId,
+          userId: userId ?? state.currentUserId,
+          amount,
+          createdAt: new Date().toISOString(),
+        },
+      },
+    });
   };
 
   /** Set or clear (pass undefined) a goal's optional deadline. */
@@ -91,6 +113,7 @@ export function useGoals() {
     progress: goals.map(progressFor),
     progressFor,
     getGoal,
+    contributionsFor,
     contribute,
     setDeadline,
     setOwner,
