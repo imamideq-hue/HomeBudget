@@ -143,7 +143,15 @@ export function DashboardScreen() {
         <View className="gap-1">
           <Text className="text-lg font-semibold text-surface-dark">Recent activity</Text>
           {recent.length > 0 ? (
-            recent.map((t) => <TransactionItem key={t.id} transaction={t} />)
+            recent.map((t) => (
+              <TransactionItem
+                key={t.id}
+                transaction={t}
+                onPress={(tx) =>
+                  router.push({ pathname: '/add-transaction', params: { transactionId: tx.id } })
+                }
+              />
+            ))
           ) : (
             <Text className="text-sm text-muted">No transactions yet.</Text>
           )}

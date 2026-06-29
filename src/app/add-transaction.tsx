@@ -14,22 +14,34 @@ import type { TransactionType } from '@/models';
 
 export default function AddTransactionModal() {
   const router = useRouter();
-  const { accounts } = useBudget();
-  const { addTransaction } = useBudgetTracker();
+  const { accounts, transactions } = useBudget();
+  const { addTransaction, editTransaction } = useBudgetTracker();
   const { groupCategories, getSubsForGroup, getSubCategory } = useCategories();
 
-  // Optional pre-fill from a quick-add shortcut.
-  const params = useLocalSearchParams<{ subCategoryId?: string; type?: string }>();
+  // Optional pre-fill from a quick-add shortcut, or full prefill when editing.
+  const params = useLocalSearchParams<{
+    subCategoryId?: string;
+    type?: string;
+    transactionId?: string;
+  }>();
+  const editing = params.transactionId
+    ? transactions.find((t) => t.id === params.transactionId)
+    : undefined;
+
   const presetSub =
     params.subCategoryId && getSubCategory(params.subCategoryId) ? params.subCategoryId : null;
   const presetType: TransactionType = params.type === 'income' ? 'income' : 'expense';
 
-  const [type, setType] = useState<TransactionType>(presetType);
-  const [amount, setAmount] = useState('');
-  const [subCategoryId, setSubCategoryId] = useState<string | null>(presetSub);
-  const [accountId, setAccountId] = useState<string | null>(accounts[0]?.id ?? null);
-  const [note, setNote] = useState('');
-  const [date, setDate] = useState(() => new Date());
+  const [type, setType] = useState<TransactionType>(editing?.type ?? presetType);
+  const [amount, setAmount] = useState(editing ? String(editing.amount) : '');
+  const [subCategoryId, setSubCategoryId] = useState<string | null>(
+    editing?.subCategoryId ?? presetSub,
+  );
+  const [accountId, setAccountId] = useState<string | null>(
+    editing?.accountId ?? accounts[0]?.id ?? null,
+  );
+  const [note, setNote] = useState(editing?.note ?? '');
+  const [date, setDate] = useState(() => (editing ? new Date(editing.date) : new Date()));
   const [showCalendar, setShowCalendar] = useState(false);
 
   const parsedAmount = useMemo(() => {
@@ -49,16 +61,25 @@ export default function AddTransactionModal() {
   const handleSave = () => {
     if (!canSave || subCategoryId === null || accountId === null) return;
 
-    // Adding the item rolls up into its parent group and recalculates that
-    // group's monthly budget; `groupBudget` reflects the new total/remaining.
-    const { groupBudget } = addTransaction({
+    const input = {
       subCategoryId,
       accountId,
       amount: parsedAmount,
       type,
       note,
       date: date.toISOString(),
-    });
+    };
+
+    if (editing) {
+      // Correct the existing item (account, amount, category, date, note).
+      editTransaction(editing.id, input);
+      router.back();
+      return;
+    }
+
+    // Adding the item rolls up into its parent group and recalculates that
+    // group's monthly budget; `groupBudget` reflects the new total/remaining.
+    const { groupBudget } = addTransaction(input);
 
     if (groupBudget.isOverBudget) {
       Alert.alert(
@@ -80,7 +101,9 @@ export default function AddTransactionModal() {
           <Pressable onPress={() => router.back()} hitSlop={8} className="active:opacity-60">
             <Text className="text-base text-muted">Cancel</Text>
           </Pressable>
-          <Text className="text-base font-semibold text-surface-dark">New transaction</Text>
+          <Text className="text-base font-semibold text-surface-dark">
+            {editing ? 'Edit transaction' : 'New transaction'}
+          </Text>
           <View className="w-14" />
         </View>
 
@@ -265,7 +288,9 @@ export default function AddTransactionModal() {
               }`}
             >
               <Ionicons name="checkmark" size={20} color="#FFFFFF" />
-              <Text className="text-base font-semibold text-white">Save transaction</Text>
+              <Text className="text-base font-semibold text-white">
+                {editing ? 'Save changes' : 'Save transaction'}
+              </Text>
             </Pressable>
         </ScrollView>
       </View>

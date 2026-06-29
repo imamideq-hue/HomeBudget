@@ -85,5 +85,27 @@ export function useBudgetTracker() {
     return { transaction, groupBudget };
   }
 
-  return { groupBudgets, getGroupBudget, setBudgetLimit, addTransaction };
+  /**
+   * Correct an existing transaction (e.g. switch the account from cash to card,
+   * fix the amount or category). Spend rolls up sub → group, so the affected
+   * group budgets recompute reactively for any consumer.
+   */
+  function editTransaction(id: string, input: NewTransactionInput): void {
+    dispatch({
+      type: 'EDIT_TRANSACTION',
+      payload: {
+        id,
+        changes: {
+          subCategoryId: input.subCategoryId,
+          accountId: input.accountId,
+          amount: input.amount,
+          type: input.type,
+          note: input.note?.trim() || undefined,
+          date: input.date,
+        },
+      },
+    });
+  }
+
+  return { groupBudgets, getGroupBudget, setBudgetLimit, addTransaction, editTransaction };
 }

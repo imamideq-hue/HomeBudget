@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { Pressable, SectionList, Text, View } from 'react-native';
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -10,6 +11,7 @@ import { groupByDay } from '@/lib/format';
 import type { Transaction } from '@/models';
 
 export function TransactionsScreen() {
+  const router = useRouter();
   const { transactions, deleteTransaction } = useBudget();
   const groups = groupByDay(transactions);
 
@@ -29,7 +31,12 @@ export function TransactionsScreen() {
         </Pressable>
       )}
     >
-      <TransactionItem transaction={item} />
+      <TransactionItem
+        transaction={item}
+        onPress={(t) =>
+          router.push({ pathname: '/add-transaction', params: { transactionId: t.id } })
+        }
+      />
     </ReanimatedSwipeable>
   );
 

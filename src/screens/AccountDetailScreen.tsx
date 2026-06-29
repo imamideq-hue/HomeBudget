@@ -95,7 +95,16 @@ export function AccountDetailScreen({ accountId }: { accountId: string }) {
               <View key={g.key}>
                 <Text className="px-4 pb-1 pt-4 text-sm font-semibold text-muted">{g.label}</Text>
                 {g.transactions.map((t) => (
-                  <TransactionItem key={t.id} transaction={t} />
+                  <TransactionItem
+                    key={t.id}
+                    transaction={t}
+                    onPress={(tx) =>
+                      router.push({
+                        pathname: '/add-transaction',
+                        params: { transactionId: tx.id },
+                      })
+                    }
+                  />
                 ))}
               </View>
             ))

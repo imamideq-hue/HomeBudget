@@ -23,10 +23,16 @@ const STORAGE_KEY = 'homebudget:state:v4';
 /** Editable fields of a sub-category. */
 export type SubCategoryEdit = Partial<Pick<SubCategory, 'name' | 'icon' | 'color' | 'groupId'>>;
 
+/** Editable fields of a transaction (e.g. correcting the account or amount). */
+export type TransactionEdit = Partial<
+  Pick<Transaction, 'accountId' | 'subCategoryId' | 'type' | 'amount' | 'note' | 'date'>
+>;
+
 // --- Reducer ----------------------------------------------------------------
 export type BudgetAction =
   | { type: 'HYDRATE'; payload: BudgetData }
   | { type: 'ADD_TRANSACTION'; payload: Transaction }
+  | { type: 'EDIT_TRANSACTION'; payload: { id: string; changes: TransactionEdit } }
   | { type: 'DELETE_TRANSACTION'; payload: { id: string } }
   | { type: 'SET_BUDGET_LIMIT'; payload: { groupId: string; limit: number } }
   | { type: 'CONTRIBUTE_TO_GOAL'; payload: { goalId: string; amount: number } }
@@ -50,6 +56,13 @@ function reducer(state: BudgetData, action: BudgetAction): BudgetData {
       return action.payload;
     case 'ADD_TRANSACTION':
       return { ...state, transactions: [action.payload, ...state.transactions] };
+    case 'EDIT_TRANSACTION':
+      return {
+        ...state,
+        transactions: state.transactions.map((t) =>
+          t.id === action.payload.id ? { ...t, ...action.payload.changes } : t,
+        ),
+      };
     case 'DELETE_TRANSACTION':
       return {
         ...state,
