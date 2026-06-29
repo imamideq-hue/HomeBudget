@@ -14,7 +14,7 @@ import type { TransactionType } from '@/models';
 
 export default function AddTransactionModal() {
   const router = useRouter();
-  const { accounts, transactions } = useBudget();
+  const { allAccounts: accounts, allTransactions: transactions } = useBudget();
   const { addTransaction, editTransaction } = useBudgetTracker();
   const { groupCategories, getSubsForGroup, getSubCategory } = useCategories();
 

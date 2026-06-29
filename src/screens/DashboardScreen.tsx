@@ -7,6 +7,7 @@ import { AccountCard } from '@/components/AccountCard';
 import { AddTransactionButton } from '@/components/AddTransactionButton';
 import { BalanceCard } from '@/components/BalanceCard';
 import { BudgetRing } from '@/components/BudgetRing';
+import { ScopeFilter } from '@/components/ScopeFilter';
 import { TransactionItem } from '@/components/TransactionItem';
 import { useBudget } from '@/hooks/useBudget';
 import { useBudgetTracker } from '@/hooks/useBudgetTracker';
@@ -17,7 +18,7 @@ const QUICK_ADD = ['sub_groceries', 'sub_dining', 'sub_transit', 'sub_coffee', '
 
 export function DashboardScreen() {
   const router = useRouter();
-  const { accounts, accountBalance, totals, transactions, currentUser } = useBudget();
+  const { accounts, accountBalance, totals, transactions, currentUser, users } = useBudget();
   const { groupBudgets } = useBudgetTracker();
   const { resolveSubVisual } = useCategories();
 
@@ -45,6 +46,9 @@ export function DashboardScreen() {
             <Text className="text-sm font-semibold text-white">Add user</Text>
           </Pressable>
         </View>
+
+        {/* Whose finances to show: Everyone / Joint / a person */}
+        <ScopeFilter users={users} currentUserId={currentUser?.id ?? ''} />
 
         {/* Balance hero */}
         <BalanceCard balance={totals.balance} income={totals.income} expense={totals.expense} />

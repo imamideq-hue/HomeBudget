@@ -5,6 +5,7 @@ import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeabl
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AddTransactionButton } from '@/components/AddTransactionButton';
+import { ScopeFilter } from '@/components/ScopeFilter';
 import { TransactionItem } from '@/components/TransactionItem';
 import { useBudget } from '@/hooks/useBudget';
 import { groupByDay } from '@/lib/format';
@@ -12,7 +13,7 @@ import type { Transaction } from '@/models';
 
 export function TransactionsScreen() {
   const router = useRouter();
-  const { transactions, deleteTransaction } = useBudget();
+  const { transactions, deleteTransaction, users, currentUser } = useBudget();
   const groups = groupByDay(transactions);
 
   const sections = groups.map((g) => ({ title: g.label, data: g.transactions }));
@@ -43,6 +44,9 @@ export function TransactionsScreen() {
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-white">
       <Text className="px-5 pb-2 pt-2 text-2xl font-bold text-surface-dark">Transactions</Text>
+      <View className="px-5 pb-2">
+        <ScopeFilter users={users} currentUserId={currentUser?.id ?? ''} />
+      </View>
       <SectionList
         sections={sections}
         keyExtractor={(item) => item.id}

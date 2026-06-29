@@ -15,5 +15,10 @@ export interface Account extends BaseEntity {
   /** Hex color + Ionicons glyph for display. */
   color: string;
   icon: string;
+  /**
+   * Who this account belongs to. A user id makes it that person's personal
+   * money; `undefined` means it's Joint/Shared between everyone in the space.
+   */
+  ownerId?: ID;
   archived?: boolean;
 }

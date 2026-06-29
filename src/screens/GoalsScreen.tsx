@@ -4,12 +4,21 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CategoryPill } from '@/components/CategoryPill';
+import { ScopeFilter } from '@/components/ScopeFilter';
+import { useBudget } from '@/hooks/useBudget';
 import { useGoals } from '@/hooks/useGoals';
 import { daysUntil, formatCurrency, formatDeadline } from '@/lib/format';
 
 export function GoalsScreen() {
   const router = useRouter();
   const { progress } = useGoals();
+  const { users, currentUser } = useBudget();
+
+  const ownerLabel = (ownerId?: string) => {
+    if (!ownerId) return 'Joint';
+    if (ownerId === currentUser?.id) return 'You';
+    return users.find((u) => u.id === ownerId)?.name ?? 'Personal';
+  };
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-white">
@@ -26,12 +35,26 @@ export function GoalsScreen() {
           </Pressable>
         </View>
 
+        <ScopeFilter users={users} currentUserId={currentUser?.id ?? ''} />
+
         {progress.map(({ goal, ratio, remaining, isReached }) => (
           <View key={goal.id} className="rounded-3xl bg-card p-5">
             <View className="flex-row items-center gap-3">
               <CategoryPill icon={goal.icon} color={goal.color} size={44} />
               <View className="flex-1">
-                <Text className="text-base font-semibold text-surface-dark">{goal.name}</Text>
+                <View className="flex-row items-center gap-2">
+                  <Text className="text-base font-semibold text-surface-dark">{goal.name}</Text>
+                  <View className="flex-row items-center gap-1 rounded-full bg-black/5 px-2 py-0.5">
+                    <Ionicons
+                      name={goal.ownerId ? 'person' : 'people'}
+                      size={11}
+                      color="#8A8A9E"
+                    />
+                    <Text className="text-[11px] font-medium text-muted">
+                      {ownerLabel(goal.ownerId)}
+                    </Text>
+                  </View>
+                </View>
                 <Text className="text-sm text-muted">
                   {formatCurrency(goal.currentAmount)} of {formatCurrency(goal.targetAmount)}
                 </Text>

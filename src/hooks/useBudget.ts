@@ -1,8 +1,10 @@
 import { useContext, useMemo } from 'react';
 
 import { BudgetContext } from '@/context/BudgetContext';
+import { useScope } from '@/context/ScopeContext';
 import { getGroupForSub } from '@/lib/categories';
 import { newId } from '@/lib/id';
+import { accountInScope, filterTransactionsByScope, goalInScope } from '@/lib/scope';
 import type { GroupCategory, Transaction, User } from '@/models';
 
 export interface NewMemberInput {
@@ -26,7 +28,28 @@ export function useBudget() {
     throw new Error('useBudget must be used within a <BudgetProvider>');
   }
   const { state, dispatch } = ctx;
-  const { transactions, accounts, goals, groupCategories, subCategories } = state;
+  const {
+    transactions: allTransactions,
+    accounts: allAccounts,
+    goals: allGoals,
+    groupCategories,
+    subCategories,
+  } = state;
+  const { scope } = useScope();
+
+  // Scoped views: which finances are currently shown (Everyone / Joint / a person).
+  const accounts = useMemo(
+    () => allAccounts.filter((a) => accountInScope(a, scope)),
+    [allAccounts, scope],
+  );
+  const transactions = useMemo(
+    () => filterTransactionsByScope(allTransactions, allAccounts, scope),
+    [allTransactions, allAccounts, scope],
+  );
+  const goals = useMemo(
+    () => allGoals.filter((g) => goalInScope(g, scope)),
+    [allGoals, scope],
+  );
 
   const currentUser = useMemo(
     () => state.users.find((u) => u.id === state.currentUserId),
@@ -62,11 +85,14 @@ export function useBudget() {
       .sort((a, b) => b.total - a.total);
   }, [transactions, groupCategories, subCategories]);
 
-  /** Live balance for an account: opening balance + its transactions. */
+  /**
+   * Live balance for an account: opening balance + its transactions. Balance is
+   * account-specific, so it always uses the full (unscoped) transaction list.
+   */
   const accountBalance = (accountId: string) => {
-    const account = accounts.find((a) => a.id === accountId);
+    const account = allAccounts.find((a) => a.id === accountId);
     if (!account) return 0;
-    return transactions.reduce((sum, t) => {
+    return allTransactions.reduce((sum, t) => {
       if (t.accountId !== accountId) return sum;
       return sum + (t.type === 'income' ? t.amount : -t.amount);
     }, account.startingBalance);
@@ -96,13 +122,21 @@ export function useBudget() {
   const setCurrency = (code: string) =>
     dispatch({ type: 'SET_CURRENCY', payload: { code } });
 
+  /** Assign an account to a person, or to Joint/Shared (pass undefined). */
+  const setAccountOwner = (accountId: string, ownerId?: string) =>
+    dispatch({ type: 'SET_ACCOUNT_OWNER', payload: { accountId, ownerId } });
+
   return {
-    // collections
+    // collections (scoped to the current view)
     transactions,
     accounts,
     goals,
     groupCategories,
     users: state.users,
+    // raw collections (ignore the scope filter — for forms & detail lookups)
+    allTransactions,
+    allAccounts,
+    allGoals,
     // context
     currentUser,
     currentSpace,
@@ -115,5 +149,6 @@ export function useBudget() {
     deleteTransaction,
     addMember,
     setCurrency,
+    setAccountOwner,
   };
 }

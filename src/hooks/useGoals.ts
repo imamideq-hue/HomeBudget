@@ -1,7 +1,9 @@
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 
 import { BudgetContext } from '@/context/BudgetContext';
+import { useScope } from '@/context/ScopeContext';
 import { newId } from '@/lib/id';
+import { goalInScope } from '@/lib/scope';
 import type { Goal } from '@/models';
 
 export interface NewGoalInput {
@@ -9,6 +11,8 @@ export interface NewGoalInput {
   targetAmount: number;
   color: string;
   icon: string;
+  /** Owner user id, or undefined for a Joint/Shared goal. */
+  ownerId?: string;
 }
 
 export interface GoalProgress {
@@ -30,7 +34,12 @@ export function useGoals() {
     throw new Error('useGoals must be used within a <BudgetProvider>');
   }
   const { state, dispatch } = ctx;
-  const { goals } = state;
+  const { scope } = useScope();
+  // Goals in the current view (Everyone / Joint / a person).
+  const goals = useMemo(
+    () => state.goals.filter((g) => goalInScope(g, scope)),
+    [state.goals, scope],
+  );
 
   const progressFor = (goal: Goal): GoalProgress => {
     const ratio = goal.targetAmount > 0 ? goal.currentAmount / goal.targetAmount : 0;
@@ -42,7 +51,9 @@ export function useGoals() {
     };
   };
 
-  const getGoal = (goalId: string) => goals.find((g) => g.id === goalId);
+  // Look up against the full list so contribute/deadline modals always resolve,
+  // regardless of the current scope filter.
+  const getGoal = (goalId: string) => state.goals.find((g) => g.id === goalId);
 
   /** Add `amount` toward a goal (no-op for non-positive amounts). */
   const contribute = (goalId: string, amount: number) => {
@@ -53,6 +64,10 @@ export function useGoals() {
   const setDeadline = (goalId: string, deadline?: string) =>
     dispatch({ type: 'SET_GOAL_DEADLINE', payload: { goalId, deadline } });
 
+  /** Assign a goal to a person, or to Joint/Shared (pass undefined). */
+  const setOwner = (goalId: string, ownerId?: string) =>
+    dispatch({ type: 'SET_GOAL_OWNER', payload: { goalId, ownerId } });
+
   /** Create a new savings goal (starts at zero progress). */
   const addGoal = (input: NewGoalInput): Goal => {
     const goal: Goal = {
@@ -61,6 +76,7 @@ export function useGoals() {
       name: input.name.trim(),
       targetAmount: input.targetAmount,
       currentAmount: 0,
+      ownerId: input.ownerId,
       color: input.color,
       icon: input.icon,
       status: 'active',
@@ -77,6 +93,7 @@ export function useGoals() {
     getGoal,
     contribute,
     setDeadline,
+    setOwner,
     addGoal,
   };
 }

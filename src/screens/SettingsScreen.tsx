@@ -24,7 +24,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 export function SettingsScreen() {
   const router = useRouter();
-  const { currentSpace, accounts, accountBalance, setCurrency } = useBudget();
+  const { currentSpace, allAccounts: accounts, accountBalance, setCurrency } = useBudget();
   const { user, signOut } = useAuth();
 
   return (

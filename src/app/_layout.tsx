@@ -7,6 +7,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { AuthProvider } from '@/context/AuthContext';
 import { BudgetProvider } from '@/context/BudgetContext';
+import { ScopeProvider } from '@/context/ScopeContext';
 
 export default function RootLayout() {
   return (
@@ -14,6 +15,7 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <AuthProvider>
         <BudgetProvider>
+        <ScopeProvider>
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="add-transaction" options={{ presentation: 'modal' }} />
@@ -27,6 +29,7 @@ export default function RootLayout() {
             <Stack.Screen name="account/[id]" />
           </Stack>
           <StatusBar style="auto" />
+        </ScopeProvider>
         </BudgetProvider>
         </AuthProvider>
       </SafeAreaProvider>

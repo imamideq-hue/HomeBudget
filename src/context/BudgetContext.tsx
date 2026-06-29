@@ -42,6 +42,8 @@ export type BudgetAction =
   | { type: 'ADD_GROUP_CATEGORY'; payload: GroupCategory }
   | { type: 'SET_GOAL_DEADLINE'; payload: { goalId: string; deadline?: string } }
   | { type: 'ADD_MEMBER'; payload: User }
+  | { type: 'SET_ACCOUNT_OWNER'; payload: { accountId: string; ownerId?: string } }
+  | { type: 'SET_GOAL_OWNER'; payload: { goalId: string; ownerId?: string } }
   | { type: 'SET_CURRENCY'; payload: { code: string } };
 
 function currencyOf(data: BudgetData): string {
@@ -110,6 +112,20 @@ function reducer(state: BudgetData, action: BudgetAction): BudgetData {
           goal.id === action.payload.goalId
             ? { ...goal, targetDate: action.payload.deadline }
             : goal,
+        ),
+      };
+    case 'SET_ACCOUNT_OWNER':
+      return {
+        ...state,
+        accounts: state.accounts.map((a) =>
+          a.id === action.payload.accountId ? { ...a, ownerId: action.payload.ownerId } : a,
+        ),
+      };
+    case 'SET_GOAL_OWNER':
+      return {
+        ...state,
+        goals: state.goals.map((g) =>
+          g.id === action.payload.goalId ? { ...g, ownerId: action.payload.ownerId } : g,
         ),
       };
     case 'SET_CURRENCY':

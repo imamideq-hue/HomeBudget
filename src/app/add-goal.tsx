@@ -5,6 +5,7 @@ import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CategoryPill } from '@/components/CategoryPill';
+import { useBudget } from '@/hooks/useBudget';
 import { useGoals } from '@/hooks/useGoals';
 import { getCurrency } from '@/lib/format';
 
@@ -22,11 +23,13 @@ const COLORS = [
 export default function AddGoalModal() {
   const router = useRouter();
   const { addGoal } = useGoals();
+  const { users, currentUser } = useBudget();
 
   const [name, setName] = useState('');
   const [target, setTarget] = useState('');
   const [icon, setIcon] = useState(ICONS[0]);
   const [color, setColor] = useState(COLORS[0]);
+  const [ownerId, setOwnerId] = useState<string | undefined>(undefined); // undefined = Joint
 
   const targetAmount = useMemo(() => {
     const n = parseFloat(target.replace(',', '.'));
@@ -37,7 +40,7 @@ export default function AddGoalModal() {
 
   const save = () => {
     if (!canSave) return;
-    addGoal({ name, targetAmount, icon, color });
+    addGoal({ name, targetAmount, icon, color, ownerId });
     router.back();
   };
 
@@ -83,6 +86,40 @@ export default function AddGoalModal() {
               keyboardType="decimal-pad"
               className="text-center text-5xl font-bold text-surface-dark"
             />
+          </View>
+
+          {/* Owner: Joint or a specific person */}
+          <View>
+            <Text className="mb-2 text-sm font-semibold text-surface-dark">Belongs to</Text>
+            <View className="flex-row flex-wrap gap-2">
+              {[{ id: undefined, name: 'Joint', color: '#7C5CFC' }, ...users].map((owner) => {
+                const selected = ownerId === owner.id;
+                const label = owner.id && owner.id === currentUser?.id ? 'You' : owner.name;
+                return (
+                  <Pressable
+                    key={owner.id ?? 'joint'}
+                    onPress={() => setOwnerId(owner.id)}
+                    className={`flex-row items-center gap-2 rounded-full border px-3 py-2 ${
+                      selected ? 'border-primary bg-primary/10' : 'border-transparent bg-card'
+                    }`}
+                  >
+                    {owner.id ? (
+                      <View
+                        className="h-2.5 w-2.5 rounded-full"
+                        style={{ backgroundColor: owner.color }}
+                      />
+                    ) : (
+                      <Ionicons name="people" size={14} color="#7C5CFC" />
+                    )}
+                    <Text
+                      className={`text-sm ${selected ? 'font-semibold text-surface-dark' : 'text-muted'}`}
+                    >
+                      {label}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
           </View>
 
           {/* Color */}

@@ -10,13 +10,14 @@ import { formatCurrency, groupByDay } from '@/lib/format';
 
 export function AccountDetailScreen({ accountId }: { accountId: string }) {
   const router = useRouter();
-  const { accounts, transactions, accountBalance } = useBudget();
+  const { allAccounts, allTransactions, accountBalance, users, currentUser, setAccountOwner } =
+    useBudget();
 
-  const account = accounts.find((a) => a.id === accountId);
+  const account = allAccounts.find((a) => a.id === accountId);
 
   const accountTx = useMemo(
-    () => transactions.filter((t) => t.accountId === accountId),
-    [transactions, accountId],
+    () => allTransactions.filter((t) => t.accountId === accountId),
+    [allTransactions, accountId],
   );
 
   const flow = useMemo(() => {
@@ -84,6 +85,41 @@ export function AccountDetailScreen({ accountId }: { accountId: string }) {
                 {formatCurrency(flow.expense)}
               </Text>
             </View>
+          </View>
+        </View>
+
+        {/* Owner: Joint or a specific person */}
+        <View>
+          <Text className="mb-2 text-sm font-semibold text-surface-dark">Belongs to</Text>
+          <View className="flex-row flex-wrap gap-2">
+            {[{ id: undefined, name: 'Joint', color: '#7C5CFC' }, ...users].map((owner) => {
+              const selected = account.ownerId === owner.id;
+              const label =
+                owner.id && owner.id === currentUser?.id ? 'You' : owner.name;
+              return (
+                <Pressable
+                  key={owner.id ?? 'joint'}
+                  onPress={() => setAccountOwner(account.id, owner.id)}
+                  className={`flex-row items-center gap-2 rounded-full border px-3 py-2 ${
+                    selected ? 'border-primary bg-primary/10' : 'border-transparent bg-card'
+                  }`}
+                >
+                  {owner.id ? (
+                    <View
+                      className="h-2.5 w-2.5 rounded-full"
+                      style={{ backgroundColor: owner.color }}
+                    />
+                  ) : (
+                    <Ionicons name="people" size={14} color="#7C5CFC" />
+                  )}
+                  <Text
+                    className={`text-sm ${selected ? 'font-semibold text-surface-dark' : 'text-muted'}`}
+                  >
+                    {label}
+                  </Text>
+                </Pressable>
+              );
+            })}
           </View>
         </View>
 

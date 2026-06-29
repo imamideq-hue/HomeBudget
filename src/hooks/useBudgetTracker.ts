@@ -1,6 +1,7 @@
 import { useContext, useMemo } from 'react';
 
 import { BudgetContext } from '@/context/BudgetContext';
+import { useScope } from '@/context/ScopeContext';
 import {
   calculateGroupBudget,
   calculateGroupBudgets,
@@ -8,6 +9,7 @@ import {
 } from '@/lib/budget';
 import { getGroupForSub } from '@/lib/categories';
 import { newId } from '@/lib/id';
+import { filterTransactionsByScope } from '@/lib/scope';
 import type { Transaction, TransactionType } from '@/models';
 
 /** Fields a caller supplies; the hook fills in id/space/user/timestamps. */
@@ -40,12 +42,19 @@ export function useBudgetTracker() {
     throw new Error('useBudgetTracker must be used within a <BudgetProvider>');
   }
   const { state, dispatch } = ctx;
-  const { transactions, groupCategories, subCategories } = state;
+  const { transactions, accounts, groupCategories, subCategories } = state;
+  const { scope } = useScope();
 
-  // Recomputed automatically whenever transactions/categories change.
+  // Budgets reflect the finances currently in view (Everyone / Joint / a person).
+  const scopedTransactions = useMemo(
+    () => filterTransactionsByScope(transactions, accounts, scope),
+    [transactions, accounts, scope],
+  );
+
+  // Recomputed automatically whenever transactions/categories/scope change.
   const groupBudgets = useMemo(
-    () => calculateGroupBudgets(groupCategories, transactions, subCategories),
-    [groupCategories, transactions, subCategories],
+    () => calculateGroupBudgets(groupCategories, scopedTransactions, subCategories),
+    [groupCategories, scopedTransactions, subCategories],
   );
 
   const getGroupBudget = (groupId: string): GroupBudgetSummary | undefined =>
