@@ -9,9 +9,12 @@ export const SUPPORTED_CURRENCIES = [
 export type CurrencyCode = (typeof SUPPORTED_CURRENCIES)[number]['code'];
 
 function makeFormatter(code: string) {
-  return new Intl.NumberFormat('en-US', {
+  // Euro uses European formatting ("15,00 €"); others use US style ("$15.00").
+  const locale = code === 'EUR' ? 'de-DE' : 'en-US';
+  return new Intl.NumberFormat(locale, {
     style: 'currency',
     currency: code,
+    minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
 }

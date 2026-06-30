@@ -6,13 +6,17 @@ import { useTheme } from '@/hooks/useTheme';
 const INACTIVE = '#8A8A9E';
 
 export default function TabsLayout() {
-  const { accent } = useTheme();
+  const { accent, isDark } = useTheme();
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: accent,
         tabBarInactiveTintColor: INACTIVE,
+        tabBarStyle: {
+          backgroundColor: isDark ? '#15151B' : '#FFFFFF',
+          borderTopColor: isDark ? '#26262F' : '#ECECF2',
+        },
       }}
     >
       <Tabs.Screen

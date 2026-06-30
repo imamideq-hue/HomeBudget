@@ -29,10 +29,10 @@ export function DashboardScreen() {
     <SafeAreaView edges={['top']} className="flex-1 bg-surface">
       <ScrollView contentContainerClassName="gap-6 px-5 pb-24 pt-2">
         {/* Header + quick add */}
-        <View className="flex-row items-center justify-between">
-          <View>
+        <View className="flex-row items-center justify-between gap-3">
+          <View className="flex-1">
             <Text className="text-sm text-muted">Welcome back</Text>
-            <Text className="text-2xl font-bold text-surface-dark">
+            <Text className="text-2xl font-bold text-surface-dark" numberOfLines={1}>
               {currentUser?.name ?? 'Dashboard'}
             </Text>
           </View>
@@ -40,7 +40,7 @@ export function DashboardScreen() {
             onPress={() => router.push('/add-member')}
             accessibilityRole="button"
             accessibilityLabel="Add member"
-            className="flex-row items-center gap-1 rounded-full bg-primary px-4 py-2 active:opacity-80"
+            className="shrink-0 flex-row items-center gap-1.5 rounded-full bg-primary px-4 py-2.5 active:opacity-80"
           >
             <Ionicons name="person-add" size={16} color="#FFFFFF" />
             <Text className="text-sm font-semibold text-white">Add user</Text>

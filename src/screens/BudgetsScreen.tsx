@@ -23,7 +23,17 @@ export function BudgetsScreen() {
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-surface">
       <ScrollView contentContainerClassName="gap-3 px-5 pb-12 pt-2">
-        <Text className="text-2xl font-bold text-surface-dark">Budgets</Text>
+        <View className="flex-row items-center justify-between">
+          <Text className="text-2xl font-bold text-surface-dark">Budgets</Text>
+          <Pressable
+            onPress={() => router.push('/add-budget')}
+            hitSlop={8}
+            className="flex-row items-center gap-1 rounded-full bg-primary px-3 py-2 active:opacity-80"
+          >
+            <Ionicons name="add" size={16} color="#FFFFFF" />
+            <Text className="text-sm font-semibold text-white">New</Text>
+          </Pressable>
+        </View>
         <Text className="mb-1 text-sm text-muted">Monthly · {MONTH} · tap to edit</Text>
 
         {budgeted.map((budget) => (

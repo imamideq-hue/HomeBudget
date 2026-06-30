@@ -15,6 +15,8 @@ function getPlayer(): AudioPlayer | null {
     // Allow the chime to play even when the ringer is on silent (iOS).
     setAudioModeAsync({ playsInSilentMode: true }).catch(() => {});
     player = createAudioPlayer(require('../../assets/sounds/success.wav'));
+    // Keep it subtle.
+    player.volume = 0.35;
   } catch {
     player = null;
   }
@@ -32,11 +34,11 @@ function chime() {
   }
 }
 
-/** Confirm feedback: chime + a success vibration. Use on saves/additions. */
+/** Confirm feedback: a soft chime + a light tap. Use on saves/additions. */
 export function feedbackSuccess() {
   chime();
   if (Platform.OS !== 'web') {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
   }
 }
 
