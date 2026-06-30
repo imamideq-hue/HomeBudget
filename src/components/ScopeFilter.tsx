@@ -1,6 +1,7 @@
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { useScope } from '@/context/ScopeContext';
+import { useTheme } from '@/hooks/useTheme';
 import { SCOPE_ALL, SCOPE_JOINT, type ScopeFilter as Scope } from '@/lib/scope';
 import type { User } from '@/models';
 
@@ -24,6 +25,7 @@ interface Chip {
  */
 export function ScopeFilter({ users, currentUserId, variant = 'chips' }: Props) {
   const { scope, setScope } = useScope();
+  const { accent } = useTheme();
 
   const chips: Chip[] = [
     { key: SCOPE_ALL, label: 'Everyone' },
@@ -31,7 +33,8 @@ export function ScopeFilter({ users, currentUserId, variant = 'chips' }: Props) 
     ...users.map((u) => ({
       key: u.id,
       label: u.id === currentUserId ? 'You' : u.name,
-      color: u.color,
+      // "You" follows the app accent; other people keep their own color.
+      color: u.id === currentUserId ? accent : u.color,
     })),
   ];
 

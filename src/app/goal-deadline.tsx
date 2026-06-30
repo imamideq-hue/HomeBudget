@@ -82,7 +82,7 @@ export default function GoalDeadlineModal() {
         <ScrollView contentContainerClassName="gap-6 pb-6 pt-2">
           {/* Goal identity */}
           <View className="mt-2 items-center gap-2">
-            <CategoryPill icon={goal.icon} color={goal.color} size={56} />
+            <CategoryPill icon={goal.icon} color={accent} size={56} />
             <Text className="text-xl font-bold text-surface-dark">{goal.name}</Text>
           </View>
 

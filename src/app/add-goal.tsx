@@ -18,11 +18,6 @@ const ICONS = [
   'game-controller', 'camera', 'paw', 'phone-portrait', 'star',
 ];
 
-const COLORS = [
-  '#22B8CF', '#7C5CFC', '#FFA94D', '#34C77B', '#FF6B6B', '#F783AC',
-  '#4DABF7', '#82C91E', '#845EF7', '#FF922B', '#20C997', '#868E96',
-];
-
 export default function AddGoalModal() {
   const router = useRouter();
   const { addGoal, editGoal, deleteGoal, getGoal } = useGoals();
@@ -36,7 +31,7 @@ export default function AddGoalModal() {
   const [name, setName] = useState(editing?.name ?? '');
   const [target, setTarget] = useState(editing ? String(editing.targetAmount) : '');
   const [icon, setIcon] = useState(editing?.icon ?? ICONS[0]);
-  const [color, setColor] = useState(editing?.color ?? COLORS[0]);
+  // Goals follow the app accent theme, so there's no per-goal color picker.
   // Defaults to the section in view on the Dashboard (undefined = Joint).
   const [ownerId, setOwnerId] = useState<string | undefined>(
     editing ? editing.ownerId : defaultOwnerForScope(scope),
@@ -52,9 +47,9 @@ export default function AddGoalModal() {
   const save = () => {
     if (!canSave) return;
     if (editing) {
-      editGoal(editing.id, { name: name.trim(), targetAmount, icon, color, ownerId });
+      editGoal(editing.id, { name: name.trim(), targetAmount, icon, color: accent, ownerId });
     } else {
-      addGoal({ name, targetAmount, icon, color, ownerId });
+      addGoal({ name, targetAmount, icon, color: accent, ownerId });
     }
     router.back();
   };
@@ -95,7 +90,7 @@ export default function AddGoalModal() {
         >
           {/* Preview + name */}
           <View className="items-center gap-3">
-            <CategoryPill icon={icon} color={color} size={64} />
+            <CategoryPill icon={icon} color={accent} size={64} />
             <TextInput
               value={name}
               onChangeText={setName}
@@ -154,23 +149,6 @@ export default function AddGoalModal() {
             </View>
           </View>
 
-          {/* Color */}
-          <View>
-            <Text className="mb-2 text-sm font-semibold text-surface-dark">Color</Text>
-            <View className="flex-row flex-wrap gap-3">
-              {COLORS.map((c) => (
-                <Pressable key={c} onPress={() => setColor(c)} hitSlop={4}>
-                  <View
-                    className="h-9 w-9 items-center justify-center rounded-full"
-                    style={{ backgroundColor: c }}
-                  >
-                    {c === color ? <Ionicons name="checkmark" size={18} color="#FFFFFF" /> : null}
-                  </View>
-                </Pressable>
-              ))}
-            </View>
-          </View>
-
           {/* Icon */}
           <View>
             <Text className="mb-2 text-sm font-semibold text-surface-dark">Icon</Text>
@@ -184,12 +162,12 @@ export default function AddGoalModal() {
                     className={`h-11 w-11 items-center justify-center rounded-xl ${
                       selected ? 'bg-primary/15' : 'bg-card'
                     }`}
-                    style={selected ? { borderWidth: 2, borderColor: color } : undefined}
+                    style={selected ? { borderWidth: 2, borderColor: accent } : undefined}
                   >
                     <Ionicons
                       name={i as keyof typeof Ionicons.glyphMap}
                       size={20}
-                      color={selected ? color : '#8A8A9E'}
+                      color={selected ? accent : '#8A8A9E'}
                     />
                   </Pressable>
                 );

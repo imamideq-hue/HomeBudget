@@ -85,6 +85,17 @@ export function AccountDetailScreen({ accountId }: { accountId: string }) {
               </Text>
             </View>
           </View>
+
+          {/* Add money / correct the balance (not logged as a transaction) */}
+          <Pressable
+            onPress={() =>
+              router.push({ pathname: '/adjust-account', params: { accountId: account.id } })
+            }
+            className="mt-4 flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-3 active:opacity-80"
+          >
+            <Ionicons name="create-outline" size={18} color="#FFFFFF" />
+            <Text className="text-sm font-semibold text-white">Add money / adjust balance</Text>
+          </Pressable>
         </View>
 
         {/* Activity for this account */}

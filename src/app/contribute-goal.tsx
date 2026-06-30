@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { CategoryPill } from '@/components/CategoryPill';
 import { useBudget } from '@/hooks/useBudget';
 import { useGoals } from '@/hooks/useGoals';
+import { useTheme } from '@/hooks/useTheme';
 import { formatCurrency, formatFullDate, getCurrency } from '@/lib/format';
 
 export default function ContributeGoalModal() {
@@ -14,6 +15,7 @@ export default function ContributeGoalModal() {
   const { goalId } = useLocalSearchParams<{ goalId: string }>();
   const { getGoal, progressFor, contribute, contributionsFor } = useGoals();
   const { users, currentUser } = useBudget();
+  const { accent } = useTheme();
 
   const goal = goalId ? getGoal(goalId) : undefined;
   const [amount, setAmount] = useState('');
@@ -63,7 +65,7 @@ export default function ContributeGoalModal() {
         >
           {/* Goal identity */}
           <View className="mt-2 items-center gap-2">
-            <CategoryPill icon={goal.icon} color={goal.color} size={64} />
+            <CategoryPill icon={goal.icon} color={accent} size={64} />
             <Text className="text-xl font-bold text-surface-dark">{goal.name}</Text>
             <Text className="text-sm text-muted">
               {formatCurrency(goal.currentAmount)} of {formatCurrency(goal.targetAmount)} ·{' '}

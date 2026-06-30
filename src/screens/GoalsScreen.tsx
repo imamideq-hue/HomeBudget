@@ -46,7 +46,7 @@ export function GoalsScreen() {
               onPress={() => router.push({ pathname: '/add-goal', params: { goalId: goal.id } })}
               className="flex-row items-center gap-3 active:opacity-70"
             >
-              <CategoryPill icon={goal.icon} color={goal.color} size={44} />
+              <CategoryPill icon={goal.icon} color={accent} size={44} />
               <View className="flex-1">
                 <View className="flex-row items-center gap-2">
                   <Text className="text-base font-semibold text-surface-dark">{goal.name}</Text>
@@ -83,7 +83,7 @@ export function GoalsScreen() {
             <View className="mt-4 h-3 overflow-hidden rounded-full bg-black/10">
               <View
                 className="h-full rounded-full"
-                style={{ width: `${ratio * 100}%`, backgroundColor: goal.color }}
+                style={{ width: `${ratio * 100}%`, backgroundColor: accent }}
               />
             </View>
 

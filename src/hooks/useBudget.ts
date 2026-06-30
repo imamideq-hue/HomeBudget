@@ -120,6 +120,34 @@ export function useBudget() {
   const setCurrency = (code: string) =>
     dispatch({ type: 'SET_CURRENCY', payload: { code } });
 
+  /**
+   * Add `amount` (may be negative) to an account's balance without logging a
+   * transaction — it adjusts the opening balance, so it never shows as income
+   * or expense.
+   */
+  const addToAccountBalance = (accountId: string, amount: number) => {
+    const account = allAccounts.find((a) => a.id === accountId);
+    if (!account) return;
+    dispatch({
+      type: 'SET_ACCOUNT_STARTING_BALANCE',
+      payload: { accountId, startingBalance: account.startingBalance + amount },
+    });
+  };
+
+  /**
+   * Correct an account so its current balance becomes `targetBalance`, by
+   * shifting the opening balance. Not recorded as a transaction.
+   */
+  const setAccountBalance = (accountId: string, targetBalance: number) => {
+    const account = allAccounts.find((a) => a.id === accountId);
+    if (!account) return;
+    const delta = targetBalance - accountBalance(accountId);
+    dispatch({
+      type: 'SET_ACCOUNT_STARTING_BALANCE',
+      payload: { accountId, startingBalance: account.startingBalance + delta },
+    });
+  };
+
   return {
     // collections (scoped to the current view)
     transactions,
@@ -143,5 +171,7 @@ export function useBudget() {
     deleteTransaction,
     addMember,
     setCurrency,
+    addToAccountBalance,
+    setAccountBalance,
   };
 }

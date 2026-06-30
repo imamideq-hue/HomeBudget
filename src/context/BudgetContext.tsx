@@ -50,6 +50,7 @@ export type BudgetAction =
   | { type: 'ADD_GROUP_CATEGORY'; payload: GroupCategory }
   | { type: 'SET_GOAL_DEADLINE'; payload: { goalId: string; deadline?: string } }
   | { type: 'ADD_MEMBER'; payload: User }
+  | { type: 'SET_ACCOUNT_STARTING_BALANCE'; payload: { accountId: string; startingBalance: number } }
   | { type: 'SET_GOAL_OWNER'; payload: { goalId: string; ownerId?: string } }
   | { type: 'SET_CURRENCY'; payload: { code: string } }
   | { type: 'SET_ACCENT'; payload: { color: string } };
@@ -155,6 +156,15 @@ function reducer(state: BudgetData, action: BudgetAction): BudgetData {
           space.id === state.currentSpaceId
             ? { ...space, currency: action.payload.code }
             : space,
+        ),
+      };
+    case 'SET_ACCOUNT_STARTING_BALANCE':
+      return {
+        ...state,
+        accounts: state.accounts.map((a) =>
+          a.id === action.payload.accountId
+            ? { ...a, startingBalance: action.payload.startingBalance }
+            : a,
         ),
       };
     case 'SET_ACCENT':
