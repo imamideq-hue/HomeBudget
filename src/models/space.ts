@@ -19,4 +19,6 @@ export interface Space extends BaseEntity {
   members: SpaceMember[];
   /** Base currency every account/transaction in the space reports in. */
   currency: CurrencyCode;
+  /** Accent color for the app theme (hex). Defaults to the app's purple. */
+  accentColor?: string;
 }

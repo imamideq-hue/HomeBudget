@@ -7,8 +7,10 @@ import { CategoryPill } from '@/components/CategoryPill';
 import { GoogleSignInButton } from '@/components/GoogleSignInButton';
 import { useAuth } from '@/context/AuthContext';
 import { useBudget } from '@/hooks/useBudget';
+import { useTheme } from '@/hooks/useTheme';
 import { formatCurrency, SUPPORTED_CURRENCIES } from '@/lib/format';
 import { GOOGLE_CONFIGURED } from '@/lib/googleConfig';
+import { ACCENT_CHOICES } from '@/lib/theme';
 
 const SETUP_MESSAGE =
   'Add your Google OAuth client IDs (EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID, etc.) — see the README. Then this button will sign you in.';
@@ -26,6 +28,7 @@ export function SettingsScreen() {
   const router = useRouter();
   const { currentSpace, allAccounts: accounts, accountBalance, setCurrency } = useBudget();
   const { user, signOut } = useAuth();
+  const { accent, setAccent } = useTheme();
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-white">
@@ -117,7 +120,7 @@ export function SettingsScreen() {
             onPress={() => router.push('/categories')}
             className="flex-row items-center gap-3 rounded-2xl bg-card px-4 py-4 active:opacity-70"
           >
-            <Ionicons name="pricetag-outline" size={22} color="#7C5CFC" />
+            <Ionicons name="pricetag-outline" size={22} color={accent} />
             <Text className="flex-1 text-base text-surface-dark">Manage categories</Text>
             <Ionicons name="chevron-forward" size={16} color="#8A8A9E" />
           </Pressable>
@@ -126,13 +129,13 @@ export function SettingsScreen() {
         {/* App */}
         <Section title="App">
           <View className="flex-row items-center gap-3 rounded-2xl bg-card px-4 py-4">
-            <Ionicons name="cloud-offline-outline" size={22} color="#7C5CFC" />
+            <Ionicons name="cloud-offline-outline" size={22} color={accent} />
             <Text className="flex-1 text-base text-surface-dark">Sync</Text>
             <Text className="text-sm text-muted">Local only</Text>
           </View>
           <View className="rounded-2xl bg-card px-4 py-4">
             <View className="flex-row items-center gap-3">
-              <Ionicons name="cash-outline" size={22} color="#7C5CFC" />
+              <Ionicons name="cash-outline" size={22} color={accent} />
               <Text className="flex-1 text-base text-surface-dark">Currency</Text>
             </View>
             <View className="mt-3 flex-row gap-2">
@@ -154,6 +157,36 @@ export function SettingsScreen() {
                     <Text className={`text-sm ${selected ? 'text-surface-dark' : 'text-muted'}`}>
                       {c.code}
                     </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </View>
+
+          {/* Accent color */}
+          <View className="rounded-2xl bg-card px-4 py-4">
+            <View className="flex-row items-center gap-3">
+              <Ionicons name="color-palette-outline" size={22} color={accent} />
+              <Text className="flex-1 text-base text-surface-dark">Accent color</Text>
+            </View>
+            <View className="mt-3 flex-row flex-wrap gap-3">
+              {ACCENT_CHOICES.map((c) => {
+                const selected = accent.toLowerCase() === c.toLowerCase();
+                return (
+                  <Pressable
+                    key={c}
+                    onPress={() => setAccent(c)}
+                    hitSlop={4}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Accent ${c}`}
+                    className="h-10 w-10 items-center justify-center rounded-full"
+                    style={{
+                      backgroundColor: c,
+                      borderWidth: selected ? 3 : 0,
+                      borderColor: '#FFFFFF',
+                    }}
+                  >
+                    {selected ? <Ionicons name="checkmark" size={18} color="#FFFFFF" /> : null}
                   </Pressable>
                 );
               })}

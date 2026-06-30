@@ -10,6 +10,7 @@ import { useScope } from '@/context/ScopeContext';
 import { useBudget } from '@/hooks/useBudget';
 import { useBudgetTracker } from '@/hooks/useBudgetTracker';
 import { useCategories } from '@/hooks/useCategories';
+import { useTheme } from '@/hooks/useTheme';
 import { formatCurrency, formatDayLabel, getCurrency } from '@/lib/format';
 import { defaultOwnerForScope } from '@/lib/scope';
 import type { TransactionType } from '@/models';
@@ -20,6 +21,7 @@ export default function AddTransactionModal() {
   const { addTransaction, editTransaction } = useBudgetTracker();
   const { groupCategories, getSubsForGroup, getSubCategory } = useCategories();
   const { scope } = useScope();
+  const { accent } = useTheme();
 
   // Optional pre-fill from a quick-add shortcut, or full prefill when editing.
   const params = useLocalSearchParams<{
@@ -196,7 +198,7 @@ export default function AddTransactionModal() {
             <View>
               <Text className="mb-2 text-sm font-semibold text-surface-dark">Belongs to</Text>
               <View className="flex-row flex-wrap gap-2">
-                {[{ id: undefined, name: 'Joint', color: '#7C5CFC' }, ...users].map((owner) => {
+                {[{ id: undefined, name: 'Joint', color: accent }, ...users].map((owner) => {
                   const selected = ownerId === owner.id;
                   const label = owner.id && owner.id === currentUser?.id ? 'You' : owner.name;
                   return (
@@ -213,7 +215,7 @@ export default function AddTransactionModal() {
                           style={{ backgroundColor: owner.color }}
                         />
                       ) : (
-                        <Ionicons name="people" size={14} color="#7C5CFC" />
+                        <Ionicons name="people" size={14} color={accent} />
                       )}
                       <Text
                         className={`text-sm ${selected ? 'font-semibold text-surface-dark' : 'text-muted'}`}
@@ -234,7 +236,7 @@ export default function AddTransactionModal() {
                 className="flex-row items-center justify-between rounded-2xl bg-card px-4 py-3 active:opacity-70"
               >
                 <View className="flex-row items-center gap-2">
-                  <Ionicons name="calendar-outline" size={18} color="#7C5CFC" />
+                  <Ionicons name="calendar-outline" size={18} color={accent} />
                   <Text className="text-base text-surface-dark">
                     {formatDayLabel(date.toISOString())}
                   </Text>
@@ -268,7 +270,7 @@ export default function AddTransactionModal() {
                   hitSlop={8}
                   className="flex-row items-center gap-1 active:opacity-60"
                 >
-                  <Ionicons name="add-circle-outline" size={16} color="#7C5CFC" />
+                  <Ionicons name="add-circle-outline" size={16} color={accent} />
                   <Text className="text-sm font-medium text-primary">New</Text>
                 </Pressable>
               </View>

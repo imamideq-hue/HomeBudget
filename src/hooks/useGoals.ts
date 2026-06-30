@@ -1,6 +1,6 @@
 import { useContext, useMemo } from 'react';
 
-import { BudgetContext } from '@/context/BudgetContext';
+import { BudgetContext, type GoalEdit } from '@/context/BudgetContext';
 import { useScope } from '@/context/ScopeContext';
 import { newId } from '@/lib/id';
 import { goalInScope } from '@/lib/scope';
@@ -108,6 +108,13 @@ export function useGoals() {
     return goal;
   };
 
+  /** Update an existing goal (name, target, icon, color, owner). */
+  const editGoal = (id: string, changes: GoalEdit) =>
+    dispatch({ type: 'EDIT_GOAL', payload: { id, changes } });
+
+  /** Delete a goal and its contribution history. */
+  const deleteGoal = (id: string) => dispatch({ type: 'DELETE_GOAL', payload: { id } });
+
   return {
     goals,
     progress: goals.map(progressFor),
@@ -118,5 +125,7 @@ export function useGoals() {
     setDeadline,
     setOwner,
     addGoal,
+    editGoal,
+    deleteGoal,
   };
 }

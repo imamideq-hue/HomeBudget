@@ -24,6 +24,11 @@ const STORAGE_KEY = 'homebudget:state:v4';
 /** Editable fields of a sub-category. */
 export type SubCategoryEdit = Partial<Pick<SubCategory, 'name' | 'icon' | 'color' | 'groupId'>>;
 
+/** Editable fields of a goal. */
+export type GoalEdit = Partial<
+  Pick<Goal, 'name' | 'targetAmount' | 'icon' | 'color' | 'ownerId'>
+>;
+
 /** Editable fields of a transaction (e.g. correcting the account or amount). */
 export type TransactionEdit = Partial<
   Pick<Transaction, 'accountId' | 'subCategoryId' | 'type' | 'amount' | 'note' | 'date' | 'ownerId'>
@@ -38,13 +43,16 @@ export type BudgetAction =
   | { type: 'SET_BUDGET_LIMIT'; payload: { groupId: string; limit: number } }
   | { type: 'CONTRIBUTE_TO_GOAL'; payload: { contribution: GoalContribution } }
   | { type: 'ADD_GOAL'; payload: Goal }
+  | { type: 'EDIT_GOAL'; payload: { id: string; changes: GoalEdit } }
+  | { type: 'DELETE_GOAL'; payload: { id: string } }
   | { type: 'ADD_SUBCATEGORY'; payload: SubCategory }
   | { type: 'EDIT_SUBCATEGORY'; payload: { id: string; changes: SubCategoryEdit } }
   | { type: 'ADD_GROUP_CATEGORY'; payload: GroupCategory }
   | { type: 'SET_GOAL_DEADLINE'; payload: { goalId: string; deadline?: string } }
   | { type: 'ADD_MEMBER'; payload: User }
   | { type: 'SET_GOAL_OWNER'; payload: { goalId: string; ownerId?: string } }
-  | { type: 'SET_CURRENCY'; payload: { code: string } };
+  | { type: 'SET_CURRENCY'; payload: { code: string } }
+  | { type: 'SET_ACCENT'; payload: { color: string } };
 
 function currencyOf(data: BudgetData): string {
   return data.spaces.find((s) => s.id === data.currentSpaceId)?.currency ?? 'USD';
@@ -98,6 +106,20 @@ function reducer(state: BudgetData, action: BudgetAction): BudgetData {
     }
     case 'ADD_GOAL':
       return { ...state, goals: [...state.goals, action.payload] };
+    case 'EDIT_GOAL':
+      return {
+        ...state,
+        goals: state.goals.map((g) =>
+          g.id === action.payload.id ? { ...g, ...action.payload.changes } : g,
+        ),
+      };
+    case 'DELETE_GOAL':
+      return {
+        ...state,
+        goals: state.goals.filter((g) => g.id !== action.payload.id),
+        // Drop the goal's contribution history too.
+        contributions: state.contributions.filter((c) => c.goalId !== action.payload.id),
+      };
     case 'ADD_GROUP_CATEGORY':
       return { ...state, groupCategories: [...state.groupCategories, action.payload] };
     case 'ADD_SUBCATEGORY':
@@ -132,6 +154,15 @@ function reducer(state: BudgetData, action: BudgetAction): BudgetData {
         spaces: state.spaces.map((space) =>
           space.id === state.currentSpaceId
             ? { ...space, currency: action.payload.code }
+            : space,
+        ),
+      };
+    case 'SET_ACCENT':
+      return {
+        ...state,
+        spaces: state.spaces.map((space) =>
+          space.id === state.currentSpaceId
+            ? { ...space, accentColor: action.payload.color }
             : space,
         ),
       };

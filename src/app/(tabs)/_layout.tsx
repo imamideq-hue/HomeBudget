@@ -1,15 +1,17 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 
-const ACTIVE = '#7C5CFC';
+import { useTheme } from '@/hooks/useTheme';
+
 const INACTIVE = '#8A8A9E';
 
 export default function TabsLayout() {
+  const { accent } = useTheme();
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: ACTIVE,
+        tabBarActiveTintColor: accent,
         tabBarInactiveTintColor: INACTIVE,
       }}
     >

@@ -7,12 +7,14 @@ import { CategoryPill } from '@/components/CategoryPill';
 import { ScopeFilter } from '@/components/ScopeFilter';
 import { useBudget } from '@/hooks/useBudget';
 import { useGoals } from '@/hooks/useGoals';
+import { useTheme } from '@/hooks/useTheme';
 import { daysUntil, formatCurrency, formatDeadline } from '@/lib/format';
 
 export function GoalsScreen() {
   const router = useRouter();
   const { progress } = useGoals();
   const { users, currentUser } = useBudget();
+  const { accent } = useTheme();
 
   const ownerLabel = (ownerId?: string) => {
     if (!ownerId) return 'Joint';
@@ -39,7 +41,11 @@ export function GoalsScreen() {
 
         {progress.map(({ goal, ratio, remaining, isReached }) => (
           <View key={goal.id} className="rounded-3xl bg-card p-5">
-            <View className="flex-row items-center gap-3">
+            {/* Tap the goal to edit (or delete) it */}
+            <Pressable
+              onPress={() => router.push({ pathname: '/add-goal', params: { goalId: goal.id } })}
+              className="flex-row items-center gap-3 active:opacity-70"
+            >
               <CategoryPill icon={goal.icon} color={goal.color} size={44} />
               <View className="flex-1">
                 <View className="flex-row items-center gap-2">
@@ -65,11 +71,14 @@ export function GoalsScreen() {
                   <Text className="text-xs font-semibold text-income">Reached</Text>
                 </View>
               ) : (
-                <Text className="text-sm font-semibold text-muted">
-                  {Math.round(ratio * 100)}%
-                </Text>
+                <View className="flex-row items-center gap-1">
+                  <Text className="text-sm font-semibold text-muted">
+                    {Math.round(ratio * 100)}%
+                  </Text>
+                  <Ionicons name="pencil" size={13} color="#8A8A9E" />
+                </View>
               )}
-            </View>
+            </Pressable>
 
             <View className="mt-4 h-3 overflow-hidden rounded-full bg-black/10">
               <View
@@ -78,28 +87,42 @@ export function GoalsScreen() {
               />
             </View>
 
-            {/* Deadline (optional) */}
-            <Pressable
-              onPress={() =>
-                router.push({ pathname: '/goal-deadline', params: { goalId: goal.id } })
-              }
-              className="mt-3 flex-row items-center gap-2 active:opacity-60"
-            >
-              <Ionicons
-                name={goal.targetDate ? 'calendar' : 'calendar-outline'}
-                size={15}
-                color={goal.targetDate && daysUntil(goal.targetDate) < 0 ? '#FF6B6B' : '#8A8A9E'}
-              />
-              <Text
-                className={`text-sm ${
-                  goal.targetDate && daysUntil(goal.targetDate) < 0
-                    ? 'text-expense'
-                    : 'text-muted'
-                }`}
-              >
-                {goal.targetDate ? formatDeadline(goal.targetDate) : 'Set a deadline'}
-              </Text>
-            </Pressable>
+            {/* Deadline — prominent pill */}
+            {(() => {
+              const overdue = goal.targetDate ? daysUntil(goal.targetDate) < 0 : false;
+              return (
+                <Pressable
+                  onPress={() =>
+                    router.push({ pathname: '/goal-deadline', params: { goalId: goal.id } })
+                  }
+                  className={`mt-4 flex-row items-center gap-2 self-start rounded-full border px-4 py-2 active:opacity-70 ${
+                    overdue
+                      ? 'border-expense/40 bg-expense/10'
+                      : goal.targetDate
+                        ? 'border-primary/30 bg-primary/10'
+                        : 'border-primary/40 bg-primary/5'
+                  }`}
+                >
+                  <Ionicons
+                    name={goal.targetDate ? 'calendar' : 'calendar-outline'}
+                    size={16}
+                    color={overdue ? '#FF6B6B' : accent}
+                  />
+                  <Text
+                    className={`text-sm font-semibold ${
+                      overdue ? 'text-expense' : 'text-primary'
+                    }`}
+                  >
+                    {goal.targetDate ? formatDeadline(goal.targetDate) : 'Set a deadline'}
+                  </Text>
+                  <Ionicons
+                    name="chevron-forward"
+                    size={13}
+                    color={overdue ? '#FF6B6B' : accent}
+                  />
+                </Pressable>
+              );
+            })()}
 
             <View className="mt-4 flex-row items-center justify-between">
               <Text className="text-sm text-muted">

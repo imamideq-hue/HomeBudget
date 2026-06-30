@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CategoryPill } from '@/components/CategoryPill';
 import { useGoals } from '@/hooks/useGoals';
+import { useTheme } from '@/hooks/useTheme';
 import { formatDeadline, formatFullDate } from '@/lib/format';
 
 function addMonths(months: number): Date {
@@ -26,6 +27,7 @@ export default function GoalDeadlineModal() {
   const router = useRouter();
   const { goalId } = useLocalSearchParams<{ goalId: string }>();
   const { getGoal, setDeadline } = useGoals();
+  const { accent } = useTheme();
 
   const goal = goalId ? getGoal(goalId) : undefined;
 
@@ -104,13 +106,13 @@ export default function GoalDeadlineModal() {
                 onPress={() => shift(-1)}
                 className="h-10 w-10 items-center justify-center rounded-full bg-white active:opacity-70"
               >
-                <Ionicons name="remove" size={18} color="#7C5CFC" />
+                <Ionicons name="remove" size={18} color={accent} />
               </Pressable>
               <Pressable
                 onPress={() => shift(1)}
                 className="h-10 w-10 items-center justify-center rounded-full bg-white active:opacity-70"
               >
-                <Ionicons name="add" size={18} color="#7C5CFC" />
+                <Ionicons name="add" size={18} color={accent} />
               </Pressable>
               <Pressable
                 onPress={() => shift(7)}

@@ -10,8 +10,9 @@ module.exports = {
     extend: {
       colors: {
         // Cashew-inspired palette
+        // Driven by a runtime CSS variable so the accent is user-customizable.
         primary: {
-          DEFAULT: '#7C5CFC',
+          DEFAULT: 'rgb(var(--color-primary, 124 92 252) / <alpha-value>)',
           dark: '#5B3FD9',
           light: '#A48BFF',
         },

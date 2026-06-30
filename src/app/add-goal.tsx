@@ -1,13 +1,14 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { Alert, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CategoryPill } from '@/components/CategoryPill';
 import { useScope } from '@/context/ScopeContext';
 import { useBudget } from '@/hooks/useBudget';
 import { useGoals } from '@/hooks/useGoals';
+import { useTheme } from '@/hooks/useTheme';
 import { getCurrency } from '@/lib/format';
 import { defaultOwnerForScope } from '@/lib/scope';
 
@@ -24,16 +25,22 @@ const COLORS = [
 
 export default function AddGoalModal() {
   const router = useRouter();
-  const { addGoal } = useGoals();
+  const { addGoal, editGoal, deleteGoal, getGoal } = useGoals();
   const { users, currentUser } = useBudget();
   const { scope } = useScope();
+  const { accent } = useTheme();
 
-  const [name, setName] = useState('');
-  const [target, setTarget] = useState('');
-  const [icon, setIcon] = useState(ICONS[0]);
-  const [color, setColor] = useState(COLORS[0]);
+  const params = useLocalSearchParams<{ goalId?: string }>();
+  const editing = params.goalId ? getGoal(params.goalId) : undefined;
+
+  const [name, setName] = useState(editing?.name ?? '');
+  const [target, setTarget] = useState(editing ? String(editing.targetAmount) : '');
+  const [icon, setIcon] = useState(editing?.icon ?? ICONS[0]);
+  const [color, setColor] = useState(editing?.color ?? COLORS[0]);
   // Defaults to the section in view on the Dashboard (undefined = Joint).
-  const [ownerId, setOwnerId] = useState<string | undefined>(defaultOwnerForScope(scope));
+  const [ownerId, setOwnerId] = useState<string | undefined>(
+    editing ? editing.ownerId : defaultOwnerForScope(scope),
+  );
 
   const targetAmount = useMemo(() => {
     const n = parseFloat(target.replace(',', '.'));
@@ -44,8 +51,27 @@ export default function AddGoalModal() {
 
   const save = () => {
     if (!canSave) return;
-    addGoal({ name, targetAmount, icon, color, ownerId });
+    if (editing) {
+      editGoal(editing.id, { name: name.trim(), targetAmount, icon, color, ownerId });
+    } else {
+      addGoal({ name, targetAmount, icon, color, ownerId });
+    }
     router.back();
+  };
+
+  const confirmDelete = () => {
+    if (!editing) return;
+    Alert.alert('Delete goal', `Delete "${editing.name}" and its contribution history?`, [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => {
+          deleteGoal(editing.id);
+          router.back();
+        },
+      },
+    ]);
   };
 
   return (
@@ -56,7 +82,9 @@ export default function AddGoalModal() {
           <Pressable onPress={() => router.back()} hitSlop={8} className="active:opacity-60">
             <Text className="text-base text-muted">Cancel</Text>
           </Pressable>
-          <Text className="text-base font-semibold text-surface-dark">New goal</Text>
+          <Text className="text-base font-semibold text-surface-dark">
+            {editing ? 'Edit goal' : 'New goal'}
+          </Text>
           <View className="w-14" />
         </View>
 
@@ -96,7 +124,7 @@ export default function AddGoalModal() {
           <View>
             <Text className="mb-2 text-sm font-semibold text-surface-dark">Belongs to</Text>
             <View className="flex-row flex-wrap gap-2">
-              {[{ id: undefined, name: 'Joint', color: '#7C5CFC' }, ...users].map((owner) => {
+              {[{ id: undefined, name: 'Joint', color: accent }, ...users].map((owner) => {
                 const selected = ownerId === owner.id;
                 const label = owner.id && owner.id === currentUser?.id ? 'You' : owner.name;
                 return (
@@ -113,7 +141,7 @@ export default function AddGoalModal() {
                         style={{ backgroundColor: owner.color }}
                       />
                     ) : (
-                      <Ionicons name="people" size={14} color="#7C5CFC" />
+                      <Ionicons name="people" size={14} color={accent} />
                     )}
                     <Text
                       className={`text-sm ${selected ? 'font-semibold text-surface-dark' : 'text-muted'}`}
@@ -177,9 +205,22 @@ export default function AddGoalModal() {
               canSave ? 'bg-primary active:opacity-80' : 'bg-primary/40'
             }`}
           >
-            <Ionicons name="flag" size={20} color="#FFFFFF" />
-            <Text className="text-base font-semibold text-white">Create goal</Text>
+            <Ionicons name={editing ? 'checkmark' : 'flag'} size={20} color="#FFFFFF" />
+            <Text className="text-base font-semibold text-white">
+              {editing ? 'Save changes' : 'Create goal'}
+            </Text>
           </Pressable>
+
+          {/* Delete (edit mode only) */}
+          {editing ? (
+            <Pressable
+              onPress={confirmDelete}
+              className="flex-row items-center justify-center gap-2 rounded-2xl border border-expense/40 py-4 active:opacity-70"
+            >
+              <Ionicons name="trash-outline" size={18} color="#FF6B6B" />
+              <Text className="text-base font-semibold text-expense">Delete goal</Text>
+            </Pressable>
+          ) : null}
         </ScrollView>
       </View>
     </SafeAreaView>

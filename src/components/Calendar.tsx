@@ -2,6 +2,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
+import { useTheme } from '@/hooks/useTheme';
+
 const WEEKDAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 const MONTHS = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -23,6 +25,7 @@ interface Props {
 
 /** Lightweight, dependency-free month calendar (works on web + native). */
 export function Calendar({ value, onChange, minDate, maxDate }: Props) {
+  const { accent } = useTheme();
   const [view, setView] = useState(() => new Date(value.getFullYear(), value.getMonth(), 1));
 
   const year = view.getFullYear();
@@ -52,7 +55,7 @@ export function Calendar({ value, onChange, minDate, maxDate }: Props) {
           hitSlop={8}
           className="h-8 w-8 items-center justify-center rounded-full bg-white active:opacity-70"
         >
-          <Ionicons name="chevron-back" size={16} color="#7C5CFC" />
+          <Ionicons name="chevron-back" size={16} color={accent} />
         </Pressable>
         <Text className="text-sm font-semibold text-surface-dark">
           {MONTHS[month]} {year}
@@ -62,7 +65,7 @@ export function Calendar({ value, onChange, minDate, maxDate }: Props) {
           hitSlop={8}
           className="h-8 w-8 items-center justify-center rounded-full bg-white active:opacity-70"
         >
-          <Ionicons name="chevron-forward" size={16} color="#7C5CFC" />
+          <Ionicons name="chevron-forward" size={16} color={accent} />
         </Pressable>
       </View>
 
@@ -95,7 +98,7 @@ export function Calendar({ value, onChange, minDate, maxDate }: Props) {
                 disabled={disabled}
                 onPress={() => onChange(new Date(year, month, day))}
                 className="h-9 w-9 items-center justify-center rounded-full"
-                style={selected ? { backgroundColor: '#7C5CFC' } : undefined}
+                style={selected ? { backgroundColor: accent } : undefined}
               >
                 <Text
                   className={
