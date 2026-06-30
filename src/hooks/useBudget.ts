@@ -116,6 +116,18 @@ export function useBudget() {
     return user;
   };
 
+  /** Remove a member from the space (the current user can't remove themselves). */
+  const removeMember = (userId: string) => {
+    if (userId === state.currentUserId) return;
+    dispatch({ type: 'REMOVE_MEMBER', payload: { userId } });
+  };
+
+  /** Rename a person (e.g. change "You" to your real name). */
+  const renameUser = (userId: string, name: string) => {
+    const trimmed = name.trim();
+    if (trimmed) dispatch({ type: 'RENAME_USER', payload: { userId, name: trimmed } });
+  };
+
   /** Change the active currency (the provider re-syncs the formatter). */
   const setCurrency = (code: string) =>
     dispatch({ type: 'SET_CURRENCY', payload: { code } });
@@ -170,6 +182,8 @@ export function useBudget() {
     addTransaction,
     deleteTransaction,
     addMember,
+    removeMember,
+    renameUser,
     setCurrency,
     addToAccountBalance,
     setAccountBalance,

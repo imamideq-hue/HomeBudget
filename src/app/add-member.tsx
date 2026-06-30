@@ -5,6 +5,7 @@ import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useBudget } from '@/hooks/useBudget';
+import { feedbackSuccess } from '@/lib/feedback';
 
 const COLORS = [
   '#7C5CFC', '#34C77B', '#4DABF7', '#FF6B6B', '#FFA94D', '#F783AC',
@@ -30,11 +31,12 @@ export default function AddMemberModal() {
   const save = () => {
     if (!canSave) return;
     addMember({ name, email, color });
+    feedbackSuccess();
     router.back();
   };
 
   return (
-    <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-white">
+    <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-surface">
       <View className="flex-1">
         {/* Header */}
         <View className="flex-row items-center justify-between px-5 py-3">

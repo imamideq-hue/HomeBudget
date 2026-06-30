@@ -11,13 +11,20 @@ import { AuthProvider } from '@/context/AuthContext';
 import { BudgetProvider } from '@/context/BudgetContext';
 import { ScopeProvider } from '@/context/ScopeContext';
 import { useTheme } from '@/hooks/useTheme';
-import { hexToRgbTriplet } from '@/lib/theme';
+import { BACKGROUND, hexToRgbTriplet, THEME_VARS } from '@/lib/theme';
 
-/** Applies the user's accent as a CSS variable so `*-primary` styles follow it. */
+/** Applies the accent + light/dark surfaces as CSS variables for the whole app. */
 function ThemedApp() {
-  const { accent } = useTheme();
+  const { accent, isDark } = useTheme();
+  const themeVars = vars({
+    ...THEME_VARS[isDark ? 'dark' : 'light'],
+    '--color-primary': hexToRgbTriplet(accent),
+  });
   return (
-    <View style={[{ flex: 1 }, vars({ '--color-primary': hexToRgbTriplet(accent) })]}>
+    <View
+      style={[{ flex: 1, backgroundColor: isDark ? BACKGROUND.dark : BACKGROUND.light }, themeVars]}
+    >
+      <StatusBar style={isDark ? 'light' : 'dark'} />
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="add-transaction" options={{ presentation: 'modal' }} />
@@ -28,10 +35,14 @@ function ThemedApp() {
         <Stack.Screen name="add-goal" options={{ presentation: 'modal' }} />
         <Stack.Screen name="add-member" options={{ presentation: 'modal' }} />
         <Stack.Screen name="adjust-account" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="manage-space" options={{ presentation: 'modal' }} />
+        <Stack.Screen
+          name="celebrate"
+          options={{ presentation: 'transparentModal', animation: 'fade' }}
+        />
         <Stack.Screen name="categories" />
         <Stack.Screen name="account/[id]" />
       </Stack>
-      <StatusBar style="auto" />
     </View>
   );
 }

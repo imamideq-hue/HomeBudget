@@ -5,18 +5,20 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CategoryPill } from '@/components/CategoryPill';
 import { useCategories } from '@/hooks/useCategories';
+import { useTheme } from '@/hooks/useTheme';
 
 export default function CategoriesScreen() {
   const router = useRouter();
   const { groupCategories, getSubsForGroup } = useCategories();
+  const { foreground } = useTheme();
 
   return (
-    <SafeAreaView edges={['top']} className="flex-1 bg-white">
+    <SafeAreaView edges={['top']} className="flex-1 bg-surface">
       {/* Header */}
       <View className="flex-row items-center justify-between px-5 py-3">
         <View className="flex-row items-center gap-3">
           <Pressable onPress={() => router.back()} hitSlop={8} className="active:opacity-60">
-            <Ionicons name="chevron-back" size={24} color="#15151B" />
+            <Ionicons name="chevron-back" size={24} color={foreground} />
           </Pressable>
           <Text className="text-lg font-semibold text-surface-dark">Categories</Text>
         </View>

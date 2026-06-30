@@ -20,7 +20,7 @@ export function TransactionItem({ transaction, onPress }: Props) {
   return (
     <Pressable
       onPress={() => onPress?.(transaction)}
-      className="flex-row items-center gap-3 bg-white px-4 py-3 active:opacity-70"
+      className="flex-row items-center gap-3 bg-surface px-4 py-3 active:opacity-70"
     >
       <CategoryPill icon={visual.icon} color={visual.color} />
 

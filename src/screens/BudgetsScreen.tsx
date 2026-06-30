@@ -21,7 +21,7 @@ export function BudgetsScreen() {
     router.push({ pathname: '/edit-budget', params: { groupId } });
 
   return (
-    <SafeAreaView edges={['top']} className="flex-1 bg-white">
+    <SafeAreaView edges={['top']} className="flex-1 bg-surface">
       <ScrollView contentContainerClassName="gap-3 px-5 pb-12 pt-2">
         <Text className="text-2xl font-bold text-surface-dark">Budgets</Text>
         <Text className="mb-1 text-sm text-muted">Monthly · {MONTH} · tap to edit</Text>

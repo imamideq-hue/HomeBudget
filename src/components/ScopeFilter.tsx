@@ -27,15 +27,13 @@ export function ScopeFilter({ users, currentUserId, variant = 'chips' }: Props) 
   const { scope, setScope } = useScope();
   const { accent } = useTheme();
 
+  // Only "You" (this device's owner) has a personal section; everyone else
+  // added to the household rolls into Joint.
+  const me = users.find((u) => u.id === currentUserId);
   const chips: Chip[] = [
     { key: SCOPE_ALL, label: 'Everyone' },
     { key: SCOPE_JOINT, label: 'Joint' },
-    ...users.map((u) => ({
-      key: u.id,
-      label: u.id === currentUserId ? 'You' : u.name,
-      // "You" follows the app accent; other people keep their own color.
-      color: u.id === currentUserId ? accent : u.color,
-    })),
+    ...(me ? [{ key: me.id, label: 'You', color: accent }] : []),
   ];
 
   if (variant === 'prominent') {

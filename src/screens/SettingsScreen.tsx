@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { Alert, Image, Pressable, ScrollView, Text, View } from 'react-native';
+import { Alert, Image, Pressable, ScrollView, Switch, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CategoryPill } from '@/components/CategoryPill';
@@ -28,10 +28,10 @@ export function SettingsScreen() {
   const router = useRouter();
   const { currentSpace, allAccounts: accounts, accountBalance, setCurrency } = useBudget();
   const { user, signOut } = useAuth();
-  const { accent, setAccent } = useTheme();
+  const { accent, setAccent, isDark, setDark } = useTheme();
 
   return (
-    <SafeAreaView edges={['top']} className="flex-1 bg-white">
+    <SafeAreaView edges={['top']} className="flex-1 bg-surface">
       <ScrollView contentContainerClassName="gap-6 px-5 pb-12 pt-2">
         <Text className="text-2xl font-bold text-surface-dark">Settings</Text>
 
@@ -64,7 +64,7 @@ export function SettingsScreen() {
             <>
               <Pressable
                 onPress={() => Alert.alert('Google sign-in needs setup', SETUP_MESSAGE)}
-                className="flex-row items-center justify-center gap-2 rounded-2xl border border-black/10 bg-white px-4 py-4 active:opacity-80"
+                className="flex-row items-center justify-center gap-2 rounded-2xl border border-black/10 bg-surface px-4 py-4 active:opacity-80"
               >
                 <Ionicons name="logo-google" size={18} color="#EA4335" />
                 <Text className="text-base font-semibold text-surface-dark">
@@ -78,9 +78,12 @@ export function SettingsScreen() {
           )}
         </Section>
 
-        {/* Space */}
+        {/* Space → manage members */}
         {currentSpace ? (
-          <View className="flex-row items-center gap-3 rounded-2xl bg-card px-4 py-4">
+          <Pressable
+            onPress={() => router.push('/manage-space')}
+            className="flex-row items-center gap-3 rounded-2xl bg-card px-4 py-4 active:opacity-70"
+          >
             <View className="h-11 w-11 items-center justify-center rounded-full bg-primary">
               <Ionicons name="people" size={22} color="#FFFFFF" />
             </View>
@@ -90,10 +93,11 @@ export function SettingsScreen() {
               </Text>
               <Text className="text-sm text-muted">
                 {currentSpace.members.length} member
-                {currentSpace.members.length === 1 ? '' : 's'} · {currentSpace.currency}
+                {currentSpace.members.length === 1 ? '' : 's'} · Manage members
               </Text>
             </View>
-          </View>
+            <Ionicons name="chevron-forward" size={16} color="#8A8A9E" />
+          </Pressable>
         ) : null}
 
         {/* Accounts */}
@@ -133,6 +137,18 @@ export function SettingsScreen() {
             <Text className="flex-1 text-base text-surface-dark">Sync</Text>
             <Text className="text-sm text-muted">Local only</Text>
           </View>
+
+          {/* Dark mode */}
+          <View className="flex-row items-center gap-3 rounded-2xl bg-card px-4 py-4">
+            <Ionicons name={isDark ? 'moon' : 'moon-outline'} size={22} color={accent} />
+            <Text className="flex-1 text-base text-surface-dark">Dark mode</Text>
+            <Switch
+              value={isDark}
+              onValueChange={setDark}
+              trackColor={{ false: '#C4C4D0', true: accent }}
+              thumbColor="#FFFFFF"
+            />
+          </View>
           <View className="rounded-2xl bg-card px-4 py-4">
             <View className="flex-row items-center gap-3">
               <Ionicons name="cash-outline" size={22} color={accent} />
@@ -146,7 +162,7 @@ export function SettingsScreen() {
                     key={c.code}
                     onPress={() => setCurrency(c.code)}
                     className={`flex-1 flex-row items-center justify-center gap-1 rounded-xl border py-2 ${
-                      selected ? 'border-primary bg-primary/10' : 'border-transparent bg-white'
+                      selected ? 'border-primary bg-primary/10' : 'border-transparent bg-surface'
                     }`}
                   >
                     <Text

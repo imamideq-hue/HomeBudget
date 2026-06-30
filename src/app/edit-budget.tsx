@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CategoryPill } from '@/components/CategoryPill';
 import { useBudgetTracker } from '@/hooks/useBudgetTracker';
+import { feedbackSuccess } from '@/lib/feedback';
 import { formatCurrency, getCurrency } from '@/lib/format';
 
 export default function EditBudgetModal() {
@@ -26,7 +27,7 @@ export default function EditBudgetModal() {
 
   if (!budget) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-white">
+      <SafeAreaView className="flex-1 items-center justify-center bg-surface">
         <Text className="text-base text-muted">Budget not found.</Text>
       </SafeAreaView>
     );
@@ -34,6 +35,7 @@ export default function EditBudgetModal() {
 
   const save = () => {
     setBudgetLimit(budget.group.id, parsedLimit);
+    feedbackSuccess();
     router.back();
   };
 
@@ -43,7 +45,7 @@ export default function EditBudgetModal() {
   };
 
   return (
-    <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-white">
+    <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-surface">
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <View className="flex-1 px-5">
           {/* Header */}

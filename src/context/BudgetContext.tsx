@@ -50,10 +50,13 @@ export type BudgetAction =
   | { type: 'ADD_GROUP_CATEGORY'; payload: GroupCategory }
   | { type: 'SET_GOAL_DEADLINE'; payload: { goalId: string; deadline?: string } }
   | { type: 'ADD_MEMBER'; payload: User }
+  | { type: 'REMOVE_MEMBER'; payload: { userId: string } }
+  | { type: 'RENAME_USER'; payload: { userId: string; name: string } }
   | { type: 'SET_ACCOUNT_STARTING_BALANCE'; payload: { accountId: string; startingBalance: number } }
   | { type: 'SET_GOAL_OWNER'; payload: { goalId: string; ownerId?: string } }
   | { type: 'SET_CURRENCY'; payload: { code: string } }
-  | { type: 'SET_ACCENT'; payload: { color: string } };
+  | { type: 'SET_ACCENT'; payload: { color: string } }
+  | { type: 'SET_DARK_MODE'; payload: { enabled: boolean } };
 
 function currencyOf(data: BudgetData): string {
   return data.spaces.find((s) => s.id === data.currentSpaceId)?.currency ?? 'USD';
@@ -176,6 +179,15 @@ function reducer(state: BudgetData, action: BudgetAction): BudgetData {
             : space,
         ),
       };
+    case 'SET_DARK_MODE':
+      return {
+        ...state,
+        spaces: state.spaces.map((space) =>
+          space.id === state.currentSpaceId
+            ? { ...space, darkMode: action.payload.enabled }
+            : space,
+        ),
+      };
     case 'ADD_MEMBER':
       return {
         ...state,
@@ -194,6 +206,22 @@ function reducer(state: BudgetData, action: BudgetAction): BudgetData {
                 ],
               }
             : space,
+        ),
+      };
+    case 'REMOVE_MEMBER':
+      return {
+        ...state,
+        users: state.users.filter((u) => u.id !== action.payload.userId),
+        spaces: state.spaces.map((space) => ({
+          ...space,
+          members: space.members.filter((m) => m.userId !== action.payload.userId),
+        })),
+      };
+    case 'RENAME_USER':
+      return {
+        ...state,
+        users: state.users.map((u) =>
+          u.id === action.payload.userId ? { ...u, name: action.payload.name } : u,
         ),
       };
     default:

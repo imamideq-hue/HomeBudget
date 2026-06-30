@@ -9,6 +9,7 @@ import { useScope } from '@/context/ScopeContext';
 import { useBudget } from '@/hooks/useBudget';
 import { useGoals } from '@/hooks/useGoals';
 import { useTheme } from '@/hooks/useTheme';
+import { feedbackSuccess } from '@/lib/feedback';
 import { getCurrency } from '@/lib/format';
 import { defaultOwnerForScope } from '@/lib/scope';
 
@@ -21,7 +22,7 @@ const ICONS = [
 export default function AddGoalModal() {
   const router = useRouter();
   const { addGoal, editGoal, deleteGoal, getGoal } = useGoals();
-  const { users, currentUser } = useBudget();
+  const { currentUser } = useBudget();
   const { scope } = useScope();
   const { accent } = useTheme();
 
@@ -51,6 +52,7 @@ export default function AddGoalModal() {
     } else {
       addGoal({ name, targetAmount, icon, color: accent, ownerId });
     }
+    feedbackSuccess();
     router.back();
   };
 
@@ -70,7 +72,7 @@ export default function AddGoalModal() {
   };
 
   return (
-    <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-white">
+    <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-surface">
       <View className="flex-1">
         {/* Header */}
         <View className="flex-row items-center justify-between px-5 py-3">
@@ -119,7 +121,10 @@ export default function AddGoalModal() {
           <View>
             <Text className="mb-2 text-sm font-semibold text-surface-dark">Belongs to</Text>
             <View className="flex-row flex-wrap gap-2">
-              {[{ id: undefined, name: 'Joint', color: accent }, ...users].map((owner) => {
+              {[
+                { id: undefined, name: 'Joint', color: accent },
+                ...(currentUser ? [currentUser] : []),
+              ].map((owner) => {
                 const selected = ownerId === owner.id;
                 const label = owner.id && owner.id === currentUser?.id ? 'You' : owner.name;
                 return (

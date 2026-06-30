@@ -11,13 +11,14 @@ import { useBudget } from '@/hooks/useBudget';
 import { useBudgetTracker } from '@/hooks/useBudgetTracker';
 import { useCategories } from '@/hooks/useCategories';
 import { useTheme } from '@/hooks/useTheme';
+import { feedbackSuccess } from '@/lib/feedback';
 import { formatCurrency, formatDayLabel, getCurrency } from '@/lib/format';
 import { defaultOwnerForScope } from '@/lib/scope';
 import type { TransactionType } from '@/models';
 
 export default function AddTransactionModal() {
   const router = useRouter();
-  const { allAccounts: accounts, allTransactions: transactions, users, currentUser } = useBudget();
+  const { allAccounts: accounts, allTransactions: transactions, currentUser } = useBudget();
   const { addTransaction, editTransaction } = useBudgetTracker();
   const { groupCategories, getSubsForGroup, getSubCategory } = useCategories();
   const { scope } = useScope();
@@ -83,6 +84,7 @@ export default function AddTransactionModal() {
     if (editing) {
       // Correct the existing item (account, amount, category, date, note).
       editTransaction(editing.id, input);
+      feedbackSuccess();
       router.back();
       return;
     }
@@ -90,6 +92,7 @@ export default function AddTransactionModal() {
     // Adding the item rolls up into its parent group and recalculates that
     // group's monthly budget; `groupBudget` reflects the new total/remaining.
     const { groupBudget } = addTransaction(input);
+    feedbackSuccess();
 
     if (groupBudget.isOverBudget) {
       Alert.alert(
@@ -104,7 +107,7 @@ export default function AddTransactionModal() {
   };
 
   return (
-    <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-white">
+    <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-surface">
       <View className="flex-1">
         {/* Header */}
         <View className="flex-row items-center justify-between px-5 py-3">
@@ -133,7 +136,7 @@ export default function AddTransactionModal() {
                       setType(t);
                       setSubCategoryId(null);
                     }}
-                    className={`flex-1 items-center rounded-xl py-2.5 ${active ? 'bg-white shadow-sm' : ''}`}
+                    className={`flex-1 items-center rounded-xl py-2.5 ${active ? 'bg-surface shadow-sm' : ''}`}
                   >
                     <Text
                       className={`text-sm font-semibold capitalize ${
@@ -198,7 +201,10 @@ export default function AddTransactionModal() {
             <View>
               <Text className="mb-2 text-sm font-semibold text-surface-dark">Belongs to</Text>
               <View className="flex-row flex-wrap gap-2">
-                {[{ id: undefined, name: 'Joint', color: accent }, ...users].map((owner) => {
+                {[
+                  { id: undefined, name: 'Joint', color: accent },
+                  ...(currentUser ? [currentUser] : []),
+                ].map((owner) => {
                   const selected = ownerId === owner.id;
                   const label = owner.id && owner.id === currentUser?.id ? 'You' : owner.name;
                   return (

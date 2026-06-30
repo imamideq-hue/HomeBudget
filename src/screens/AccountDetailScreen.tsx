@@ -6,11 +6,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { TransactionItem } from '@/components/TransactionItem';
 import { useBudget } from '@/hooks/useBudget';
+import { useTheme } from '@/hooks/useTheme';
 import { formatCurrency, groupByDay } from '@/lib/format';
 
 export function AccountDetailScreen({ accountId }: { accountId: string }) {
   const router = useRouter();
   const { allAccounts, allTransactions, accountBalance } = useBudget();
+  const { foreground } = useTheme();
 
   const account = allAccounts.find((a) => a.id === accountId);
 
@@ -33,18 +35,18 @@ export function AccountDetailScreen({ accountId }: { accountId: string }) {
 
   if (!account) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-white">
+      <SafeAreaView className="flex-1 items-center justify-center bg-surface">
         <Text className="text-base text-muted">Account not found.</Text>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView edges={['top']} className="flex-1 bg-white">
+    <SafeAreaView edges={['top']} className="flex-1 bg-surface">
       {/* Header */}
       <View className="flex-row items-center gap-3 px-5 py-3">
         <Pressable onPress={() => router.back()} hitSlop={8} className="active:opacity-60">
-          <Ionicons name="chevron-back" size={24} color="#15151B" />
+          <Ionicons name="chevron-back" size={24} color={foreground} />
         </Pressable>
         <Text className="text-lg font-semibold text-surface-dark">{account.name}</Text>
       </View>
@@ -72,13 +74,13 @@ export function AccountDetailScreen({ accountId }: { accountId: string }) {
           </Text>
 
           <View className="mt-4 flex-row gap-3">
-            <View className="flex-1 rounded-2xl bg-white px-4 py-3">
+            <View className="flex-1 rounded-2xl bg-surface px-4 py-3">
               <Text className="text-xs text-muted">In</Text>
               <Text className="mt-0.5 text-base font-semibold text-income">
                 {formatCurrency(flow.income)}
               </Text>
             </View>
-            <View className="flex-1 rounded-2xl bg-white px-4 py-3">
+            <View className="flex-1 rounded-2xl bg-surface px-4 py-3">
               <Text className="text-xs text-muted">Out</Text>
               <Text className="mt-0.5 text-base font-semibold text-expense">
                 {formatCurrency(flow.expense)}

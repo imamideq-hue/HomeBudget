@@ -13,6 +13,28 @@ export const ACCENT_CHOICES = [
   '#15151B', // graphite
 ];
 
+/** Surface/text CSS variables for each color scheme (used at the app root). */
+export const THEME_VARS = {
+  light: {
+    '--color-bg': '255 255 255',
+    '--color-fg': '21 21 27',
+    '--color-card': '244 244 248',
+    '--color-muted': '138 138 158',
+  },
+  dark: {
+    '--color-bg': '21 21 27',
+    '--color-fg': '244 244 248',
+    '--color-card': '30 30 39',
+    '--color-muted': '154 160 174',
+  },
+} as const;
+
+/** Neutral foreground hex for icons that can't use a class (per scheme). */
+export const FOREGROUND = { light: '#15151B', dark: '#F4F4F8' } as const;
+
+/** Page background hex per scheme (for the root container). */
+export const BACKGROUND = { light: '#FFFFFF', dark: '#15151B' } as const;
+
 /** Parse `#RRGGBB` into a space-separated `"r g b"` triplet for CSS variables. */
 export function hexToRgbTriplet(hex: string): string {
   const h = hex.replace('#', '');

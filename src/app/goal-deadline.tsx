@@ -42,7 +42,7 @@ export default function GoalDeadlineModal() {
 
   if (!goal) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-white">
+      <SafeAreaView className="flex-1 items-center justify-center bg-surface">
         <Text className="text-base text-muted">Goal not found.</Text>
       </SafeAreaView>
     );
@@ -68,7 +68,7 @@ export default function GoalDeadlineModal() {
   };
 
   return (
-    <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-white">
+    <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-surface">
       <View className="flex-1 px-5">
         {/* Header */}
         <View className="flex-row items-center justify-between py-3">
@@ -98,25 +98,25 @@ export default function GoalDeadlineModal() {
             <View className="mt-4 flex-row items-center gap-3">
               <Pressable
                 onPress={() => shift(-7)}
-                className="rounded-xl bg-white px-3 py-2 active:opacity-70"
+                className="rounded-xl bg-surface px-3 py-2 active:opacity-70"
               >
                 <Text className="text-sm font-semibold text-surface-dark">-1w</Text>
               </Pressable>
               <Pressable
                 onPress={() => shift(-1)}
-                className="h-10 w-10 items-center justify-center rounded-full bg-white active:opacity-70"
+                className="h-10 w-10 items-center justify-center rounded-full bg-surface active:opacity-70"
               >
                 <Ionicons name="remove" size={18} color={accent} />
               </Pressable>
               <Pressable
                 onPress={() => shift(1)}
-                className="h-10 w-10 items-center justify-center rounded-full bg-white active:opacity-70"
+                className="h-10 w-10 items-center justify-center rounded-full bg-surface active:opacity-70"
               >
                 <Ionicons name="add" size={18} color={accent} />
               </Pressable>
               <Pressable
                 onPress={() => shift(7)}
-                className="rounded-xl bg-white px-3 py-2 active:opacity-70"
+                className="rounded-xl bg-surface px-3 py-2 active:opacity-70"
               >
                 <Text className="text-sm font-semibold text-surface-dark">+1w</Text>
               </Pressable>

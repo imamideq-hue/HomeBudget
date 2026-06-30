@@ -26,7 +26,7 @@ export function DashboardScreen() {
   const recent = transactions.slice(0, 3);
 
   return (
-    <SafeAreaView edges={['top']} className="flex-1 bg-white">
+    <SafeAreaView edges={['top']} className="flex-1 bg-surface">
       <ScrollView contentContainerClassName="gap-6 px-5 pb-24 pt-2">
         {/* Header + quick add */}
         <View className="flex-row items-center justify-between">

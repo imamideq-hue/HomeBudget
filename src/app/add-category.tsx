@@ -61,7 +61,7 @@ export default function AddCategoryModal() {
   };
 
   return (
-    <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-white">
+    <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-surface">
       <View className="flex-1">
         {/* Header */}
         <View className="flex-row items-center justify-between px-5 py-3">

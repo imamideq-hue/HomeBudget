@@ -42,7 +42,7 @@ export function TransactionsScreen() {
   );
 
   return (
-    <SafeAreaView edges={['top']} className="flex-1 bg-white">
+    <SafeAreaView edges={['top']} className="flex-1 bg-surface">
       <Text className="px-5 pb-2 pt-2 text-2xl font-bold text-surface-dark">Transactions</Text>
       <View className="px-5 pb-2">
         <ScopeFilter users={users} currentUserId={currentUser?.id ?? ''} />
@@ -53,7 +53,7 @@ export function TransactionsScreen() {
         contentContainerClassName="pb-12"
         stickySectionHeadersEnabled={false}
         renderSectionHeader={({ section }) => (
-          <Text className="bg-white px-5 pb-1 pt-4 text-sm font-semibold text-muted">
+          <Text className="bg-surface px-5 pb-1 pt-4 text-sm font-semibold text-muted">
             {section.title}
           </Text>
         )}

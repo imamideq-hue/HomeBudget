@@ -21,4 +21,6 @@ export interface Space extends BaseEntity {
   currency: CurrencyCode;
   /** Accent color for the app theme (hex). Defaults to the app's purple. */
   accentColor?: string;
+  /** Whether the app uses the dark color scheme. */
+  darkMode?: boolean;
 }

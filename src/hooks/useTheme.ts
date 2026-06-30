@@ -1,12 +1,12 @@
 import { useContext } from 'react';
 
 import { BudgetContext } from '@/context/BudgetContext';
-import { DEFAULT_ACCENT, darken } from '@/lib/theme';
+import { DEFAULT_ACCENT, FOREGROUND, darken } from '@/lib/theme';
 
 /**
- * The current accent color (theme) and a setter. `accent` drives every
- * `bg-primary`/`text-primary` style (via a CSS variable) plus the hardcoded
- * accent spots that read this hook directly.
+ * The current theme: accent color (drives `*-primary` styles via a CSS
+ * variable) plus the light/dark color scheme. `foreground` is a hex for icons
+ * that can't use a class and must stay readable in both schemes.
  */
 export function useTheme() {
   const ctx = useContext(BudgetContext);
@@ -16,8 +16,18 @@ export function useTheme() {
   const { state, dispatch } = ctx;
   const space = state.spaces.find((s) => s.id === state.currentSpaceId);
   const accent = space?.accentColor ?? DEFAULT_ACCENT;
+  const isDark = space?.darkMode ?? false;
 
   const setAccent = (color: string) => dispatch({ type: 'SET_ACCENT', payload: { color } });
+  const setDark = (enabled: boolean) =>
+    dispatch({ type: 'SET_DARK_MODE', payload: { enabled } });
 
-  return { accent, accentDark: darken(accent), setAccent };
+  return {
+    accent,
+    accentDark: darken(accent),
+    isDark,
+    foreground: isDark ? FOREGROUND.dark : FOREGROUND.light,
+    setAccent,
+    setDark,
+  };
 }

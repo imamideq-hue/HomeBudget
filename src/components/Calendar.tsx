@@ -53,7 +53,7 @@ export function Calendar({ value, onChange, minDate, maxDate }: Props) {
         <Pressable
           onPress={() => setView(new Date(year, month - 1, 1))}
           hitSlop={8}
-          className="h-8 w-8 items-center justify-center rounded-full bg-white active:opacity-70"
+          className="h-8 w-8 items-center justify-center rounded-full bg-surface active:opacity-70"
         >
           <Ionicons name="chevron-back" size={16} color={accent} />
         </Pressable>
@@ -63,7 +63,7 @@ export function Calendar({ value, onChange, minDate, maxDate }: Props) {
         <Pressable
           onPress={() => setView(new Date(year, month + 1, 1))}
           hitSlop={8}
-          className="h-8 w-8 items-center justify-center rounded-full bg-white active:opacity-70"
+          className="h-8 w-8 items-center justify-center rounded-full bg-surface active:opacity-70"
         >
           <Ionicons name="chevron-forward" size={16} color={accent} />
         </Pressable>

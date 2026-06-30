@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useBudget } from '@/hooks/useBudget';
 import { useTheme } from '@/hooks/useTheme';
+import { feedbackSuccess } from '@/lib/feedback';
 import { formatCurrency, getCurrency } from '@/lib/format';
 
 type Mode = 'set' | 'add';
@@ -29,7 +30,7 @@ export default function AdjustAccountModal() {
 
   if (!account) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-white">
+      <SafeAreaView className="flex-1 items-center justify-center bg-surface">
         <Text className="text-base text-muted">Account not found.</Text>
       </SafeAreaView>
     );
@@ -42,11 +43,12 @@ export default function AdjustAccountModal() {
     if (!valid) return;
     if (mode === 'set') setAccountBalance(account.id, parsed);
     else addToAccountBalance(account.id, parsed);
+    feedbackSuccess();
     router.back();
   };
 
   return (
-    <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-white">
+    <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-surface">
       <View className="flex-1">
         {/* Header */}
         <View className="flex-row items-center justify-between px-5 py-3">
@@ -91,7 +93,7 @@ export default function AdjustAccountModal() {
                 <Pressable
                   key={opt.key}
                   onPress={() => setMode(opt.key)}
-                  className={`flex-1 items-center rounded-xl py-2.5 ${active ? 'bg-white shadow-sm' : ''}`}
+                  className={`flex-1 items-center rounded-xl py-2.5 ${active ? 'bg-surface shadow-sm' : ''}`}
                 >
                   <Text
                     className={`text-sm font-semibold ${active ? 'text-primary' : 'text-muted'}`}

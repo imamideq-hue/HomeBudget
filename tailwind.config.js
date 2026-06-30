@@ -18,15 +18,18 @@ module.exports = {
         },
         income: '#34C77B',
         expense: '#FF6B6B',
+        // Surface/card/muted are variable-driven so they flip for dark mode.
         surface: {
-          DEFAULT: '#FFFFFF',
-          dark: '#15151B',
+          // page background
+          DEFAULT: 'rgb(var(--color-bg, 255 255 255) / <alpha-value>)',
+          // primary foreground text (named "dark" historically)
+          dark: 'rgb(var(--color-fg, 21 21 27) / <alpha-value>)',
         },
         card: {
-          DEFAULT: '#F4F4F8',
+          DEFAULT: 'rgb(var(--color-card, 244 244 248) / <alpha-value>)',
           dark: '#1E1E27',
         },
-        muted: '#8A8A9E',
+        muted: 'rgb(var(--color-muted, 138 138 158) / <alpha-value>)',
       },
     },
   },

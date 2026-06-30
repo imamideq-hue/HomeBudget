@@ -23,7 +23,7 @@ export function GoalsScreen() {
   };
 
   return (
-    <SafeAreaView edges={['top']} className="flex-1 bg-white">
+    <SafeAreaView edges={['top']} className="flex-1 bg-surface">
       <ScrollView contentContainerClassName="gap-4 px-5 pb-12 pt-2">
         <View className="flex-row items-center justify-between">
           <Text className="text-2xl font-bold text-surface-dark">Goals</Text>

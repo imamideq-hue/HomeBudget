@@ -8,6 +8,7 @@ import { CategoryPill } from '@/components/CategoryPill';
 import { useBudget } from '@/hooks/useBudget';
 import { useGoals } from '@/hooks/useGoals';
 import { useTheme } from '@/hooks/useTheme';
+import { feedbackSuccess } from '@/lib/feedback';
 import { formatCurrency, formatFullDate, getCurrency } from '@/lib/format';
 
 export default function ContributeGoalModal() {
@@ -32,7 +33,7 @@ export default function ContributeGoalModal() {
 
   if (!goal) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-white">
+      <SafeAreaView className="flex-1 items-center justify-center bg-surface">
         <Text className="text-base text-muted">Goal not found.</Text>
       </SafeAreaView>
     );
@@ -42,12 +43,22 @@ export default function ContributeGoalModal() {
   const projected = Math.min(goal.currentAmount + parsed, goal.targetAmount);
 
   const save = () => {
+    const reachedNow =
+      goal.currentAmount < goal.targetAmount && goal.currentAmount + parsed >= goal.targetAmount;
     contribute(goal.id, parsed, fromId);
-    router.back();
+    if (reachedNow) {
+      router.replace({
+        pathname: '/celebrate',
+        params: { title: 'Goal reached! 🎉', subtitle: `You hit your "${goal.name}" goal.` },
+      });
+    } else {
+      feedbackSuccess();
+      router.back();
+    }
   };
 
   return (
-    <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-white">
+    <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-surface">
       <View className="flex-1">
         {/* Header */}
         <View className="flex-row items-center justify-between px-5 py-3">
