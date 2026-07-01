@@ -44,6 +44,8 @@ function ThemedApp() {
           options={{ presentation: 'transparentModal', animation: 'fade' }}
         />
         <Stack.Screen name="categories" />
+        <Stack.Screen name="goals" />
+        <Stack.Screen name="settings" />
         <Stack.Screen name="account/[id]" />
       </Stack>
     </View>

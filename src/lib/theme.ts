@@ -13,27 +13,33 @@ export const ACCENT_CHOICES = [
   '#15151B', // graphite
 ];
 
-/** Surface/text CSS variables for each color scheme (used at the app root). */
+/**
+ * Surface/text CSS variables for each color scheme (used at the app root).
+ * Dark values are tuned to Cashew: near-black page, softly elevated cards,
+ * a faint hairline for card borders.
+ */
 export const THEME_VARS = {
   light: {
     '--color-bg': '255 255 255',
     '--color-fg': '21 21 27',
     '--color-card': '244 244 248',
     '--color-muted': '138 138 158',
+    '--color-line': '234 234 240',
   },
   dark: {
-    '--color-bg': '21 21 27',
-    '--color-fg': '244 244 248',
-    '--color-card': '30 30 39',
-    '--color-muted': '154 160 174',
+    '--color-bg': '11 11 15', // #0B0B0F
+    '--color-fg': '236 236 242', // #ECECF2
+    '--color-card': '23 23 31', // #17171F
+    '--color-muted': '138 138 152', // #8A8A98
+    '--color-line': '38 38 46', // #26262E
   },
 } as const;
 
 /** Neutral foreground hex for icons that can't use a class (per scheme). */
-export const FOREGROUND = { light: '#15151B', dark: '#F4F4F8' } as const;
+export const FOREGROUND = { light: '#15151B', dark: '#ECECF2' } as const;
 
 /** Page background hex per scheme (for the root container). */
-export const BACKGROUND = { light: '#FFFFFF', dark: '#15151B' } as const;
+export const BACKGROUND = { light: '#FFFFFF', dark: '#0B0B0F' } as const;
 
 /** Parse `#RRGGBB` into a space-separated `"r g b"` triplet for CSS variables. */
 export function hexToRgbTriplet(hex: string): string {
@@ -42,6 +48,17 @@ export function hexToRgbTriplet(hex: string): string {
   const g = parseInt(h.slice(2, 4), 16);
   const b = parseInt(h.slice(4, 6), 16);
   return `${r} ${g} ${b}`;
+}
+
+/** Lighten a hex color by mixing it toward white by `amount` (0..1). */
+export function lighten(hex: string, amount = 0.7): string {
+  const h = hex.replace('#', '');
+  const channel = (i: number) => {
+    const v = parseInt(h.slice(i, i + 2), 16);
+    return Math.min(255, Math.round(v + (255 - v) * amount));
+  };
+  const to2 = (n: number) => n.toString(16).padStart(2, '0');
+  return `#${to2(channel(0))}${to2(channel(2))}${to2(channel(4))}`;
 }
 
 /** Darken a hex color by `amount` (0..1) — used for the balance-card gradient. */

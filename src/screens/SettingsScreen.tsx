@@ -28,12 +28,17 @@ export function SettingsScreen() {
   const router = useRouter();
   const { currentSpace, allAccounts: accounts, accountBalance, setCurrency } = useBudget();
   const { user, signOut } = useAuth();
-  const { accent, setAccent, isDark, setDark } = useTheme();
+  const { accent, setAccent, isDark, setDark, foreground } = useTheme();
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-surface">
       <ScrollView contentContainerClassName="gap-6 px-5 pb-12 pt-2">
-        <Text className="text-2xl font-bold text-surface-dark">Settings</Text>
+        <View className="flex-row items-center gap-3">
+          <Pressable onPress={() => router.back()} hitSlop={8} className="active:opacity-60">
+            <Ionicons name="chevron-back" size={26} color={foreground} />
+          </Pressable>
+          <Text className="text-2xl font-bold text-surface-dark">Settings</Text>
+        </View>
 
         {/* Account / Google sign-in */}
         <Section title="Account">

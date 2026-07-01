@@ -16,7 +16,8 @@ export function useTheme() {
   const { state, dispatch } = ctx;
   const space = state.spaces.find((s) => s.id === state.currentSpaceId);
   const accent = space?.accentColor ?? DEFAULT_ACCENT;
-  const isDark = space?.darkMode ?? false;
+  // Dark is the default (Cashew-style); an explicit light choice still wins.
+  const isDark = space?.darkMode ?? true;
 
   const setAccent = (color: string) => dispatch({ type: 'SET_ACCENT', payload: { color } });
   const setDark = (enabled: boolean) =>

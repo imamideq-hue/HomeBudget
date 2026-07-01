@@ -30,6 +30,8 @@ module.exports = {
           dark: '#1E1E27',
         },
         muted: 'rgb(var(--color-muted, 138 138 158) / <alpha-value>)',
+        // Hairline for card borders/dividers (flips with the scheme).
+        line: 'rgb(var(--color-line, 234 234 240) / <alpha-value>)',
       },
     },
   },

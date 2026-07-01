@@ -14,7 +14,7 @@ export function GoalsScreen() {
   const router = useRouter();
   const { progress } = useGoals();
   const { users, currentUser } = useBudget();
-  const { accent } = useTheme();
+  const { accent, foreground } = useTheme();
 
   const ownerLabel = (ownerId?: string) => {
     if (!ownerId) return 'Joint';
@@ -26,7 +26,12 @@ export function GoalsScreen() {
     <SafeAreaView edges={['top']} className="flex-1 bg-surface">
       <ScrollView contentContainerClassName="gap-4 px-5 pb-12 pt-2">
         <View className="flex-row items-center justify-between">
-          <Text className="text-2xl font-bold text-surface-dark">Goals</Text>
+          <View className="flex-row items-center gap-3">
+            <Pressable onPress={() => router.back()} hitSlop={8} className="active:opacity-60">
+              <Ionicons name="chevron-back" size={26} color={foreground} />
+            </Pressable>
+            <Text className="text-2xl font-bold text-surface-dark">Goals</Text>
+          </View>
           <Pressable
             onPress={() => router.push('/add-goal')}
             hitSlop={8}

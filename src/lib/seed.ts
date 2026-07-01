@@ -29,6 +29,8 @@ export const SEED_DATA: BudgetData = {
       currency: 'USD',
       createdAt: NOW,
       members: [{ userId: USER_ME, role: 'owner', joinedAt: NOW }],
+      // Cashew-style dark theme by default (toggle in Settings).
+      darkMode: true,
     },
   ],
 

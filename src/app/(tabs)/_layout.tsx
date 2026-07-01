@@ -1,9 +1,40 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
+import { Platform, View, type ColorValue } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
 
 const INACTIVE = '#8A8A9E';
+
+type IconName = keyof typeof Ionicons.glyphMap;
+
+/** A tab icon that gets a rounded pill highlight behind it when active (Cashew). */
+function TabIcon({
+  name,
+  color,
+  focused,
+  accent,
+}: {
+  name: IconName;
+  color: ColorValue;
+  focused: boolean;
+  accent: string;
+}) {
+  return (
+    <View
+      style={{
+        width: 56,
+        height: 30,
+        borderRadius: 15,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: focused ? `${accent}26` : 'transparent',
+      }}
+    >
+      <Ionicons name={name} size={22} color={color} />
+    </View>
+  );
+}
 
 export default function TabsLayout() {
   const { accent, isDark } = useTheme();
@@ -13,9 +44,13 @@ export default function TabsLayout() {
         headerShown: false,
         tabBarActiveTintColor: accent,
         tabBarInactiveTintColor: INACTIVE,
+        tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
         tabBarStyle: {
-          backgroundColor: isDark ? '#15151B' : '#FFFFFF',
-          borderTopColor: isDark ? '#26262F' : '#ECECF2',
+          backgroundColor: isDark ? '#121218' : '#FFFFFF',
+          borderTopColor: isDark ? '#26262E' : '#ECECF2',
+          height: Platform.OS === 'ios' ? 88 : 64,
+          paddingTop: 6,
+          paddingBottom: Platform.OS === 'ios' ? 28 : 8,
         },
       }}
     >
@@ -23,35 +58,36 @@ export default function TabsLayout() {
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color, size }) => <Ionicons name="home" size={size} color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon name="home" color={color} focused={focused} accent={accent} />
+          ),
         }}
       />
       <Tabs.Screen
         name="transactions"
         options={{
-          title: 'Activity',
-          tabBarIcon: ({ color, size }) => <Ionicons name="list" size={size} color={color} />,
+          title: 'Transactions',
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon name="swap-vertical" color={color} focused={focused} accent={accent} />
+          ),
         }}
       />
       <Tabs.Screen
         name="budgets"
         options={{
           title: 'Budgets',
-          tabBarIcon: ({ color, size }) => <Ionicons name="wallet" size={size} color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon name="wallet" color={color} focused={focused} accent={accent} />
+          ),
         }}
       />
       <Tabs.Screen
-        name="goals"
+        name="more"
         options={{
-          title: 'Goals',
-          tabBarIcon: ({ color, size }) => <Ionicons name="flag" size={size} color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{
-          title: 'Settings',
-          tabBarIcon: ({ color, size }) => <Ionicons name="settings" size={size} color={color} />,
+          title: 'More',
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon name="ellipsis-horizontal" color={color} focused={focused} accent={accent} />
+          ),
         }}
       />
     </Tabs>
