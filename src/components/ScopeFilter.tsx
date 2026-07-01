@@ -49,18 +49,18 @@ export function ScopeFilter({ users, currentUserId, variant = 'chips' }: Props) 
             <Pressable
               key={chip.key}
               onPress={() => setScope(chip.key)}
-              className={`flex-row items-center gap-2 rounded-2xl px-5 py-3 ${
+              className={`flex-row items-center gap-2 rounded-2xl px-7 py-4 ${
                 active ? 'bg-primary shadow-sm' : 'bg-card'
               }`}
             >
               {chip.color ? (
                 <View
-                  className="h-3 w-3 rounded-full"
+                  className="h-3.5 w-3.5 rounded-full"
                   style={{ backgroundColor: active ? '#FFFFFF' : chip.color }}
                 />
               ) : null}
               <Text
-                className={`text-base font-bold ${active ? 'text-white' : 'text-surface-dark'}`}
+                className={`text-lg font-bold ${active ? 'text-white' : 'text-surface-dark'}`}
               >
                 {chip.label}
               </Text>

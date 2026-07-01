@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
 
+import { useTheme } from '@/hooks/useTheme';
 import { formatCurrency } from '@/lib/format';
 import type { Account } from '@/models';
 
@@ -12,16 +13,17 @@ interface Props {
 
 /** Compact account tile with its current (live) balance. */
 export function AccountCard({ account, balance, onPress }: Props) {
+  const { accent } = useTheme();
   return (
     <Pressable onPress={onPress} className="w-40 rounded-2xl bg-card p-4 active:opacity-70">
       <View
-        className="h-9 w-9 items-center justify-center rounded-full"
-        style={{ backgroundColor: `${account.color}22` }}
+        className="h-12 w-12 items-center justify-center rounded-full"
+        style={{ backgroundColor: `${accent}22` }}
       >
         <Ionicons
           name={account.icon as keyof typeof Ionicons.glyphMap}
-          size={18}
-          color={account.color}
+          size={24}
+          color={accent}
         />
       </View>
       <Text className="mt-3 text-sm text-muted" numberOfLines={1}>

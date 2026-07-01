@@ -77,17 +77,17 @@ export function DashboardScreen() {
               onPress={() => router.push('/add-member')}
               accessibilityRole="button"
               accessibilityLabel="Add member"
-              className="h-10 w-10 items-center justify-center rounded-full bg-card active:opacity-70"
+              className="h-14 w-14 items-center justify-center rounded-full bg-card active:opacity-70"
             >
-              <Ionicons name="person-add-outline" size={19} color={accent} />
+              <Ionicons name="person-add-outline" size={24} color={accent} />
             </Pressable>
             <Pressable
               onPress={() => router.push('/customize-dashboard')}
               accessibilityRole="button"
               accessibilityLabel="Customize dashboard"
-              className="h-10 w-10 items-center justify-center rounded-full bg-card active:opacity-70"
+              className="h-14 w-14 items-center justify-center rounded-full bg-card active:opacity-70"
             >
-              <Ionicons name="options-outline" size={20} color={accent} />
+              <Ionicons name="options-outline" size={26} color={accent} />
             </Pressable>
           </View>
         </View>
@@ -157,16 +157,16 @@ export function DashboardScreen() {
                         params: { subCategoryId: subId, type: 'expense' },
                       })
                     }
-                    className="w-20 items-center gap-1 active:opacity-70"
+                    className="w-24 items-center gap-1.5 active:opacity-70"
                   >
                     <View
-                      className="h-14 w-14 items-center justify-center rounded-2xl"
-                      style={{ backgroundColor: `${visual.color}22` }}
+                      className="h-20 w-20 items-center justify-center rounded-3xl"
+                      style={{ backgroundColor: `${accent}22` }}
                     >
                       <Ionicons
                         name={visual.icon as keyof typeof Ionicons.glyphMap}
-                        size={24}
-                        color={visual.color}
+                        size={34}
+                        color={accent}
                       />
                     </View>
                     <Text className="text-xs text-muted" numberOfLines={1}>
@@ -200,10 +200,10 @@ export function DashboardScreen() {
               ))}
               <Pressable
                 onPress={() => router.push('/add-account')}
-                className="w-28 items-center justify-center gap-2 rounded-2xl border border-dashed border-muted/40 p-4 active:opacity-70"
+                className="w-32 items-center justify-center gap-2 rounded-2xl border border-dashed border-muted/40 p-4 active:opacity-70"
               >
-                <View className="h-9 w-9 items-center justify-center rounded-full bg-primary/10">
-                  <Ionicons name="add" size={20} color={accent} />
+                <View className="h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                  <Ionicons name="add" size={26} color={accent} />
                 </View>
                 <Text className="text-sm font-medium text-primary">Add</Text>
               </Pressable>

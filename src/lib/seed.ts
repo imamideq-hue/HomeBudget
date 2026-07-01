@@ -35,19 +35,20 @@ export const SEED_DATA: BudgetData = {
   ],
 
   accounts: [
-    { id: ACC_CHECKING, spaceId: SPACE_ID, name: 'Main Checking', type: 'checking', startingBalance: 0, currency: 'USD', color: '#4DABF7', icon: 'card', createdAt: NOW },
-    { id: ACC_CASH, spaceId: SPACE_ID, name: 'Cash', type: 'cash', startingBalance: 0, currency: 'USD', color: '#82C91E', icon: 'cash', createdAt: NOW },
-    { id: ACC_SAVINGS, spaceId: SPACE_ID, name: 'Savings', type: 'savings', startingBalance: 0, currency: 'USD', color: '#7C5CFC', icon: 'wallet', createdAt: NOW },
+    { id: ACC_CHECKING, spaceId: SPACE_ID, name: 'Main Checking', type: 'checking', startingBalance: 0, currency: 'USD', color: '#5B9BD5', icon: 'card', createdAt: NOW },
+    { id: ACC_CASH, spaceId: SPACE_ID, name: 'Cash', type: 'cash', startingBalance: 0, currency: 'USD', color: '#57C08A', icon: 'cash', createdAt: NOW },
+    { id: ACC_SAVINGS, spaceId: SPACE_ID, name: 'Savings', type: 'savings', startingBalance: 0, currency: 'USD', color: '#7C6CF0', icon: 'wallet', createdAt: NOW },
   ],
 
   // --- Categories: sub-categories roll up into group-categories -------------
-  // Default categories (no budget limits — the user sets those).
+  // Default categories (no budget limits — the user sets those). Colors are a
+  // harmonious, similar-saturation palette so icons and charts read coherent.
   groupCategories: [
-    { id: 'grp_food', spaceId: SPACE_ID, name: 'Food & Drink', icon: 'restaurant', color: '#FF6B6B', kind: 'expense', order: 0, createdAt: NOW },
-    { id: 'grp_transport', spaceId: SPACE_ID, name: 'Transport', icon: 'car', color: '#4DABF7', kind: 'expense', order: 1, createdAt: NOW },
-    { id: 'grp_home', spaceId: SPACE_ID, name: 'Home', icon: 'home', color: '#7C5CFC', kind: 'expense', order: 2, createdAt: NOW },
-    { id: 'grp_lifestyle', spaceId: SPACE_ID, name: 'Lifestyle', icon: 'sparkles', color: '#F783AC', kind: 'expense', order: 3, createdAt: NOW },
-    { id: 'grp_income', spaceId: SPACE_ID, name: 'Income', icon: 'cash', color: '#34C77B', kind: 'income', order: 4, createdAt: NOW },
+    { id: 'grp_food', spaceId: SPACE_ID, name: 'Food & Drink', icon: 'restaurant', color: '#E8896B', kind: 'expense', order: 0, createdAt: NOW },
+    { id: 'grp_transport', spaceId: SPACE_ID, name: 'Transport', icon: 'car', color: '#5B9BD5', kind: 'expense', order: 1, createdAt: NOW },
+    { id: 'grp_home', spaceId: SPACE_ID, name: 'Home', icon: 'home', color: '#7C6CF0', kind: 'expense', order: 2, createdAt: NOW },
+    { id: 'grp_lifestyle', spaceId: SPACE_ID, name: 'Lifestyle', icon: 'sparkles', color: '#C77DBB', kind: 'expense', order: 3, createdAt: NOW },
+    { id: 'grp_income', spaceId: SPACE_ID, name: 'Income', icon: 'cash', color: '#57C08A', kind: 'income', order: 4, createdAt: NOW },
   ],
 
   subCategories: [
