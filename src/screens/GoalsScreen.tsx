@@ -4,7 +4,6 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CategoryPill } from '@/components/CategoryPill';
-import { PressableScale } from '@/components/motion';
 import { ScopeFilter } from '@/components/ScopeFilter';
 import { useBudget } from '@/hooks/useBudget';
 import { useGoals } from '@/hooks/useGoals';
@@ -28,14 +27,14 @@ export function GoalsScreen() {
       <ScrollView contentContainerClassName="gap-4 px-5 pb-12 pt-2">
         <View className="flex-row items-center justify-between">
           <Text className="text-2xl font-bold text-surface-dark">Goals</Text>
-          <PressableScale
+          <Pressable
             onPress={() => router.push('/add-goal')}
             hitSlop={8}
-            className="flex-row items-center gap-1 rounded-full bg-primary px-3 py-2"
+            className="flex-row items-center gap-1 rounded-full bg-primary px-3 py-2 active:opacity-80"
           >
             <Ionicons name="add" size={16} color="#FFFFFF" />
             <Text className="text-sm font-semibold text-white">New</Text>
-          </PressableScale>
+          </Pressable>
         </View>
 
         <ScopeFilter users={users} currentUserId={currentUser?.id ?? ''} />
@@ -43,10 +42,9 @@ export function GoalsScreen() {
         {progress.map(({ goal, ratio, remaining, isReached }) => (
           <View key={goal.id} className="rounded-3xl bg-card p-5">
             {/* Tap the goal to edit (or delete) it */}
-            <PressableScale
-              scaleTo={0.98}
+            <Pressable
               onPress={() => router.push({ pathname: '/add-goal', params: { goalId: goal.id } })}
-              className="flex-row items-center gap-3"
+              className="flex-row items-center gap-3 active:opacity-70"
             >
               <CategoryPill icon={goal.icon} color={accent} size={44} />
               <View className="flex-1">
@@ -80,7 +78,7 @@ export function GoalsScreen() {
                   <Ionicons name="pencil" size={13} color="#8A8A9E" />
                 </View>
               )}
-            </PressableScale>
+            </Pressable>
 
             <View className="mt-4 h-3 overflow-hidden rounded-full bg-black/10">
               <View
@@ -130,15 +128,15 @@ export function GoalsScreen() {
               <Text className="text-sm text-muted">
                 {isReached ? 'Goal complete 🎉' : `${formatCurrency(remaining)} to go`}
               </Text>
-              <PressableScale
+              <Pressable
                 onPress={() =>
                   router.push({ pathname: '/contribute-goal', params: { goalId: goal.id } })
                 }
-                className="flex-row items-center gap-1 rounded-full bg-primary px-4 py-2"
+                className="flex-row items-center gap-1 rounded-full bg-primary px-4 py-2 active:opacity-80"
               >
                 <Ionicons name="add" size={16} color="#FFFFFF" />
                 <Text className="text-sm font-semibold text-white">Contribute</Text>
-              </PressableScale>
+              </Pressable>
             </View>
           </View>
         ))}
@@ -147,13 +145,13 @@ export function GoalsScreen() {
           <View className="items-center gap-3 pt-16">
             <Ionicons name="flag-outline" size={40} color="#C4C4D0" />
             <Text className="text-base text-muted">No goals yet</Text>
-            <PressableScale
+            <Pressable
               onPress={() => router.push('/add-goal')}
-              className="flex-row items-center gap-1 rounded-full bg-primary px-4 py-2"
+              className="flex-row items-center gap-1 rounded-full bg-primary px-4 py-2 active:opacity-80"
             >
               <Ionicons name="add" size={16} color="#FFFFFF" />
               <Text className="text-sm font-semibold text-white">Create a goal</Text>
-            </PressableScale>
+            </Pressable>
           </View>
         ) : null}
       </ScrollView>

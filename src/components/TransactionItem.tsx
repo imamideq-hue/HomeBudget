@@ -1,7 +1,6 @@
-import { Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
 import { CategoryPill } from '@/components/CategoryPill';
-import { PressableScale } from '@/components/motion';
 import { useCategories } from '@/hooks/useCategories';
 import { formatSigned } from '@/lib/format';
 import type { Transaction } from '@/models';
@@ -19,10 +18,9 @@ export function TransactionItem({ transaction, onPress }: Props) {
   const subtitle = transaction.note ?? group.name;
 
   return (
-    <PressableScale
-      scaleTo={0.98}
+    <Pressable
       onPress={() => onPress?.(transaction)}
-      className="flex-row items-center gap-3 bg-surface px-4 py-3"
+      className="flex-row items-center gap-3 bg-surface px-4 py-3 active:opacity-70"
     >
       <CategoryPill icon={visual.icon} color={visual.color} />
 
@@ -36,6 +34,6 @@ export function TransactionItem({ transaction, onPress }: Props) {
       <Text className={`text-base font-semibold ${isIncome ? 'text-income' : 'text-surface-dark'}`}>
         {formatSigned(transaction)}
       </Text>
-    </PressableScale>
+    </Pressable>
   );
 }
