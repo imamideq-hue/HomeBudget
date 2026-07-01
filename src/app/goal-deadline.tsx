@@ -140,8 +140,8 @@ export default function GoalDeadlineModal() {
           </View>
         </ScrollView>
 
-        {/* Actions */}
-        <View className="gap-3 pb-2">
+        {/* Sticky actions — always visible at the bottom */}
+        <View className="gap-3 border-t border-line pb-2 pt-3">
           <Pressable
             onPress={save}
             className="flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-4 active:opacity-80"

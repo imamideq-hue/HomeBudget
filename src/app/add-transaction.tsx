@@ -127,7 +127,7 @@ export default function AddTransactionModal() {
         </View>
 
         <ScrollView
-          contentContainerClassName="gap-6 px-5 pb-10 pt-2"
+          contentContainerClassName="gap-6 px-5 pb-6 pt-2"
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"
         >
@@ -350,20 +350,23 @@ export default function AddTransactionModal() {
               />
             </View>
 
-            {/* Save */}
-            <Pressable
-              onPress={handleSave}
-              disabled={!canSave}
-              className={`mt-2 flex-row items-center justify-center gap-2 rounded-2xl py-4 ${
-                canSave ? 'bg-primary active:opacity-80' : 'bg-primary/40'
-              }`}
-            >
-              <Ionicons name="checkmark" size={20} color="#FFFFFF" />
-              <Text className="text-base font-semibold text-white">
-                {editing ? 'Save changes' : 'Save transaction'}
-              </Text>
-            </Pressable>
         </ScrollView>
+
+        {/* Sticky action button — always visible at the bottom */}
+        <View className="border-t border-line bg-surface px-5 pb-2 pt-3">
+          <Pressable
+            onPress={handleSave}
+            disabled={!canSave}
+            className={`flex-row items-center justify-center gap-2 rounded-2xl py-4 ${
+              canSave ? 'bg-primary active:opacity-80' : 'bg-primary/40'
+            }`}
+          >
+            <Ionicons name="checkmark" size={20} color="#FFFFFF" />
+            <Text className="text-base font-semibold text-white">
+              {editing ? 'Save changes' : 'Save transaction'}
+            </Text>
+          </Pressable>
+        </View>
       </View>
     </SafeAreaView>
   );

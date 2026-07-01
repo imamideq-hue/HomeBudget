@@ -133,7 +133,10 @@ export default function ManageSpaceModal() {
             )}
           </View>
 
-          {/* Add member */}
+        </ScrollView>
+
+        {/* Sticky action button — always visible at the bottom */}
+        <View className="border-t border-line bg-surface px-5 pb-2 pt-3">
           <Pressable
             onPress={() => router.push('/add-member')}
             className="flex-row items-center justify-center gap-2 rounded-2xl bg-primary py-4 active:opacity-80"
@@ -141,7 +144,7 @@ export default function ManageSpaceModal() {
             <Ionicons name="person-add" size={18} color="#FFFFFF" />
             <Text className="text-base font-semibold text-white">Add a member</Text>
           </Pressable>
-        </ScrollView>
+        </View>
       </View>
     </SafeAreaView>
   );

@@ -160,8 +160,8 @@ export default function ContributeGoalModal() {
           ) : null}
         </ScrollView>
 
-        {/* Save */}
-        <View className="px-5 pb-2 pt-2">
+        {/* Sticky action button — always visible at the bottom */}
+        <View className="border-t border-line bg-surface px-5 pb-2 pt-3">
           <Pressable
             onPress={save}
             disabled={parsed <= 0}

@@ -189,20 +189,6 @@ export default function AddCategoryModal() {
               </View>
             </View>
 
-            {/* Save */}
-            <Pressable
-              onPress={save}
-              disabled={!canSave}
-              className={`mt-2 flex-row items-center justify-center gap-2 rounded-2xl py-4 ${
-                canSave ? 'bg-primary active:opacity-80' : 'bg-primary/40'
-              }`}
-            >
-              <Ionicons name="checkmark" size={20} color="#FFFFFF" />
-              <Text className="text-base font-semibold text-white">
-                {editing ? 'Save changes' : 'Create category'}
-              </Text>
-            </Pressable>
-
             {/* Delete (edit mode) */}
             {editing ? (
               <Pressable
@@ -214,6 +200,22 @@ export default function AddCategoryModal() {
               </Pressable>
             ) : null}
         </ScrollView>
+
+        {/* Sticky action button — always visible at the bottom */}
+        <View className="border-t border-line bg-surface px-5 pb-2 pt-3">
+          <Pressable
+            onPress={save}
+            disabled={!canSave}
+            className={`flex-row items-center justify-center gap-2 rounded-2xl py-4 ${
+              canSave ? 'bg-primary active:opacity-80' : 'bg-primary/40'
+            }`}
+          >
+            <Ionicons name="checkmark" size={20} color="#FFFFFF" />
+            <Text className="text-base font-semibold text-white">
+              {editing ? 'Save changes' : 'Create category'}
+            </Text>
+          </Pressable>
+        </View>
       </View>
     </SafeAreaView>
   );

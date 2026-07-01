@@ -135,11 +135,14 @@ export default function AdjustAccountModal() {
             expenses.
           </Text>
 
-          {/* Save */}
+        </ScrollView>
+
+        {/* Sticky action button — always visible at the bottom */}
+        <View className="border-t border-line bg-surface px-5 pb-2 pt-3">
           <Pressable
             onPress={save}
             disabled={!valid}
-            className={`mt-2 flex-row items-center justify-center gap-2 rounded-2xl py-4 ${
+            className={`flex-row items-center justify-center gap-2 rounded-2xl py-4 ${
               valid ? 'bg-primary active:opacity-80' : 'bg-primary/40'
             }`}
             style={valid ? { shadowColor: accent } : undefined}
@@ -147,7 +150,7 @@ export default function AdjustAccountModal() {
             <Ionicons name="checkmark" size={20} color="#FFFFFF" />
             <Text className="text-base font-semibold text-white">Save balance</Text>
           </Pressable>
-        </ScrollView>
+        </View>
       </View>
     </SafeAreaView>
   );
