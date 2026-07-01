@@ -1,16 +1,13 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
-import Svg, { Circle } from 'react-native-svg';
 
 import type { GroupBudgetSummary } from '@/lib/budget';
 import { formatCurrency } from '@/lib/format';
 
-const SIZE = 96;
-const STROKE = 10;
-const RADIUS = (SIZE - STROKE) / 2;
-const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
-
-/** Cashew-style circular budget progress ring with the category icon centered. */
+/**
+ * A compact budget tile: a rounded card (like the account cards) with a colored
+ * outline, the category icon, the name, spent/limit and a progress bar.
+ */
 export function BudgetRing({
   budget,
   onPress,
@@ -20,49 +17,40 @@ export function BudgetRing({
 }) {
   const pct = Math.min(budget.percentUsed, 1);
   const color = budget.isOverBudget ? '#FF6B6B' : budget.group.color;
-  const dashOffset = CIRCUMFERENCE * (1 - pct);
 
   return (
-    <Pressable onPress={onPress} className="w-28 items-center gap-2 active:opacity-70">
-      <View style={{ width: SIZE, height: SIZE }} className="items-center justify-center">
-        <Svg width={SIZE} height={SIZE} style={{ position: 'absolute' }}>
-          <Circle
-            cx={SIZE / 2}
-            cy={SIZE / 2}
-            r={RADIUS}
-            stroke="#E9E9EF"
-            strokeWidth={STROKE}
-            fill="none"
-          />
-          <Circle
-            cx={SIZE / 2}
-            cy={SIZE / 2}
-            r={RADIUS}
-            stroke={color}
-            strokeWidth={STROKE}
-            fill="none"
-            strokeLinecap="round"
-            strokeDasharray={CIRCUMFERENCE}
-            strokeDashoffset={dashOffset}
-            transform={`rotate(-90 ${SIZE / 2} ${SIZE / 2})`}
-          />
-        </Svg>
+    <Pressable
+      onPress={onPress}
+      className="w-40 rounded-2xl bg-card p-4 active:opacity-70"
+      style={{ borderWidth: 1.5, borderColor: color }}
+    >
+      <View
+        className="h-11 w-11 items-center justify-center rounded-full"
+        style={{ backgroundColor: `${color}22` }}
+      >
         <Ionicons
           name={budget.group.icon as keyof typeof Ionicons.glyphMap}
-          size={26}
+          size={22}
           color={color}
         />
       </View>
 
-      <Text numberOfLines={1} className="text-sm font-medium text-surface-dark">
+      <Text numberOfLines={1} className="mt-3 text-sm font-semibold text-surface-dark">
         {budget.group.name}
       </Text>
       <Text
         numberOfLines={1}
-        className={`text-xs ${budget.isOverBudget ? 'text-expense' : 'text-muted'}`}
+        className={`mt-0.5 text-xs ${budget.isOverBudget ? 'text-expense' : 'text-muted'}`}
       >
         {formatCurrency(budget.totalSpent)} / {formatCurrency(budget.budgetLimit)}
       </Text>
+
+      <View className="mt-3 h-1.5 overflow-hidden rounded-full bg-black/25">
+        <View
+          className="h-full rounded-full"
+          style={{ width: `${pct * 100}%`, backgroundColor: color }}
+        />
+      </View>
     </Pressable>
   );
 }

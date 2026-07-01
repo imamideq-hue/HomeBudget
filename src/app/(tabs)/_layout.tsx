@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
-import { Platform, View, type ColorValue } from 'react-native';
+import { View, type ColorValue } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/hooks/useTheme';
 
@@ -38,6 +39,10 @@ function TabIcon({
 
 export default function TabsLayout() {
   const { accent, isDark } = useTheme();
+  const insets = useSafeAreaInsets();
+  // Reserve room for the device's bottom inset (gesture pill / nav bar) so the
+  // tab bar never sits under the system navigation.
+  const bottomInset = Math.max(insets.bottom, 8);
   return (
     <Tabs
       screenOptions={{
@@ -48,9 +53,9 @@ export default function TabsLayout() {
         tabBarStyle: {
           backgroundColor: isDark ? '#121218' : '#FFFFFF',
           borderTopColor: isDark ? '#26262E' : '#ECECF2',
-          height: Platform.OS === 'ios' ? 88 : 64,
+          height: 60 + bottomInset,
           paddingTop: 6,
-          paddingBottom: Platform.OS === 'ios' ? 28 : 8,
+          paddingBottom: bottomInset,
         },
       }}
     >
