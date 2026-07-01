@@ -7,6 +7,7 @@ import { AccountCard } from '@/components/AccountCard';
 import { AddTransactionButton } from '@/components/AddTransactionButton';
 import { BalanceCard } from '@/components/BalanceCard';
 import { BudgetRing } from '@/components/BudgetRing';
+import { PressableScale } from '@/components/motion';
 import { ScopeFilter } from '@/components/ScopeFilter';
 import { TransactionItem } from '@/components/TransactionItem';
 import { useBudget } from '@/hooks/useBudget';
@@ -36,15 +37,15 @@ export function DashboardScreen() {
               {currentUser?.name ?? 'Dashboard'}
             </Text>
           </View>
-          <Pressable
+          <PressableScale
             onPress={() => router.push('/add-member')}
             accessibilityRole="button"
             accessibilityLabel="Add member"
-            className="shrink-0 flex-row items-center gap-1.5 rounded-full bg-primary px-4 py-2.5 active:opacity-80"
+            className="shrink-0 flex-row items-center gap-1.5 rounded-full bg-primary px-4 py-2.5"
           >
             <Ionicons name="person-add" size={16} color="#FFFFFF" />
             <Text className="text-sm font-semibold text-white">Add user</Text>
-          </Pressable>
+          </PressableScale>
         </View>
 
         {/* Active section: drives the view and where new entries are filed */}
@@ -73,7 +74,7 @@ export function DashboardScreen() {
             {QUICK_ADD.map((subId) => {
               const visual = resolveSubVisual(subId);
               return (
-                <Pressable
+                <PressableScale
                   key={subId}
                   onPress={() =>
                     router.push({
@@ -81,7 +82,7 @@ export function DashboardScreen() {
                       params: { subCategoryId: subId, type: 'expense' },
                     })
                   }
-                  className="w-20 items-center gap-1 active:opacity-70"
+                  className="w-20 items-center gap-1"
                 >
                   <View
                     className="h-14 w-14 items-center justify-center rounded-2xl"
@@ -96,7 +97,7 @@ export function DashboardScreen() {
                   <Text className="text-xs text-muted" numberOfLines={1}>
                     {visual.name}
                   </Text>
-                </Pressable>
+                </PressableScale>
               );
             })}
           </ScrollView>

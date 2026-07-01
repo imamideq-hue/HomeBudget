@@ -1,5 +1,6 @@
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 
+import { PressableScale } from '@/components/motion';
 import { useScope } from '@/context/ScopeContext';
 import { useTheme } from '@/hooks/useTheme';
 import { SCOPE_ALL, SCOPE_JOINT, type ScopeFilter as Scope } from '@/lib/scope';
@@ -46,7 +47,7 @@ export function ScopeFilter({ users, currentUserId, variant = 'chips' }: Props) 
         {chips.map((chip) => {
           const active = scope === chip.key;
           return (
-            <Pressable
+            <PressableScale
               key={chip.key}
               onPress={() => setScope(chip.key)}
               className={`flex-row items-center gap-2 rounded-2xl px-5 py-3 ${
@@ -64,7 +65,7 @@ export function ScopeFilter({ users, currentUserId, variant = 'chips' }: Props) 
               >
                 {chip.label}
               </Text>
-            </Pressable>
+            </PressableScale>
           );
         })}
       </ScrollView>
@@ -80,7 +81,7 @@ export function ScopeFilter({ users, currentUserId, variant = 'chips' }: Props) 
       {chips.map((chip) => {
         const active = scope === chip.key;
         return (
-          <Pressable
+          <PressableScale
             key={chip.key}
             onPress={() => setScope(chip.key)}
             className={`flex-row items-center gap-1.5 rounded-full border px-3.5 py-2 ${
@@ -100,7 +101,7 @@ export function ScopeFilter({ users, currentUserId, variant = 'chips' }: Props) 
             >
               {chip.label}
             </Text>
-          </Pressable>
+          </PressableScale>
         );
       })}
     </ScrollView>

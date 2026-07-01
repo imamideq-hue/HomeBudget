@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Calendar } from '@/components/Calendar';
 import { CategoryPill } from '@/components/CategoryPill';
+import { PressableScale } from '@/components/motion';
 import { useScope } from '@/context/ScopeContext';
 import { useBudget } from '@/hooks/useBudget';
 import { useBudgetTracker } from '@/hooks/useBudgetTracker';
@@ -330,18 +331,18 @@ export default function AddTransactionModal() {
             </View>
 
             {/* Save */}
-            <Pressable
+            <PressableScale
               onPress={handleSave}
               disabled={!canSave}
               className={`mt-2 flex-row items-center justify-center gap-2 rounded-2xl py-4 ${
-                canSave ? 'bg-primary active:opacity-80' : 'bg-primary/40'
+                canSave ? 'bg-primary' : 'bg-primary/40'
               }`}
             >
               <Ionicons name="checkmark" size={20} color="#FFFFFF" />
               <Text className="text-base font-semibold text-white">
                 {editing ? 'Save changes' : 'Save transaction'}
               </Text>
-            </Pressable>
+            </PressableScale>
         </ScrollView>
       </View>
     </SafeAreaView>
