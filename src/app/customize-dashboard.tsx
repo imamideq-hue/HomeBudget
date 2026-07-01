@@ -4,11 +4,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ToggleSwitch } from '@/components/ToggleSwitch';
 import { useDashboard } from '@/hooks/useDashboard';
+import { useTheme } from '@/hooks/useTheme';
 import { DASHBOARD_SECTIONS } from '@/lib/dashboard';
 
 export default function CustomizeDashboardModal() {
   const router = useRouter();
   const { sections, setSection } = useDashboard();
+  const { accent } = useTheme();
 
   return (
     <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-surface">
@@ -44,7 +46,11 @@ export default function CustomizeDashboardModal() {
                   </Text>
                   <Text className="text-xs text-muted">{section.description}</Text>
                 </View>
-                <ToggleSwitch value={visible} onValueChange={(v) => setSection(section.key, v)} />
+                <ToggleSwitch
+                  value={visible}
+                  onValueChange={(v) => setSection(section.key, v)}
+                  activeColor={accent}
+                />
               </View>
             );
           })}

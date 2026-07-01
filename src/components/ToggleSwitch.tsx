@@ -3,14 +3,16 @@ import { Pressable, View } from 'react-native';
 interface Props {
   value: boolean;
   onValueChange: (v: boolean) => void;
+  /** Track color when on (defaults to the app accent set by the caller). */
+  activeColor?: string;
 }
 
 /**
- * A neutral, iOS-style toggle we render ourselves so it looks identical on web
- * and device (the RN `Switch` ignores thumb/track colors on web). Monochrome:
- * a grey track that lightens when on, with a white knob.
+ * An iOS-style toggle we render ourselves so it looks identical on web and
+ * device (the RN `Switch` ignores thumb/track colors on web). Off is a neutral
+ * grey; on uses the caller's accent color with a white knob.
  */
-export function ToggleSwitch({ value, onValueChange }: Props) {
+export function ToggleSwitch({ value, onValueChange, activeColor = '#7C5CFC' }: Props) {
   return (
     <Pressable
       accessibilityRole="switch"
@@ -24,7 +26,7 @@ export function ToggleSwitch({ value, onValueChange }: Props) {
         padding: 3,
         justifyContent: 'center',
         alignItems: value ? 'flex-end' : 'flex-start',
-        backgroundColor: value ? '#6E6E76' : '#3A3A3E',
+        backgroundColor: value ? activeColor : '#3A3A3E',
       }}
     >
       <View
