@@ -1,9 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Pressable, ScrollView, Text, View } from 'react-native';
+import { FadeInDown } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CategoryPill } from '@/components/CategoryPill';
+import { MotionView } from '@/components/motion';
 import { ScopeFilter } from '@/components/ScopeFilter';
 import { useBudget } from '@/hooks/useBudget';
 import { useGoals } from '@/hooks/useGoals';
@@ -39,8 +41,12 @@ export function GoalsScreen() {
 
         <ScopeFilter users={users} currentUserId={currentUser?.id ?? ''} />
 
-        {progress.map(({ goal, ratio, remaining, isReached }) => (
-          <View key={goal.id} className="rounded-3xl bg-card p-5">
+        {progress.map(({ goal, ratio, remaining, isReached }, i) => (
+          <MotionView
+            key={goal.id}
+            entering={FadeInDown.duration(360).delay(i * 60)}
+            className="rounded-3xl bg-card p-5"
+          >
             {/* Tap the goal to edit (or delete) it */}
             <Pressable
               onPress={() => router.push({ pathname: '/add-goal', params: { goalId: goal.id } })}
@@ -138,7 +144,7 @@ export function GoalsScreen() {
                 <Text className="text-sm font-semibold text-white">Contribute</Text>
               </Pressable>
             </View>
-          </View>
+          </MotionView>
         ))}
 
         {progress.length === 0 ? (

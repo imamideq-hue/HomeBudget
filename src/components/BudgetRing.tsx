@@ -1,7 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 
+import { PressableScale } from '@/components/motion';
 import type { GroupBudgetSummary } from '@/lib/budget';
 import { formatCurrency } from '@/lib/format';
 
@@ -23,14 +24,15 @@ export function BudgetRing({
   const dashOffset = CIRCUMFERENCE * (1 - pct);
 
   return (
-    <Pressable onPress={onPress} className="w-28 items-center gap-2 active:opacity-70">
+    <PressableScale onPress={onPress} className="w-28 items-center gap-2">
       <View style={{ width: SIZE, height: SIZE }} className="items-center justify-center">
         <Svg width={SIZE} height={SIZE} style={{ position: 'absolute' }}>
           <Circle
             cx={SIZE / 2}
             cy={SIZE / 2}
             r={RADIUS}
-            stroke="#E9E9EF"
+            stroke="#8A8A9E"
+            strokeOpacity={0.15}
             strokeWidth={STROKE}
             fill="none"
           />
@@ -63,6 +65,6 @@ export function BudgetRing({
       >
         {formatCurrency(budget.totalSpent)} / {formatCurrency(budget.budgetLimit)}
       </Text>
-    </Pressable>
+    </PressableScale>
   );
 }

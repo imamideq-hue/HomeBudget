@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
+import { PressableScale } from '@/components/motion';
 import { formatCurrency } from '@/lib/format';
 import type { Account } from '@/models';
 
@@ -13,7 +14,7 @@ interface Props {
 /** Compact account tile with its current (live) balance. */
 export function AccountCard({ account, balance, onPress }: Props) {
   return (
-    <Pressable onPress={onPress} className="w-40 rounded-2xl bg-card p-4 active:opacity-70">
+    <PressableScale onPress={onPress} className="w-40 rounded-2xl bg-card p-4">
       <View
         className="h-9 w-9 items-center justify-center rounded-full"
         style={{ backgroundColor: `${account.color}22` }}
@@ -31,6 +32,6 @@ export function AccountCard({ account, balance, onPress }: Props) {
         {formatCurrency(balance)}
       </Text>
       <Text className="text-xs capitalize text-muted">{account.type}</Text>
-    </Pressable>
+    </PressableScale>
   );
 }

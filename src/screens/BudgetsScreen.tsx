@@ -1,10 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Pressable, ScrollView, Text, View } from 'react-native';
+import { FadeInDown } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BudgetProgressRow } from '@/components/BudgetProgressRow';
 import { CategoryPill } from '@/components/CategoryPill';
+import { MotionView, PressableScale } from '@/components/motion';
 import { useBudgetTracker } from '@/hooks/useBudgetTracker';
 
 const MONTH = new Date().toLocaleDateString('en-US', { month: 'long' });
@@ -36,12 +38,10 @@ export function BudgetsScreen() {
         </View>
         <Text className="mb-1 text-sm text-muted">Monthly · {MONTH} · tap to edit</Text>
 
-        {budgeted.map((budget) => (
-          <BudgetProgressRow
-            key={budget.group.id}
-            budget={budget}
-            onPress={() => edit(budget.group.id)}
-          />
+        {budgeted.map((budget, i) => (
+          <MotionView key={budget.group.id} entering={FadeInDown.duration(340).delay(i * 50)}>
+            <BudgetProgressRow budget={budget} onPress={() => edit(budget.group.id)} />
+          </MotionView>
         ))}
 
         {unbudgeted.length > 0 ? (
@@ -51,10 +51,10 @@ export function BudgetsScreen() {
         ) : null}
 
         {unbudgeted.map((budget) => (
-          <Pressable
+          <PressableScale
             key={budget.group.id}
             onPress={() => edit(budget.group.id)}
-            className="flex-row items-center gap-3 rounded-2xl bg-card p-4 active:opacity-70"
+            className="flex-row items-center gap-3 rounded-2xl bg-card p-4"
           >
             <CategoryPill icon={budget.group.icon} color={budget.group.color} size={36} />
             <Text className="flex-1 text-base font-medium text-surface-dark">
@@ -62,7 +62,7 @@ export function BudgetsScreen() {
             </Text>
             <Text className="text-sm font-medium text-primary">Set budget</Text>
             <Ionicons name="chevron-forward" size={16} color="#8A8A9E" />
-          </Pressable>
+          </PressableScale>
         ))}
       </ScrollView>
     </SafeAreaView>

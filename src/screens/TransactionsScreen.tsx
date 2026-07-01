@@ -2,9 +2,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Pressable, SectionList, Text, View } from 'react-native';
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import { FadeIn } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AddTransactionButton } from '@/components/AddTransactionButton';
+import { MotionView } from '@/components/motion';
 import { ScopeFilter } from '@/components/ScopeFilter';
 import { TransactionItem } from '@/components/TransactionItem';
 import { useBudget } from '@/hooks/useBudget';
@@ -19,26 +21,28 @@ export function TransactionsScreen() {
   const sections = groups.map((g) => ({ title: g.label, data: g.transactions }));
 
   const renderItem = ({ item }: { item: Transaction }) => (
-    <ReanimatedSwipeable
-      friction={2}
-      rightThreshold={40}
-      renderRightActions={() => (
-        <Pressable
-          onPress={() => deleteTransaction(item.id)}
-          className="w-20 items-center justify-center bg-expense active:opacity-80"
-        >
-          <Ionicons name="trash" size={20} color="#FFFFFF" />
-          <Text className="mt-1 text-xs font-medium text-white">Delete</Text>
-        </Pressable>
-      )}
-    >
-      <TransactionItem
-        transaction={item}
-        onPress={(t) =>
-          router.push({ pathname: '/add-transaction', params: { transactionId: t.id } })
-        }
-      />
-    </ReanimatedSwipeable>
+    <MotionView entering={FadeIn.duration(250)}>
+      <ReanimatedSwipeable
+        friction={2}
+        rightThreshold={40}
+        renderRightActions={() => (
+          <Pressable
+            onPress={() => deleteTransaction(item.id)}
+            className="w-20 items-center justify-center bg-expense active:opacity-80"
+          >
+            <Ionicons name="trash" size={20} color="#FFFFFF" />
+            <Text className="mt-1 text-xs font-medium text-white">Delete</Text>
+          </Pressable>
+        )}
+      >
+        <TransactionItem
+          transaction={item}
+          onPress={(t) =>
+            router.push({ pathname: '/add-transaction', params: { transactionId: t.id } })
+          }
+        />
+      </ReanimatedSwipeable>
+    </MotionView>
   );
 
   return (
