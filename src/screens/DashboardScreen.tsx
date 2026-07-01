@@ -198,6 +198,15 @@ export function DashboardScreen() {
                   }
                 />
               ))}
+              <Pressable
+                onPress={() => router.push('/add-account')}
+                className="w-28 items-center justify-center gap-2 rounded-2xl border border-dashed border-muted/40 p-4 active:opacity-70"
+              >
+                <View className="h-9 w-9 items-center justify-center rounded-full bg-primary/10">
+                  <Ionicons name="add" size={20} color={accent} />
+                </View>
+                <Text className="text-sm font-medium text-primary">Add</Text>
+              </Pressable>
             </ScrollView>
           </View>
         ) : null}

@@ -97,16 +97,24 @@ export default function ManageSpaceModal() {
                   key={u.id}
                   className="flex-row items-center gap-3 rounded-2xl bg-card px-4 py-3"
                 >
-                  <View
-                    className="h-11 w-11 items-center justify-center rounded-full"
-                    style={{ backgroundColor: u.color }}
+                  <Pressable
+                    onPress={() =>
+                      router.push({ pathname: '/add-member', params: { memberId: u.id } })
+                    }
+                    className="flex-1 flex-row items-center gap-3 active:opacity-70"
                   >
-                    <Text className="text-base font-bold text-white">{initials(u.name)}</Text>
-                  </View>
-                  <View className="flex-1">
-                    <Text className="text-base font-semibold text-surface-dark">{u.name}</Text>
-                    {u.email ? <Text className="text-sm text-muted">{u.email}</Text> : null}
-                  </View>
+                    <View
+                      className="h-11 w-11 items-center justify-center rounded-full"
+                      style={{ backgroundColor: u.color }}
+                    >
+                      <Text className="text-base font-bold text-white">{initials(u.name)}</Text>
+                    </View>
+                    <View className="flex-1">
+                      <Text className="text-base font-semibold text-surface-dark">{u.name}</Text>
+                      {u.email ? <Text className="text-sm text-muted">{u.email}</Text> : null}
+                    </View>
+                    <Ionicons name="create-outline" size={16} color="#8A8A9E" />
+                  </Pressable>
                   <Pressable
                     onPress={() => confirmRemove(u.id, u.name)}
                     hitSlop={8}

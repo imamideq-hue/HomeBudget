@@ -48,7 +48,19 @@ export function AccountDetailScreen({ accountId }: { accountId: string }) {
         <Pressable onPress={() => router.back()} hitSlop={8} className="active:opacity-60">
           <Ionicons name="chevron-back" size={24} color={foreground} />
         </Pressable>
-        <Text className="text-lg font-semibold text-surface-dark">{account.name}</Text>
+        <Text className="flex-1 text-lg font-semibold text-surface-dark">{account.name}</Text>
+        <Pressable
+          onPress={() =>
+            router.push({ pathname: '/add-account', params: { accountId: account.id } })
+          }
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityLabel="Edit account"
+          className="flex-row items-center gap-1 active:opacity-60"
+        >
+          <Ionicons name="create-outline" size={18} color={foreground} />
+          <Text className="text-sm font-medium text-primary">Edit</Text>
+        </Pressable>
       </View>
 
       <ScrollView contentContainerClassName="gap-6 px-5 pb-12 pt-2">

@@ -34,6 +34,7 @@ function ThemedApp() {
         <Stack.Screen name="goal-deadline" options={{ presentation: 'modal' }} />
         <Stack.Screen name="add-goal" options={{ presentation: 'modal' }} />
         <Stack.Screen name="add-budget" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="add-account" options={{ presentation: 'modal' }} />
         <Stack.Screen name="add-member" options={{ presentation: 'modal' }} />
         <Stack.Screen name="adjust-account" options={{ presentation: 'modal' }} />
         <Stack.Screen name="manage-space" options={{ presentation: 'modal' }} />

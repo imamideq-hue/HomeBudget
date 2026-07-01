@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -20,17 +20,24 @@ function initials(name: string): string {
 
 export default function AddMemberModal() {
   const router = useRouter();
-  const { currentSpace, addMember } = useBudget();
+  const { currentSpace, users, addMember, editUser } = useBudget();
 
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [color, setColor] = useState(COLORS[0]);
+  const params = useLocalSearchParams<{ memberId?: string }>();
+  const editing = params.memberId ? users.find((u) => u.id === params.memberId) : undefined;
+
+  const [name, setName] = useState(editing?.name ?? '');
+  const [email, setEmail] = useState(editing?.email ?? '');
+  const [color, setColor] = useState(editing?.color ?? COLORS[0]);
 
   const canSave = name.trim().length > 0;
 
   const save = () => {
     if (!canSave) return;
-    addMember({ name, email, color });
+    if (editing) {
+      editUser(editing.id, { name: name.trim(), email: email.trim() || undefined, color });
+    } else {
+      addMember({ name, email, color });
+    }
     feedbackSuccess();
     router.back();
   };
@@ -43,7 +50,9 @@ export default function AddMemberModal() {
           <Pressable onPress={() => router.back()} hitSlop={8} className="active:opacity-60">
             <Text className="text-base text-muted">Cancel</Text>
           </Pressable>
-          <Text className="text-base font-semibold text-surface-dark">Add member</Text>
+          <Text className="text-base font-semibold text-surface-dark">
+            {editing ? 'Edit member' : 'Add member'}
+          </Text>
           <View className="w-14" />
         </View>
 
@@ -118,8 +127,10 @@ export default function AddMemberModal() {
                 canSave ? 'bg-primary active:opacity-80' : 'bg-primary/40'
               }`}
             >
-              <Ionicons name="person-add" size={20} color="#FFFFFF" />
-              <Text className="text-base font-semibold text-white">Add member</Text>
+              <Ionicons name={editing ? 'checkmark' : 'person-add'} size={20} color="#FFFFFF" />
+              <Text className="text-base font-semibold text-white">
+                {editing ? 'Save changes' : 'Add member'}
+              </Text>
             </Pressable>
         </ScrollView>
       </View>

@@ -10,6 +10,7 @@ import {
 import { setCurrencyCode } from '@/lib/format';
 import { SEED_DATA } from '@/lib/seed';
 import type {
+  Account,
   BudgetData,
   Goal,
   GoalContribution,
@@ -28,6 +29,14 @@ export type SubCategoryEdit = Partial<Pick<SubCategory, 'name' | 'icon' | 'color
 export type GoalEdit = Partial<
   Pick<Goal, 'name' | 'targetAmount' | 'icon' | 'color' | 'ownerId'>
 >;
+
+/** Editable fields of an account. */
+export type AccountEdit = Partial<
+  Pick<Account, 'name' | 'type' | 'icon' | 'color' | 'startingBalance'>
+>;
+
+/** Editable fields of a member/user. */
+export type UserEdit = Partial<Pick<User, 'name' | 'email' | 'color'>>;
 
 /** Editable fields of a transaction (e.g. correcting the account or amount). */
 export type TransactionEdit = Partial<
@@ -49,9 +58,14 @@ export type BudgetAction =
   | { type: 'EDIT_SUBCATEGORY'; payload: { id: string; changes: SubCategoryEdit } }
   | { type: 'ADD_GROUP_CATEGORY'; payload: GroupCategory }
   | { type: 'SET_GOAL_DEADLINE'; payload: { goalId: string; deadline?: string } }
+  | { type: 'ADD_ACCOUNT'; payload: Account }
+  | { type: 'EDIT_ACCOUNT'; payload: { id: string; changes: AccountEdit } }
+  | { type: 'DELETE_ACCOUNT'; payload: { id: string } }
+  | { type: 'DELETE_SUBCATEGORY'; payload: { id: string } }
   | { type: 'ADD_MEMBER'; payload: User }
   | { type: 'REMOVE_MEMBER'; payload: { userId: string } }
   | { type: 'RENAME_USER'; payload: { userId: string; name: string } }
+  | { type: 'EDIT_USER'; payload: { userId: string; changes: UserEdit } }
   | { type: 'SET_ACCOUNT_STARTING_BALANCE'; payload: { accountId: string; startingBalance: number } }
   | { type: 'SET_GOAL_OWNER'; payload: { goalId: string; ownerId?: string } }
   | { type: 'SET_CURRENCY'; payload: { code: string } }
@@ -169,6 +183,34 @@ function reducer(state: BudgetData, action: BudgetAction): BudgetData {
           a.id === action.payload.accountId
             ? { ...a, startingBalance: action.payload.startingBalance }
             : a,
+        ),
+      };
+    case 'ADD_ACCOUNT':
+      return { ...state, accounts: [...state.accounts, action.payload] };
+    case 'EDIT_ACCOUNT':
+      return {
+        ...state,
+        accounts: state.accounts.map((a) =>
+          a.id === action.payload.id ? { ...a, ...action.payload.changes } : a,
+        ),
+      };
+    case 'DELETE_ACCOUNT':
+      return {
+        ...state,
+        accounts: state.accounts.filter((a) => a.id !== action.payload.id),
+        // Remove the deleted account's transactions so balances stay correct.
+        transactions: state.transactions.filter((t) => t.accountId !== action.payload.id),
+      };
+    case 'DELETE_SUBCATEGORY':
+      return {
+        ...state,
+        subCategories: state.subCategories.filter((s) => s.id !== action.payload.id),
+      };
+    case 'EDIT_USER':
+      return {
+        ...state,
+        users: state.users.map((u) =>
+          u.id === action.payload.userId ? { ...u, ...action.payload.changes } : u,
         ),
       };
     case 'SET_ACCENT':

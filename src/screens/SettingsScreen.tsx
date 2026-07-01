@@ -116,6 +116,15 @@ export function SettingsScreen() {
               <Ionicons name="chevron-forward" size={16} color="#8A8A9E" />
             </Pressable>
           ))}
+          <Pressable
+            onPress={() => router.push('/add-account')}
+            className="flex-row items-center gap-3 rounded-2xl border border-dashed border-muted/40 px-4 py-3 active:opacity-70"
+          >
+            <View className="h-9 w-9 items-center justify-center rounded-full bg-primary/10">
+              <Ionicons name="add" size={20} color={accent} />
+            </View>
+            <Text className="flex-1 text-base font-medium text-primary">Add account</Text>
+          </Pressable>
         </Section>
 
         {/* Categories */}

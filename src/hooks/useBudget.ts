@@ -1,16 +1,24 @@
 import { useContext, useMemo } from 'react';
 
-import { BudgetContext } from '@/context/BudgetContext';
+import { BudgetContext, type AccountEdit, type UserEdit } from '@/context/BudgetContext';
 import { useScope } from '@/context/ScopeContext';
 import { getGroupForSub } from '@/lib/categories';
 import { newId } from '@/lib/id';
 import { filterTransactionsByScope, goalInScope } from '@/lib/scope';
-import type { GroupCategory, Transaction, User } from '@/models';
+import type { Account, AccountType, GroupCategory, Transaction, User } from '@/models';
 
 export interface NewMemberInput {
   name: string;
   email?: string;
   color: string;
+}
+
+export interface NewAccountInput {
+  name: string;
+  type: AccountType;
+  icon: string;
+  color: string;
+  startingBalance: number;
 }
 
 export interface GroupSpend {
@@ -128,6 +136,34 @@ export function useBudget() {
     if (trimmed) dispatch({ type: 'RENAME_USER', payload: { userId, name: trimmed } });
   };
 
+  /** Edit a member's details (name, email, color). */
+  const editUser = (userId: string, changes: UserEdit) =>
+    dispatch({ type: 'EDIT_USER', payload: { userId, changes } });
+
+  /** Create a new account. */
+  const addAccount = (input: NewAccountInput): Account => {
+    const account: Account = {
+      id: newId(),
+      spaceId: state.currentSpaceId,
+      name: input.name.trim(),
+      type: input.type,
+      startingBalance: input.startingBalance,
+      currency: currentSpace?.currency ?? 'USD',
+      color: input.color,
+      icon: input.icon,
+      createdAt: new Date().toISOString(),
+    };
+    dispatch({ type: 'ADD_ACCOUNT', payload: account });
+    return account;
+  };
+
+  /** Edit an account's details (name, type, icon, color). */
+  const editAccount = (id: string, changes: AccountEdit) =>
+    dispatch({ type: 'EDIT_ACCOUNT', payload: { id, changes } });
+
+  /** Delete an account and its transactions. */
+  const deleteAccount = (id: string) => dispatch({ type: 'DELETE_ACCOUNT', payload: { id } });
+
   /** Change the active currency (the provider re-syncs the formatter). */
   const setCurrency = (code: string) =>
     dispatch({ type: 'SET_CURRENCY', payload: { code } });
@@ -184,6 +220,10 @@ export function useBudget() {
     addMember,
     removeMember,
     renameUser,
+    editUser,
+    addAccount,
+    editAccount,
+    deleteAccount,
     setCurrency,
     addToAccountBalance,
     setAccountBalance,

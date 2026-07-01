@@ -1,11 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { Alert, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CategoryPill } from '@/components/CategoryPill';
 import { useCategories } from '@/hooks/useCategories';
+import { feedbackSuccess } from '@/lib/feedback';
 import type { TransactionType } from '@/models';
 
 const ICONS = [
@@ -24,8 +25,14 @@ const COLORS = [
 
 export default function AddCategoryModal() {
   const router = useRouter();
-  const { groupCategories, getSubCategory, getGroupForSub, addSubCategory, editSubCategory } =
-    useCategories();
+  const {
+    groupCategories,
+    getSubCategory,
+    getGroupForSub,
+    addSubCategory,
+    editSubCategory,
+    deleteSubCategory,
+  } = useCategories();
   const params = useLocalSearchParams<{ groupId?: string; kind?: string; categoryId?: string }>();
 
   const editing = params.categoryId ? getSubCategory(params.categoryId) : undefined;
@@ -57,7 +64,23 @@ export default function AddCategoryModal() {
     } else {
       addSubCategory({ groupId, name, icon, color });
     }
+    feedbackSuccess();
     router.back();
+  };
+
+  const confirmDelete = () => {
+    if (!editing) return;
+    Alert.alert('Delete category', `Delete "${editing.name}"?`, [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => {
+          deleteSubCategory(editing.id);
+          router.back();
+        },
+      },
+    ]);
   };
 
   return (
@@ -179,6 +202,17 @@ export default function AddCategoryModal() {
                 {editing ? 'Save changes' : 'Create category'}
               </Text>
             </Pressable>
+
+            {/* Delete (edit mode) */}
+            {editing ? (
+              <Pressable
+                onPress={confirmDelete}
+                className="flex-row items-center justify-center gap-2 rounded-2xl border border-expense/40 py-4 active:opacity-70"
+              >
+                <Ionicons name="trash-outline" size={18} color="#FF6B6B" />
+                <Text className="text-base font-semibold text-expense">Delete category</Text>
+              </Pressable>
+            ) : null}
         </ScrollView>
       </View>
     </SafeAreaView>

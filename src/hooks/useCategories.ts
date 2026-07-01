@@ -55,6 +55,9 @@ export function useCategories() {
   const editSubCategory = (id: string, changes: SubCategoryEdit) =>
     dispatch({ type: 'EDIT_SUBCATEGORY', payload: { id, changes } });
 
+  const deleteSubCategory = (id: string) =>
+    dispatch({ type: 'DELETE_SUBCATEGORY', payload: { id } });
+
   const addGroupCategory = (input: NewGroupCategoryInput): GroupCategory => {
     const group: GroupCategory = {
       id: newId(),
@@ -81,6 +84,7 @@ export function useCategories() {
       resolveSubVisualPure(groupCategories, subCategories, subId),
     addSubCategory,
     editSubCategory,
+    deleteSubCategory,
     addGroupCategory,
   };
 }
