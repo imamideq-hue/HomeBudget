@@ -8,7 +8,7 @@ import type { User } from '@/models';
 interface Props {
   users: User[];
   currentUserId: string;
-  /** `prominent` renders big segmented buttons (used on the Dashboard). */
+  /** `prominent` (default) renders big segmented buttons; `chips` is compact. */
   variant?: 'chips' | 'prominent';
 }
 
@@ -23,7 +23,7 @@ interface Chip {
  * On the Dashboard this also sets the default section for new entries, so Joint
  * and personal money stay separate in one app.
  */
-export function ScopeFilter({ users, currentUserId, variant = 'chips' }: Props) {
+export function ScopeFilter({ users, currentUserId, variant = 'prominent' }: Props) {
   const { scope, setScope } = useScope();
   const { accent } = useTheme();
 

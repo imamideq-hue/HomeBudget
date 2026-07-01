@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useMemo, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -14,13 +15,14 @@ import { useTheme } from '@/hooks/useTheme';
 import { feedbackSuccess } from '@/lib/feedback';
 import { formatCurrency, formatDayLabel, getCurrency } from '@/lib/format';
 import { defaultOwnerForScope } from '@/lib/scope';
+import { darken, lighten } from '@/lib/theme';
 import type { TransactionType } from '@/models';
 
 export default function AddTransactionModal() {
   const router = useRouter();
   const { allAccounts: accounts, allTransactions: transactions, currentUser } = useBudget();
   const { addTransaction, editTransaction } = useBudgetTracker();
-  const { groupCategories, getSubsForGroup, getSubCategory } = useCategories();
+  const { groupCategories, getSubsForGroup, getSubCategory, resolveSubVisual } = useCategories();
   const { scope } = useScope();
   const { accent } = useTheme();
 
@@ -64,6 +66,10 @@ export default function AddTransactionModal() {
     () => groupCategories.filter((g) => g.kind === type),
     [groupCategories, type],
   );
+
+  // The selected category tints the hero block (accent until one is chosen).
+  const activeVisual = subCategoryId ? resolveSubVisual(subCategoryId) : null;
+  const heroColor = activeVisual?.color ?? accent;
 
   const canSave =
     parsedAmount > 0 && subCategoryId !== null && accountId !== null;
@@ -125,7 +131,7 @@ export default function AddTransactionModal() {
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"
         >
-            {/* Type toggle */}
+            {/* Type toggle — at the very top (Cashew) */}
             <View className="flex-row rounded-2xl bg-card p-1">
               {(['expense', 'income'] as const).map((t) => {
                 const active = type === t;
@@ -136,10 +142,10 @@ export default function AddTransactionModal() {
                       setType(t);
                       setSubCategoryId(null);
                     }}
-                    className={`flex-1 items-center rounded-xl py-2.5 ${active ? 'bg-surface shadow-sm' : ''}`}
+                    className={`flex-1 items-center rounded-xl py-3 ${active ? 'bg-surface shadow-sm' : ''}`}
                   >
                     <Text
-                      className={`text-sm font-semibold capitalize ${
+                      className={`text-base font-bold capitalize ${
                         active ? (t === 'income' ? 'text-income' : 'text-expense') : 'text-muted'
                       }`}
                     >
@@ -150,20 +156,35 @@ export default function AddTransactionModal() {
               })}
             </View>
 
-            {/* Amount */}
-            <View className="items-center py-2">
-              <Text className="mb-1 text-xs uppercase tracking-wide text-muted">
+            {/* Category-colored hero: icon + amount */}
+            <LinearGradient
+              colors={[lighten(heroColor, 0.06), darken(heroColor, 0.24)]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={{ borderRadius: 28, paddingVertical: 26, paddingHorizontal: 24, alignItems: 'center' }}
+            >
+              <View className="h-16 w-16 items-center justify-center rounded-full bg-white/20">
+                <Ionicons
+                  name={(activeVisual?.icon ?? 'pricetag') as keyof typeof Ionicons.glyphMap}
+                  size={30}
+                  color="#FFFFFF"
+                />
+              </View>
+              <Text className="mt-4 text-xs uppercase tracking-wide text-white/70">
                 Amount ({getCurrency()})
               </Text>
               <TextInput
                 value={amount}
                 onChangeText={setAmount}
                 placeholder="0.00"
-                placeholderTextColor="#C4C4D0"
+                placeholderTextColor="rgba(255,255,255,0.55)"
                 keyboardType="decimal-pad"
-                className="text-center text-5xl font-bold text-surface-dark"
+                className="mt-1 text-center text-5xl font-extrabold text-white"
               />
-            </View>
+              <Text className="mt-1 text-sm font-medium text-white/80">
+                {activeVisual?.name ?? 'Pick a category below'}
+              </Text>
+            </LinearGradient>
 
             {/* Account selector */}
             {accounts.length > 0 ? (
