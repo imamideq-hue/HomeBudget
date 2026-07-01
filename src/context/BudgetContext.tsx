@@ -56,7 +56,8 @@ export type BudgetAction =
   | { type: 'SET_GOAL_OWNER'; payload: { goalId: string; ownerId?: string } }
   | { type: 'SET_CURRENCY'; payload: { code: string } }
   | { type: 'SET_ACCENT'; payload: { color: string } }
-  | { type: 'SET_DARK_MODE'; payload: { enabled: boolean } };
+  | { type: 'SET_DARK_MODE'; payload: { enabled: boolean } }
+  | { type: 'SET_DASHBOARD_SECTION'; payload: { key: string; visible: boolean } };
 
 function currencyOf(data: BudgetData): string {
   return data.spaces.find((s) => s.id === data.currentSpaceId)?.currency ?? 'USD';
@@ -185,6 +186,21 @@ function reducer(state: BudgetData, action: BudgetAction): BudgetData {
         spaces: state.spaces.map((space) =>
           space.id === state.currentSpaceId
             ? { ...space, darkMode: action.payload.enabled }
+            : space,
+        ),
+      };
+    case 'SET_DASHBOARD_SECTION':
+      return {
+        ...state,
+        spaces: state.spaces.map((space) =>
+          space.id === state.currentSpaceId
+            ? {
+                ...space,
+                dashboard: {
+                  ...(space.dashboard ?? {}),
+                  [action.payload.key]: action.payload.visible,
+                },
+              }
             : space,
         ),
       };

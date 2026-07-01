@@ -37,6 +37,7 @@ function ThemedApp() {
         <Stack.Screen name="add-member" options={{ presentation: 'modal' }} />
         <Stack.Screen name="adjust-account" options={{ presentation: 'modal' }} />
         <Stack.Screen name="manage-space" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="customize-dashboard" options={{ presentation: 'modal' }} />
         <Stack.Screen
           name="celebrate"
           options={{ presentation: 'transparentModal', animation: 'fade' }}

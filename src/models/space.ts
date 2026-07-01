@@ -23,4 +23,6 @@ export interface Space extends BaseEntity {
   accentColor?: string;
   /** Whether the app uses the dark color scheme. */
   darkMode?: boolean;
+  /** Which dashboard sections are visible (keyed by DashboardSectionKey). */
+  dashboard?: Record<string, boolean>;
 }

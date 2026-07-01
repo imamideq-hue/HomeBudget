@@ -132,6 +132,15 @@ export function SettingsScreen() {
 
         {/* App */}
         <Section title="App">
+          <Pressable
+            onPress={() => router.push('/customize-dashboard')}
+            className="flex-row items-center gap-3 rounded-2xl bg-card px-4 py-4 active:opacity-70"
+          >
+            <Ionicons name="options-outline" size={22} color={accent} />
+            <Text className="flex-1 text-base text-surface-dark">Customize dashboard</Text>
+            <Ionicons name="chevron-forward" size={16} color="#8A8A9E" />
+          </Pressable>
+
           <View className="flex-row items-center gap-3 rounded-2xl bg-card px-4 py-4">
             <Ionicons name="cloud-offline-outline" size={22} color={accent} />
             <Text className="flex-1 text-base text-surface-dark">Sync</Text>
