@@ -45,8 +45,16 @@ function SectionHeader({
 
 export function DashboardScreen() {
   const router = useRouter();
-  const { accounts, accountBalance, totals, transactions, spendByGroup, currentUser, users } =
-    useBudget();
+  const {
+    accounts,
+    accountBalance,
+    totals,
+    accountsTotal,
+    transactions,
+    spendByGroup,
+    currentUser,
+    users,
+  } = useBudget();
   const { groupBudgets } = useBudgetTracker();
   const { resolveSubVisual } = useCategories();
   const { progress: goalProgress } = useGoals();
@@ -100,7 +108,7 @@ export function DashboardScreen() {
 
         {/* Balance */}
         {sections.balance ? (
-          <BalanceCard balance={totals.balance} income={totals.income} expense={totals.expense} />
+          <BalanceCard balance={accountsTotal} income={totals.income} expense={totals.expense} />
         ) : null}
 
         {/* Spending overview */}

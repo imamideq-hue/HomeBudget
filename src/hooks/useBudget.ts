@@ -104,6 +104,25 @@ export function useBudget() {
     }, account.startingBalance);
   };
 
+  /**
+   * Net worth: the sum of every account's live balance. This is what the
+   * "Total balance" hero shows, so it always matches the Accounts section.
+   */
+  const accountsTotal = useMemo(
+    () =>
+      allAccounts.reduce((sum, account) => {
+        const bal = allTransactions.reduce(
+          (acc, t) =>
+            t.accountId === account.id
+              ? acc + (t.type === 'income' ? t.amount : -t.amount)
+              : acc,
+          account.startingBalance,
+        );
+        return sum + bal;
+      }, 0),
+    [allAccounts, allTransactions],
+  );
+
   // --- Action helpers -------------------------------------------------------
   const addTransaction = (t: Transaction) =>
     dispatch({ type: 'ADD_TRANSACTION', payload: t });
@@ -212,6 +231,7 @@ export function useBudget() {
     currentSpace,
     // derived
     totals,
+    accountsTotal,
     spendByGroup,
     accountBalance,
     // actions
