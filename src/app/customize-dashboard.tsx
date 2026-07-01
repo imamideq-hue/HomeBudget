@@ -1,16 +1,14 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { Pressable, ScrollView, Switch, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { ToggleSwitch } from '@/components/ToggleSwitch';
 import { useDashboard } from '@/hooks/useDashboard';
-import { useTheme } from '@/hooks/useTheme';
 import { DASHBOARD_SECTIONS } from '@/lib/dashboard';
 
 export default function CustomizeDashboardModal() {
   const router = useRouter();
   const { sections, setSection } = useDashboard();
-  const { accent } = useTheme();
 
   return (
     <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-surface">
@@ -37,30 +35,16 @@ export default function CustomizeDashboardModal() {
             return (
               <View
                 key={section.key}
-                className="flex-row items-center gap-4 rounded-2xl bg-card px-5 py-4"
+                className="flex-row items-center gap-4 rounded-2xl px-5 py-4"
+                style={{ backgroundColor: '#26262E' }}
               >
-                <View
-                  className="h-14 w-14 items-center justify-center rounded-full"
-                  style={{ backgroundColor: `${accent}22` }}
-                >
-                  <Ionicons
-                    name={section.icon as keyof typeof Ionicons.glyphMap}
-                    size={26}
-                    color={accent}
-                  />
-                </View>
                 <View className="flex-1">
                   <Text className="text-lg font-semibold text-surface-dark">
                     {section.label}
                   </Text>
                   <Text className="text-xs text-muted">{section.description}</Text>
                 </View>
-                <Switch
-                  value={visible}
-                  onValueChange={(v) => setSection(section.key, v)}
-                  trackColor={{ false: '#C4C4D0', true: accent }}
-                  thumbColor="#FFFFFF"
-                />
+                <ToggleSwitch value={visible} onValueChange={(v) => setSection(section.key, v)} />
               </View>
             );
           })}
