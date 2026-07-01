@@ -1,10 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { Alert, Image, Pressable, ScrollView, Switch, Text, View } from 'react-native';
+import { Alert, Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CategoryPill } from '@/components/CategoryPill';
 import { GoogleSignInButton } from '@/components/GoogleSignInButton';
+import { ToggleSwitch } from '@/components/ToggleSwitch';
 import { useAuth } from '@/context/AuthContext';
 import { useBudget } from '@/hooks/useBudget';
 import { useTheme } from '@/hooks/useTheme';
@@ -165,12 +166,7 @@ export function SettingsScreen() {
           <View className="flex-row items-center gap-3 rounded-2xl bg-card px-4 py-4">
             <Ionicons name={isDark ? 'moon' : 'moon-outline'} size={22} color={accent} />
             <Text className="flex-1 text-base text-surface-dark">Dark mode</Text>
-            <Switch
-              value={isDark}
-              onValueChange={setDark}
-              trackColor={{ false: '#C4C4D0', true: accent }}
-              thumbColor="#FFFFFF"
-            />
+            <ToggleSwitch value={isDark} onValueChange={setDark} activeColor={accent} />
           </View>
           <View className="rounded-2xl bg-card px-4 py-4">
             <View className="flex-row items-center gap-3">

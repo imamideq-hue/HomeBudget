@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AddTransactionButton } from '@/components/AddTransactionButton';
 import { ScopeFilter } from '@/components/ScopeFilter';
+import { SummaryPill } from '@/components/SummaryPill';
 import { TransactionItem } from '@/components/TransactionItem';
 import { useBudget } from '@/hooks/useBudget';
 import { groupByDay } from '@/lib/format';
@@ -13,7 +14,7 @@ import type { Transaction } from '@/models';
 
 export function TransactionsScreen() {
   const router = useRouter();
-  const { transactions, deleteTransaction, users, currentUser } = useBudget();
+  const { transactions, deleteTransaction, users, currentUser, totals } = useBudget();
   const groups = groupByDay(transactions);
 
   const sections = groups.map((g) => ({ title: g.label, data: g.transactions }));
@@ -43,10 +44,17 @@ export function TransactionsScreen() {
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-surface">
-      <Text className="px-5 pb-2 pt-2 text-2xl font-bold text-surface-dark">Transactions</Text>
-      <View className="px-5 pb-2">
+      <Text className="px-5 pb-3 pt-2 text-3xl font-extrabold text-surface-dark">
+        Transactions
+      </Text>
+      <View className="px-5 pb-3">
         <ScopeFilter users={users} currentUserId={currentUser?.id ?? ''} />
       </View>
+      {transactions.length > 0 ? (
+        <View className="px-5 pb-2">
+          <SummaryPill income={totals.income} expense={totals.expense} />
+        </View>
+      ) : null}
       <SectionList
         sections={sections}
         keyExtractor={(item) => item.id}

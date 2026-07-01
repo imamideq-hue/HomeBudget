@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { BudgetProgressRow } from '@/components/BudgetProgressRow';
+import { BudgetCard } from '@/components/BudgetCard';
 import { CategoryPill } from '@/components/CategoryPill';
 import { useBudgetTracker } from '@/hooks/useBudgetTracker';
 
@@ -22,22 +22,22 @@ export function BudgetsScreen() {
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-surface">
-      <ScrollView contentContainerClassName="gap-3 px-5 pb-12 pt-2">
+      <ScrollView contentContainerClassName="gap-4 px-5 pb-12 pt-2">
         <View className="flex-row items-center justify-between">
-          <Text className="text-2xl font-bold text-surface-dark">Budgets</Text>
+          <Text className="text-3xl font-extrabold text-surface-dark">Budgets</Text>
           <Pressable
             onPress={() => router.push('/add-budget')}
             hitSlop={8}
-            className="flex-row items-center gap-1 rounded-full bg-primary px-3 py-2 active:opacity-80"
+            className="flex-row items-center gap-1 rounded-full bg-primary px-4 py-2.5 active:opacity-80"
           >
-            <Ionicons name="add" size={16} color="#FFFFFF" />
+            <Ionicons name="add" size={18} color="#FFFFFF" />
             <Text className="text-sm font-semibold text-white">New</Text>
           </Pressable>
         </View>
-        <Text className="mb-1 text-sm text-muted">Monthly · {MONTH} · tap to edit</Text>
+        <Text className="-mt-2 text-sm text-muted">Monthly · {MONTH} · tap to edit</Text>
 
         {budgeted.map((budget) => (
-          <BudgetProgressRow
+          <BudgetCard
             key={budget.group.id}
             budget={budget}
             onPress={() => edit(budget.group.id)}

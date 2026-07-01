@@ -295,15 +295,28 @@ export function DashboardScreen() {
           <View className="gap-1">
             <Text className="text-lg font-semibold text-surface-dark">Recent activity</Text>
             {recent.length > 0 ? (
-              recent.map((t) => (
-                <TransactionItem
-                  key={t.id}
-                  transaction={t}
-                  onPress={(tx) =>
-                    router.push({ pathname: '/add-transaction', params: { transactionId: tx.id } })
-                  }
-                />
-              ))
+              <>
+                {recent.map((t) => (
+                  <TransactionItem
+                    key={t.id}
+                    transaction={t}
+                    onPress={(tx) =>
+                      router.push({
+                        pathname: '/add-transaction',
+                        params: { transactionId: tx.id },
+                      })
+                    }
+                  />
+                ))}
+                <Pressable
+                  onPress={() => router.push('/transactions')}
+                  className="mt-2 items-center rounded-full bg-card py-3.5 active:opacity-80"
+                >
+                  <Text className="text-sm font-semibold text-primary">
+                    View all transactions
+                  </Text>
+                </Pressable>
+              </>
             ) : (
               <Text className="text-sm text-muted">No transactions yet.</Text>
             )}
