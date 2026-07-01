@@ -165,16 +165,17 @@ export function DashboardScreen() {
                         params: { subCategoryId: subId, type: 'expense' },
                       })
                     }
-                    className="w-24 items-center gap-1.5 active:opacity-70"
+                    className="w-24 items-center gap-2 rounded-2xl bg-card p-3 active:opacity-70"
+                    style={{ borderWidth: 1.5, borderColor: visual.color }}
                   >
                     <View
-                      className="h-20 w-20 items-center justify-center rounded-3xl"
-                      style={{ backgroundColor: `${accent}22` }}
+                      className="h-12 w-12 items-center justify-center rounded-full"
+                      style={{ backgroundColor: `${visual.color}22` }}
                     >
                       <Ionicons
                         name={visual.icon as keyof typeof Ionicons.glyphMap}
-                        size={34}
-                        color={accent}
+                        size={26}
+                        color={visual.color}
                       />
                     </View>
                     <Text className="text-xs text-muted" numberOfLines={1}>
