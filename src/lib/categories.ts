@@ -1,24 +1,60 @@
-import type { Category } from '@/lib/types';
+import { SEED_DATA } from '@/lib/seed';
+import type { GroupCategory, SubCategory } from '@/models';
 
 /**
- * Default spending categories, Cashew-style. `icon` values are Ionicons names.
+ * Pure category lookups + the sub→group roll-up. These operate on the category
+ * arrays passed in (which come from app state) so custom, user-created
+ * categories resolve everywhere. The `DEFAULT_*` exports are the seed values,
+ * used for seeding and tests.
  */
-export const CATEGORIES: Category[] = [
-  { id: 'groceries', name: 'Groceries', icon: 'cart', color: '#34C77B' },
-  { id: 'dining', name: 'Dining', icon: 'restaurant', color: '#FF6B6B' },
-  { id: 'transport', name: 'Transport', icon: 'bus', color: '#4DABF7' },
-  { id: 'housing', name: 'Housing', icon: 'home', color: '#7C5CFC' },
-  { id: 'utilities', name: 'Utilities', icon: 'flash', color: '#FFA94D' },
-  { id: 'entertainment', name: 'Entertainment', icon: 'game-controller', color: '#F783AC' },
-  { id: 'health', name: 'Health', icon: 'medkit', color: '#22B8CF' },
-  { id: 'income', name: 'Income', icon: 'cash', color: '#82C91E' },
-  { id: 'other', name: 'Other', icon: 'ellipsis-horizontal', color: '#8A8A9E' },
-];
 
-const CATEGORY_BY_ID = new Map(CATEGORIES.map((c) => [c.id, c]));
+export const DEFAULT_GROUP_CATEGORIES = SEED_DATA.groupCategories;
+export const DEFAULT_SUB_CATEGORIES = SEED_DATA.subCategories;
 
-const FALLBACK: Category = CATEGORIES[CATEGORIES.length - 1];
+export function getGroupCategory(
+  groups: GroupCategory[],
+  id: string,
+): GroupCategory | undefined {
+  return groups.find((g) => g.id === id);
+}
 
-export function getCategory(id: string): Category {
-  return CATEGORY_BY_ID.get(id) ?? FALLBACK;
+export function getSubCategory(subs: SubCategory[], id: string): SubCategory | undefined {
+  return subs.find((s) => s.id === id);
+}
+
+/** Resolve the GroupCategory a sub-category rolls up into (falls back to last). */
+export function getGroupForSub(
+  groups: GroupCategory[],
+  subs: SubCategory[],
+  subCategoryId: string,
+): GroupCategory {
+  const sub = subs.find((s) => s.id === subCategoryId);
+  const group = sub && groups.find((g) => g.id === sub.groupId);
+  return group ?? groups[groups.length - 1];
+}
+
+/** Sub-categories belonging to a group (for pickers / drill-downs). */
+export function getSubsForGroup(subs: SubCategory[], groupId: string): SubCategory[] {
+  return subs.filter((s) => s.groupId === groupId);
+}
+
+export interface CategoryVisual {
+  name: string;
+  icon: string;
+  color: string;
+}
+
+/** Display name/icon/color for a sub-category, inheriting the group's. */
+export function resolveSubVisual(
+  groups: GroupCategory[],
+  subs: SubCategory[],
+  subCategoryId: string,
+): CategoryVisual {
+  const sub = subs.find((s) => s.id === subCategoryId);
+  const group = getGroupForSub(groups, subs, subCategoryId);
+  return {
+    name: sub?.name ?? group.name,
+    icon: sub?.icon ?? group.icon,
+    color: sub?.color ?? group.color,
+  };
 }

@@ -1,5 +1,5 @@
-import { OverviewScreen } from '@/screens/OverviewScreen';
+import { DashboardScreen } from '@/screens/DashboardScreen';
 
-export default function OverviewRoute() {
-  return <OverviewScreen />;
+export default function DashboardRoute() {
+  return <DashboardScreen />;
 }

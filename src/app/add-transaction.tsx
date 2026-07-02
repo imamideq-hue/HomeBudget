@@ -1,0 +1,370 @@
+import { Ionicons } from '@expo/vector-icons';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useMemo, useState } from 'react';
+import { Alert, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { Calendar } from '@/components/Calendar';
+import { CategoryPill } from '@/components/CategoryPill';
+import { useScope } from '@/context/ScopeContext';
+import { useBudget } from '@/hooks/useBudget';
+import { useBudgetTracker } from '@/hooks/useBudgetTracker';
+import { useCategories } from '@/hooks/useCategories';
+import { useTheme } from '@/hooks/useTheme';
+import { feedbackSuccess } from '@/lib/feedback';
+import { formatCurrency, formatDayLabel, getCurrency } from '@/lib/format';
+import { defaultOwnerForScope } from '@/lib/scope';
+import { darken, lighten } from '@/lib/theme';
+import type { TransactionType } from '@/models';
+
+export default function AddTransactionModal() {
+  const router = useRouter();
+  const { allAccounts: accounts, allTransactions: transactions, currentUser } = useBudget();
+  const { addTransaction, editTransaction } = useBudgetTracker();
+  const { groupCategories, getSubsForGroup, getSubCategory, resolveSubVisual } = useCategories();
+  const { scope } = useScope();
+  const { accent, jointColor } = useTheme();
+
+  // Optional pre-fill from a quick-add shortcut, or full prefill when editing.
+  const params = useLocalSearchParams<{
+    subCategoryId?: string;
+    type?: string;
+    transactionId?: string;
+  }>();
+  const editing = params.transactionId
+    ? transactions.find((t) => t.id === params.transactionId)
+    : undefined;
+
+  const presetSub =
+    params.subCategoryId && getSubCategory(params.subCategoryId) ? params.subCategoryId : null;
+  const presetType: TransactionType = params.type === 'income' ? 'income' : 'expense';
+
+  const [type, setType] = useState<TransactionType>(editing?.type ?? presetType);
+  const [amount, setAmount] = useState(editing ? String(editing.amount) : '');
+  const [subCategoryId, setSubCategoryId] = useState<string | null>(
+    editing?.subCategoryId ?? presetSub,
+  );
+  const [accountId, setAccountId] = useState<string | null>(
+    editing?.accountId ?? accounts[0]?.id ?? null,
+  );
+  const [note, setNote] = useState(editing?.note ?? '');
+  const [date, setDate] = useState(() => (editing ? new Date(editing.date) : new Date()));
+  const [showCalendar, setShowCalendar] = useState(false);
+  // New items default to the section currently in view on the Dashboard.
+  const [ownerId, setOwnerId] = useState<string | undefined>(
+    editing ? editing.ownerId : defaultOwnerForScope(scope),
+  );
+
+  const parsedAmount = useMemo(() => {
+    const n = parseFloat(amount.replace(',', '.'));
+    return Number.isFinite(n) ? n : 0;
+  }, [amount]);
+
+  // Only show category groups that match the selected direction.
+  const groups = useMemo(
+    () => groupCategories.filter((g) => g.kind === type),
+    [groupCategories, type],
+  );
+
+  // The selected category tints the hero block (accent until one is chosen).
+  const activeVisual = subCategoryId ? resolveSubVisual(subCategoryId) : null;
+  const heroColor = activeVisual?.color ?? accent;
+
+  const canSave =
+    parsedAmount > 0 && subCategoryId !== null && accountId !== null;
+
+  const handleSave = () => {
+    if (!canSave || subCategoryId === null || accountId === null) return;
+
+    const input = {
+      subCategoryId,
+      accountId,
+      amount: parsedAmount,
+      type,
+      note,
+      date: date.toISOString(),
+      ownerId,
+    };
+
+    if (editing) {
+      // Correct the existing item (account, amount, category, date, note).
+      editTransaction(editing.id, input);
+      feedbackSuccess();
+      router.back();
+      return;
+    }
+
+    // Adding the item rolls up into its parent group and recalculates that
+    // group's monthly budget; `groupBudget` reflects the new total/remaining.
+    const { groupBudget } = addTransaction(input);
+    feedbackSuccess();
+
+    if (groupBudget.isOverBudget) {
+      Alert.alert(
+        'Over budget',
+        `This puts ${groupBudget.group.name} ${formatCurrency(
+          Math.abs(groupBudget.remaining),
+        )} over its ${formatCurrency(groupBudget.budgetLimit)} monthly budget.`,
+      );
+    }
+
+    router.back();
+  };
+
+  return (
+    <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-surface">
+      <View className="flex-1">
+        {/* Header */}
+        <View className="flex-row items-center justify-between px-5 py-3">
+          <Pressable onPress={() => router.back()} hitSlop={8} className="active:opacity-60">
+            <Text className="text-base text-muted">Cancel</Text>
+          </Pressable>
+          <Text className="text-base font-semibold text-surface-dark">
+            {editing ? 'Edit transaction' : 'New transaction'}
+          </Text>
+          <View className="w-14" />
+        </View>
+
+        <ScrollView
+          contentContainerClassName="gap-6 px-5 pb-6 pt-2"
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+        >
+            {/* Type toggle — at the very top (Cashew) */}
+            <View className="flex-row rounded-2xl bg-card p-1">
+              {(['expense', 'income'] as const).map((t) => {
+                const active = type === t;
+                return (
+                  <Pressable
+                    key={t}
+                    onPress={() => {
+                      setType(t);
+                      setSubCategoryId(null);
+                    }}
+                    className={`flex-1 items-center rounded-xl py-3 ${active ? 'bg-surface shadow-sm' : ''}`}
+                  >
+                    <Text
+                      className={`text-base font-bold capitalize ${
+                        active ? (t === 'income' ? 'text-income' : 'text-expense') : 'text-muted'
+                      }`}
+                    >
+                      {t}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+
+            {/* Category-colored hero: icon + amount */}
+            <LinearGradient
+              colors={[lighten(heroColor, 0.06), darken(heroColor, 0.24)]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={{ borderRadius: 28, paddingVertical: 26, paddingHorizontal: 24, alignItems: 'center' }}
+            >
+              <View className="h-16 w-16 items-center justify-center rounded-2xl bg-white/20">
+                <Ionicons
+                  name={(activeVisual?.icon ?? 'pricetag') as keyof typeof Ionicons.glyphMap}
+                  size={30}
+                  color="#FFFFFF"
+                />
+              </View>
+              <Text className="mt-4 text-xs uppercase tracking-wide text-white/70">
+                Amount ({getCurrency()})
+              </Text>
+              <TextInput
+                value={amount}
+                onChangeText={setAmount}
+                placeholder="0.00"
+                placeholderTextColor="rgba(255,255,255,0.55)"
+                keyboardType="decimal-pad"
+                className="mt-1 text-center text-5xl font-extrabold text-white"
+              />
+              <Text className="mt-1 text-sm font-medium text-white/80">
+                {activeVisual?.name ?? 'Pick a category below'}
+              </Text>
+            </LinearGradient>
+
+            {/* Account selector */}
+            {accounts.length > 0 ? (
+              <View>
+                <Text className="mb-2 text-sm font-semibold text-surface-dark">Account</Text>
+                <View className="flex-row flex-wrap gap-2">
+                  {accounts.map((acc) => {
+                    const selected = acc.id === accountId;
+                    return (
+                      <Pressable
+                        key={acc.id}
+                        onPress={() => setAccountId(acc.id)}
+                        className={`flex-row items-center gap-2 rounded-2xl border px-5 py-3.5 ${
+                          selected ? 'border-primary bg-primary/10' : 'border-transparent bg-card'
+                        }`}
+                      >
+                        <Ionicons
+                          name={acc.icon as keyof typeof Ionicons.glyphMap}
+                          size={20}
+                          color={acc.color}
+                        />
+                        <Text
+                          className={`text-base ${selected ? 'font-bold text-surface-dark' : 'text-muted'}`}
+                        >
+                          {acc.name}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              </View>
+            ) : null}
+
+            {/* Section: Joint or a specific person (colored like the dashboard) */}
+            <View>
+              <Text className="mb-2 text-sm font-semibold text-surface-dark">Belongs to</Text>
+              <View className="flex-row flex-wrap gap-2">
+                {[
+                  { id: undefined, name: 'Joint', color: jointColor },
+                  ...(currentUser ? [currentUser] : []),
+                ].map((owner) => {
+                  const selected = ownerId === owner.id;
+                  const label = owner.id && owner.id === currentUser?.id ? 'You' : owner.name;
+                  const color = owner.color ?? accent;
+                  return (
+                    <Pressable
+                      key={owner.id ?? 'joint'}
+                      onPress={() => setOwnerId(owner.id)}
+                      className={`flex-row items-center gap-2 rounded-2xl px-7 py-4 ${selected ? '' : 'bg-card'}`}
+                      style={selected ? { backgroundColor: color } : undefined}
+                    >
+                      <Ionicons
+                        name={owner.id ? 'person' : 'people'}
+                        size={18}
+                        color={selected ? '#FFFFFF' : '#8A8A9E'}
+                      />
+                      <Text
+                        className={`text-lg font-bold ${selected ? 'text-white' : 'text-surface-dark'}`}
+                      >
+                        {label}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </View>
+
+            {/* Date — tap to open a calendar */}
+            <View>
+              <Text className="mb-2 text-sm font-semibold text-surface-dark">Date</Text>
+              <Pressable
+                onPress={() => setShowCalendar((v) => !v)}
+                className="flex-row items-center justify-between rounded-2xl bg-card px-4 py-3 active:opacity-70"
+              >
+                <View className="flex-row items-center gap-2">
+                  <Ionicons name="calendar-outline" size={18} color={accent} />
+                  <Text className="text-base text-surface-dark">
+                    {formatDayLabel(date.toISOString())}
+                  </Text>
+                </View>
+                <Ionicons
+                  name={showCalendar ? 'chevron-up' : 'chevron-down'}
+                  size={18}
+                  color="#8A8A9E"
+                />
+              </Pressable>
+              {showCalendar ? (
+                <View className="mt-2">
+                  <Calendar
+                    value={date}
+                    maxDate={new Date()}
+                    onChange={(d) => {
+                      setDate(d);
+                      setShowCalendar(false);
+                    }}
+                  />
+                </View>
+              ) : null}
+            </View>
+
+            {/* Category picker (sub-categories grouped by group) */}
+            <View>
+              <View className="mb-3 flex-row items-center justify-between">
+                <Text className="text-sm font-semibold text-surface-dark">Category</Text>
+                <Pressable
+                  onPress={() => router.push({ pathname: '/add-category', params: { kind: type } })}
+                  hitSlop={8}
+                  className="flex-row items-center gap-1 active:opacity-60"
+                >
+                  <Ionicons name="add-circle-outline" size={16} color={accent} />
+                  <Text className="text-sm font-medium text-primary">New</Text>
+                </Pressable>
+              </View>
+              <View className="gap-4">
+                {groups.map((group) => (
+                  <View key={group.id}>
+                    <Text className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted">
+                      {group.name}
+                    </Text>
+                    <View className="flex-row flex-wrap gap-3">
+                      {getSubsForGroup(group.id).map((sub) => {
+                        const selected = sub.id === subCategoryId;
+                        const color = sub.color ?? group.color;
+                        return (
+                          <Pressable
+                            key={sub.id}
+                            onPress={() => setSubCategoryId(sub.id)}
+                            className="w-[22%] items-center gap-1"
+                          >
+                            <View
+                              className="rounded-full"
+                              style={selected ? { borderWidth: 2, borderColor: color } : undefined}
+                            >
+                              <CategoryPill icon={sub.icon ?? group.icon} color={color} size={48} />
+                            </View>
+                            <Text
+                              numberOfLines={1}
+                              className={`text-xs ${selected ? 'font-semibold text-surface-dark' : 'text-muted'}`}
+                            >
+                              {sub.name}
+                            </Text>
+                          </Pressable>
+                        );
+                      })}
+                    </View>
+                  </View>
+                ))}
+              </View>
+            </View>
+
+            {/* Note */}
+            <View>
+              <Text className="mb-2 text-sm font-semibold text-surface-dark">Note</Text>
+              <TextInput
+                value={note}
+                onChangeText={setNote}
+                placeholder="Optional note"
+                placeholderTextColor="#8A8A9E"
+                className="rounded-2xl bg-card px-4 py-3 text-base text-surface-dark"
+              />
+            </View>
+
+        </ScrollView>
+
+        {/* Sticky action button — always visible at the bottom */}
+        <View className="border-t border-line bg-surface px-5 pb-2 pt-3">
+          <Pressable
+            onPress={handleSave}
+            disabled={!canSave}
+            className={`flex-row items-center justify-center gap-2 rounded-2xl py-4 ${
+              canSave ? 'bg-primary active:opacity-80' : 'bg-primary/40'
+            }`}
+          >
+            <Ionicons name="checkmark" size={20} color="#FFFFFF" />
+            <Text className="text-base font-semibold text-white">
+              {editing ? 'Save changes' : 'Save transaction'}
+            </Text>
+          </Pressable>
+        </View>
+      </View>
+    </SafeAreaView>
+  );
+}
