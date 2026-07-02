@@ -1,7 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
 
-import { CategoryPill } from '@/components/CategoryPill';
 import { useCategories } from '@/hooks/useCategories';
 import { formatCurrency } from '@/lib/format';
 import type { Transaction } from '@/models';
@@ -22,7 +21,14 @@ export function TransactionItem({ transaction, onPress }: Props) {
       onPress={() => onPress?.(transaction)}
       className="flex-row items-center gap-3 bg-surface px-4 py-3 active:opacity-70"
     >
-      <CategoryPill icon={visual.icon} color={visual.color} size={46} />
+      {/* Plain icon (no box), settings-style */}
+      <View className="w-10 items-center justify-center">
+        <Ionicons
+          name={visual.icon as keyof typeof Ionicons.glyphMap}
+          size={28}
+          color={visual.color}
+        />
+      </View>
 
       <View className="flex-1">
         <Text className="text-base font-semibold text-surface-dark" numberOfLines={1}>

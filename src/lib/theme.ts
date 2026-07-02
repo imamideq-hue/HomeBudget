@@ -1,6 +1,9 @@
 /** The app's default accent (the original purple). */
 export const DEFAULT_ACCENT = '#7C5CFC';
 
+/** Default color for the Joint (shared) section — distinct from the personal accent. */
+export const DEFAULT_JOINT_COLOR = '#22B8CF';
+
 /** Accent colors the user can choose from in Settings. */
 export const ACCENT_CHOICES = [
   '#7C5CFC', // purple (default)

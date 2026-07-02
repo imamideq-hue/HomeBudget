@@ -24,7 +24,7 @@ export default function AddTransactionModal() {
   const { addTransaction, editTransaction } = useBudgetTracker();
   const { groupCategories, getSubsForGroup, getSubCategory, resolveSubVisual } = useCategories();
   const { scope } = useScope();
-  const { accent } = useTheme();
+  const { accent, jointColor } = useTheme();
 
   // Optional pre-fill from a quick-add shortcut, or full prefill when editing.
   const params = useLocalSearchParams<{
@@ -197,17 +197,17 @@ export default function AddTransactionModal() {
                       <Pressable
                         key={acc.id}
                         onPress={() => setAccountId(acc.id)}
-                        className={`flex-row items-center gap-2 rounded-full border px-3 py-2 ${
+                        className={`flex-row items-center gap-2 rounded-2xl border px-5 py-3.5 ${
                           selected ? 'border-primary bg-primary/10' : 'border-transparent bg-card'
                         }`}
                       >
                         <Ionicons
                           name={acc.icon as keyof typeof Ionicons.glyphMap}
-                          size={16}
+                          size={20}
                           color={acc.color}
                         />
                         <Text
-                          className={`text-sm ${selected ? 'font-semibold text-surface-dark' : 'text-muted'}`}
+                          className={`text-base ${selected ? 'font-bold text-surface-dark' : 'text-muted'}`}
                         >
                           {acc.name}
                         </Text>
@@ -218,31 +218,31 @@ export default function AddTransactionModal() {
               </View>
             ) : null}
 
-            {/* Section: Joint or a specific person */}
+            {/* Section: Joint or a specific person (colored like the dashboard) */}
             <View>
               <Text className="mb-2 text-sm font-semibold text-surface-dark">Belongs to</Text>
               <View className="flex-row flex-wrap gap-2">
                 {[
-                  { id: undefined, name: 'Joint', color: accent },
+                  { id: undefined, name: 'Joint', color: jointColor },
                   ...(currentUser ? [currentUser] : []),
                 ].map((owner) => {
                   const selected = ownerId === owner.id;
                   const label = owner.id && owner.id === currentUser?.id ? 'You' : owner.name;
+                  const color = owner.color ?? accent;
                   return (
                     <Pressable
                       key={owner.id ?? 'joint'}
                       onPress={() => setOwnerId(owner.id)}
-                      className={`flex-row items-center gap-2 rounded-full border px-3 py-2 ${
-                        selected ? 'border-primary bg-primary/10' : 'border-transparent bg-card'
-                      }`}
+                      className={`flex-row items-center gap-2 rounded-2xl px-7 py-4 ${selected ? '' : 'bg-card'}`}
+                      style={selected ? { backgroundColor: color } : undefined}
                     >
                       <Ionicons
                         name={owner.id ? 'person' : 'people'}
-                        size={14}
-                        color={selected ? accent : '#8A8A9E'}
+                        size={18}
+                        color={selected ? '#FFFFFF' : '#8A8A9E'}
                       />
                       <Text
-                        className={`text-sm ${selected ? 'font-semibold text-surface-dark' : 'text-muted'}`}
+                        className={`text-lg font-bold ${selected ? 'text-white' : 'text-surface-dark'}`}
                       >
                         {label}
                       </Text>

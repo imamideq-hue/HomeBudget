@@ -27,9 +27,11 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 export function SettingsScreen() {
   const router = useRouter();
-  const { currentSpace, allAccounts: accounts, accountBalance, setCurrency } = useBudget();
+  const { currentSpace, allAccounts: accounts, accountBalance, setCurrency, currentUser, editUser } =
+    useBudget();
   const { user, signOut } = useAuth();
-  const { accent, setAccent, isDark, setDark, foreground } = useTheme();
+  const { accent, setAccent, jointColor, setJointColor, isDark, setDark, foreground } = useTheme();
+  const youColor = currentUser?.color ?? accent;
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-surface">
@@ -227,6 +229,52 @@ export function SettingsScreen() {
               })}
             </View>
           </View>
+        </Section>
+
+        {/* Section colors: Joint vs You */}
+        <Section title="Section colors">
+          {(
+            [
+              { label: 'Joint', value: jointColor, set: setJointColor },
+              {
+                label: 'You',
+                value: youColor,
+                set: (c: string) => currentUser && editUser(currentUser.id, { color: c }),
+              },
+            ] as const
+          ).map((row) => (
+            <View key={row.label} className="rounded-2xl bg-card px-4 py-4">
+              <View className="flex-row items-center gap-3">
+                <View
+                  className="h-6 w-6 rounded-lg"
+                  style={{ backgroundColor: row.value }}
+                />
+                <Text className="flex-1 text-lg text-surface-dark">{row.label}</Text>
+              </View>
+              <View className="mt-3 flex-row flex-wrap gap-3">
+                {ACCENT_CHOICES.map((c) => {
+                  const selected = row.value.toLowerCase() === c.toLowerCase();
+                  return (
+                    <Pressable
+                      key={c}
+                      onPress={() => row.set(c)}
+                      hitSlop={4}
+                      accessibilityRole="button"
+                      accessibilityLabel={`${row.label} color ${c}`}
+                      className="h-11 w-11 items-center justify-center rounded-xl"
+                      style={{
+                        backgroundColor: c,
+                        borderWidth: selected ? 3 : 0,
+                        borderColor: '#FFFFFF',
+                      }}
+                    >
+                      {selected ? <Ionicons name="checkmark" size={18} color="#FFFFFF" /> : null}
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </View>
+          ))}
         </Section>
 
         <Text className="mt-2 text-center text-xs text-muted">

@@ -70,6 +70,7 @@ export type BudgetAction =
   | { type: 'SET_GOAL_OWNER'; payload: { goalId: string; ownerId?: string } }
   | { type: 'SET_CURRENCY'; payload: { code: string } }
   | { type: 'SET_ACCENT'; payload: { color: string } }
+  | { type: 'SET_JOINT_COLOR'; payload: { color: string } }
   | { type: 'SET_DARK_MODE'; payload: { enabled: boolean } }
   | { type: 'SET_DASHBOARD_SECTION'; payload: { key: string; visible: boolean } };
 
@@ -219,6 +220,15 @@ function reducer(state: BudgetData, action: BudgetAction): BudgetData {
         spaces: state.spaces.map((space) =>
           space.id === state.currentSpaceId
             ? { ...space, accentColor: action.payload.color }
+            : space,
+        ),
+      };
+    case 'SET_JOINT_COLOR':
+      return {
+        ...state,
+        spaces: state.spaces.map((space) =>
+          space.id === state.currentSpaceId
+            ? { ...space, jointColor: action.payload.color }
             : space,
         ),
       };

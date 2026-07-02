@@ -21,6 +21,8 @@ export interface Space extends BaseEntity {
   currency: CurrencyCode;
   /** Accent color for the app theme (hex). Defaults to the app's purple. */
   accentColor?: string;
+  /** Color used to mark the Joint (shared) section. */
+  jointColor?: string;
   /** Whether the app uses the dark color scheme. */
   darkMode?: boolean;
   /** Which dashboard sections are visible (keyed by DashboardSectionKey). */
