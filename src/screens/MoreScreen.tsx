@@ -74,7 +74,7 @@ export function MoreScreen() {
               className="w-[48%] gap-3 rounded-2xl border border-line bg-card px-4 py-4 active:opacity-80"
             >
               <View
-                className="h-11 w-11 items-center justify-center rounded-full"
+                className="h-11 w-11 items-center justify-center rounded-2xl"
                 style={{ backgroundColor: `${accent}22` }}
               >
                 <Ionicons name={t.icon} size={22} color={accent} />

@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BudgetCard } from '@/components/BudgetCard';
 import { CategoryPill } from '@/components/CategoryPill';
+import { Fab } from '@/components/Fab';
 import { useBudgetTracker } from '@/hooks/useBudgetTracker';
 
 const MONTH = new Date().toLocaleDateString('en-US', { month: 'long' });
@@ -22,18 +23,8 @@ export function BudgetsScreen() {
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-surface">
-      <ScrollView contentContainerClassName="gap-4 px-5 pb-12 pt-2">
-        <View className="flex-row items-center justify-between">
-          <Text className="text-3xl font-extrabold text-surface-dark">Budgets</Text>
-          <Pressable
-            onPress={() => router.push('/add-budget')}
-            hitSlop={8}
-            className="flex-row items-center gap-1 rounded-full bg-primary px-4 py-2.5 active:opacity-80"
-          >
-            <Ionicons name="add" size={18} color="#FFFFFF" />
-            <Text className="text-sm font-semibold text-white">New</Text>
-          </Pressable>
-        </View>
+      <ScrollView contentContainerClassName="gap-4 px-5 pb-24 pt-2">
+        <Text className="text-3xl font-extrabold text-surface-dark">Budgets</Text>
         <Text className="-mt-2 text-sm text-muted">Monthly · {MONTH} · tap to edit</Text>
 
         {budgeted.map((budget) => (
@@ -65,6 +56,8 @@ export function BudgetsScreen() {
           </Pressable>
         ))}
       </ScrollView>
+
+      <Fab onPress={() => router.push('/add-budget')} accessibilityLabel="New budget" />
     </SafeAreaView>
   );
 }

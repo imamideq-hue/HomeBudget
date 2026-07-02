@@ -19,7 +19,7 @@ const SETUP_MESSAGE =
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <View className="gap-2">
-      <Text className="text-xs font-semibold uppercase tracking-wide text-muted">{title}</Text>
+      <Text className="text-sm font-semibold uppercase tracking-wide text-muted">{title}</Text>
       <View className="gap-2">{children}</View>
     </View>
   );
@@ -38,7 +38,7 @@ export function SettingsScreen() {
           <Pressable onPress={() => router.back()} hitSlop={8} className="active:opacity-60">
             <Ionicons name="chevron-back" size={26} color={foreground} />
           </Pressable>
-          <Text className="text-2xl font-bold text-surface-dark">Settings</Text>
+          <Text className="text-3xl font-extrabold text-surface-dark">Settings</Text>
         </View>
 
         {/* Account / Google sign-in */}
@@ -115,7 +115,7 @@ export function SettingsScreen() {
               className="flex-row items-center gap-3 rounded-2xl bg-card px-4 py-3 active:opacity-70"
             >
               <CategoryPill icon={acc.icon} color={acc.color} size={36} />
-              <Text className="flex-1 text-base text-surface-dark">{acc.name}</Text>
+              <Text className="flex-1 text-lg text-surface-dark">{acc.name}</Text>
               <Text className="text-sm font-semibold text-surface-dark">
                 {formatCurrency(accountBalance(acc.id))}
               </Text>
@@ -140,7 +140,7 @@ export function SettingsScreen() {
             className="flex-row items-center gap-3 rounded-2xl bg-card px-4 py-4 active:opacity-70"
           >
             <Ionicons name="pricetag-outline" size={22} color={accent} />
-            <Text className="flex-1 text-base text-surface-dark">Manage categories</Text>
+            <Text className="flex-1 text-lg text-surface-dark">Manage categories</Text>
             <Ionicons name="chevron-forward" size={16} color="#8A8A9E" />
           </Pressable>
         </Section>
@@ -152,26 +152,26 @@ export function SettingsScreen() {
             className="flex-row items-center gap-3 rounded-2xl bg-card px-4 py-4 active:opacity-70"
           >
             <Ionicons name="options-outline" size={22} color={accent} />
-            <Text className="flex-1 text-base text-surface-dark">Customize dashboard</Text>
+            <Text className="flex-1 text-lg text-surface-dark">Customize dashboard</Text>
             <Ionicons name="chevron-forward" size={16} color="#8A8A9E" />
           </Pressable>
 
           <View className="flex-row items-center gap-3 rounded-2xl bg-card px-4 py-4">
             <Ionicons name="cloud-offline-outline" size={22} color={accent} />
-            <Text className="flex-1 text-base text-surface-dark">Sync</Text>
+            <Text className="flex-1 text-lg text-surface-dark">Sync</Text>
             <Text className="text-sm text-muted">Local only</Text>
           </View>
 
           {/* Dark mode */}
           <View className="flex-row items-center gap-3 rounded-2xl bg-card px-4 py-4">
             <Ionicons name={isDark ? 'moon' : 'moon-outline'} size={22} color={accent} />
-            <Text className="flex-1 text-base text-surface-dark">Dark mode</Text>
+            <Text className="flex-1 text-lg text-surface-dark">Dark mode</Text>
             <ToggleSwitch value={isDark} onValueChange={setDark} activeColor={accent} />
           </View>
           <View className="rounded-2xl bg-card px-4 py-4">
             <View className="flex-row items-center gap-3">
               <Ionicons name="cash-outline" size={22} color={accent} />
-              <Text className="flex-1 text-base text-surface-dark">Currency</Text>
+              <Text className="flex-1 text-lg text-surface-dark">Currency</Text>
             </View>
             <View className="mt-3 flex-row gap-2">
               {SUPPORTED_CURRENCIES.map((c) => {
@@ -202,7 +202,7 @@ export function SettingsScreen() {
           <View className="rounded-2xl bg-card px-4 py-4">
             <View className="flex-row items-center gap-3">
               <Ionicons name="color-palette-outline" size={22} color={accent} />
-              <Text className="flex-1 text-base text-surface-dark">Accent color</Text>
+              <Text className="flex-1 text-lg text-surface-dark">Accent color</Text>
             </View>
             <View className="mt-3 flex-row flex-wrap gap-3">
               {ACCENT_CHOICES.map((c) => {
@@ -214,7 +214,7 @@ export function SettingsScreen() {
                     hitSlop={4}
                     accessibilityRole="button"
                     accessibilityLabel={`Accent ${c}`}
-                    className="h-10 w-10 items-center justify-center rounded-full"
+                    className="h-11 w-11 items-center justify-center rounded-xl"
                     style={{
                       backgroundColor: c,
                       borderWidth: selected ? 3 : 0,

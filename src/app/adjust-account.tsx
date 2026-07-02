@@ -67,7 +67,7 @@ export default function AdjustAccountModal() {
           {/* Account identity + current balance */}
           <View className="items-center gap-2">
             <View
-              className="h-14 w-14 items-center justify-center rounded-full"
+              className="h-14 w-14 items-center justify-center rounded-2xl"
               style={{ backgroundColor: `${account.color}22` }}
             >
               <Ionicons

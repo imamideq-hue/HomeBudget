@@ -17,7 +17,7 @@ export function AccountCard({ account, balance, onPress }: Props) {
   return (
     <Pressable onPress={onPress} className="w-40 rounded-2xl bg-card p-4 active:opacity-70">
       <View
-        className="h-12 w-12 items-center justify-center rounded-full"
+        className="h-12 w-12 items-center justify-center rounded-2xl"
         style={{ backgroundColor: `${accent}22` }}
       >
         <Ionicons

@@ -16,14 +16,18 @@ export default function EditBudgetModal() {
 
   const budget = groupId ? getGroupBudget(groupId) : undefined;
 
-  const [limit, setLimit] = useState(
-    budget?.budgetLimit ? String(budget.budgetLimit) : '',
-  );
+  const [mode, setMode] = useState<'set' | 'add'>('set');
+  const [value, setValue] = useState(budget?.budgetLimit ? String(budget.budgetLimit) : '');
 
-  const parsedLimit = useMemo(() => {
-    const n = parseFloat(limit.replace(',', '.'));
-    return Number.isFinite(n) && n > 0 ? n : 0;
-  }, [limit]);
+  const parsed = useMemo(() => {
+    const n = parseFloat(value.replace(',', '.'));
+    return Number.isFinite(n) ? n : NaN;
+  }, [value]);
+
+  const current = budget?.budgetLimit ?? 0;
+  const projected = mode === 'set' ? parsed : current + parsed;
+  const valid =
+    mode === 'set' ? Number.isFinite(parsed) && parsed > 0 : Number.isFinite(parsed) && parsed !== 0 && projected > 0;
 
   if (!budget) {
     return (
@@ -34,7 +38,8 @@ export default function EditBudgetModal() {
   }
 
   const save = () => {
-    setBudgetLimit(budget.group.id, parsedLimit);
+    if (!valid) return;
+    setBudgetLimit(budget.group.id, projected > 0 ? projected : 0);
     feedbackSuccess();
     router.back();
   };
@@ -62,38 +67,70 @@ export default function EditBudgetModal() {
             <CategoryPill icon={budget.group.icon} color={budget.group.color} size={64} />
             <Text className="text-xl font-bold text-surface-dark">{budget.group.name}</Text>
             <Text className="text-sm text-muted">
-              {formatCurrency(budget.totalSpent)} spent this month
+              {budget.hasBudget
+                ? `Limit ${formatCurrency(current)} · ${formatCurrency(budget.totalSpent)} spent`
+                : `${formatCurrency(budget.totalSpent)} spent this month`}
             </Text>
           </View>
 
-          {/* Limit input */}
-          <View className="mt-8 items-center">
+          {/* Mode toggle: set an absolute limit, or add / take away */}
+          <View className="mt-6 flex-row rounded-2xl bg-card p-1">
+            {(
+              [
+                { key: 'set', label: 'Set limit' },
+                { key: 'add', label: 'Add / take away' },
+              ] as const
+            ).map((opt) => {
+              const active = mode === opt.key;
+              return (
+                <Pressable
+                  key={opt.key}
+                  onPress={() => {
+                    setMode(opt.key);
+                    setValue('');
+                  }}
+                  className={`flex-1 items-center rounded-xl py-2.5 ${active ? 'bg-surface shadow-sm' : ''}`}
+                >
+                  <Text className={`text-sm font-semibold ${active ? 'text-primary' : 'text-muted'}`}>
+                    {opt.label}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+
+          {/* Amount input */}
+          <View className="mt-6 items-center">
             <Text className="mb-1 text-xs uppercase tracking-wide text-muted">
-              Monthly limit ({getCurrency()})
+              {mode === 'set' ? `Monthly limit (${getCurrency()})` : `Amount (${getCurrency()})`}
             </Text>
             <TextInput
-              value={limit}
-              onChangeText={setLimit}
-              placeholder="0.00"
+              value={value}
+              onChangeText={setValue}
+              placeholder={mode === 'set' ? '0.00' : '+/- 0.00'}
               placeholderTextColor="#C4C4D0"
-              keyboardType="decimal-pad"
+              keyboardType="numbers-and-punctuation"
               autoFocus
               className="text-center text-5xl font-bold text-surface-dark"
             />
-            {parsedLimit > 0 ? (
+            {valid ? (
               <Text className="mt-2 text-sm text-muted">
-                {formatCurrency(Math.max(parsedLimit - budget.totalSpent, 0))} would remain
+                New limit {formatCurrency(projected)}
               </Text>
-            ) : null}
+            ) : (
+              <Text className="mt-2 text-sm text-muted">
+                {mode === 'add' ? 'Use a negative amount to take away' : ' '}
+              </Text>
+            )}
           </View>
 
           {/* Actions */}
           <View className="mt-auto gap-3 pb-2">
             <Pressable
               onPress={save}
-              disabled={parsedLimit <= 0}
+              disabled={!valid}
               className={`flex-row items-center justify-center gap-2 rounded-2xl py-4 ${
-                parsedLimit > 0 ? 'bg-primary active:opacity-80' : 'bg-primary/40'
+                valid ? 'bg-primary active:opacity-80' : 'bg-primary/40'
               }`}
             >
               <Ionicons name="checkmark" size={20} color="#FFFFFF" />

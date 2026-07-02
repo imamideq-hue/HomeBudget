@@ -163,7 +163,7 @@ export default function AddTransactionModal() {
               end={{ x: 1, y: 1 }}
               style={{ borderRadius: 28, paddingVertical: 26, paddingHorizontal: 24, alignItems: 'center' }}
             >
-              <View className="h-16 w-16 items-center justify-center rounded-full bg-white/20">
+              <View className="h-16 w-16 items-center justify-center rounded-2xl bg-white/20">
                 <Ionicons
                   name={(activeVisual?.icon ?? 'pricetag') as keyof typeof Ionicons.glyphMap}
                   size={30}
@@ -236,14 +236,11 @@ export default function AddTransactionModal() {
                         selected ? 'border-primary bg-primary/10' : 'border-transparent bg-card'
                       }`}
                     >
-                      {owner.id ? (
-                        <View
-                          className="h-2.5 w-2.5 rounded-full"
-                          style={{ backgroundColor: owner.color }}
-                        />
-                      ) : (
-                        <Ionicons name="people" size={14} color={accent} />
-                      )}
+                      <Ionicons
+                        name={owner.id ? 'person' : 'people'}
+                        size={14}
+                        color={selected ? accent : '#8A8A9E'}
+                      />
                       <Text
                         className={`text-sm ${selected ? 'font-semibold text-surface-dark' : 'text-muted'}`}
                       >

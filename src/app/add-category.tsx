@@ -153,7 +153,7 @@ export default function AddCategoryModal() {
                 {COLORS.map((c) => (
                   <Pressable key={c} onPress={() => setColor(c)} hitSlop={4}>
                     <View
-                      className="h-9 w-9 items-center justify-center rounded-full"
+                      className="h-10 w-10 items-center justify-center rounded-xl"
                       style={{ backgroundColor: c }}
                     >
                       {c === color ? <Ionicons name="checkmark" size={18} color="#FFFFFF" /> : null}

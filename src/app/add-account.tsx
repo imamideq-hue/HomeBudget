@@ -99,7 +99,7 @@ export default function AddAccountModal() {
           {/* Preview + name */}
           <View className="items-center gap-3">
             <View
-              className="h-16 w-16 items-center justify-center rounded-full"
+              className="h-16 w-16 items-center justify-center rounded-2xl"
               style={{ backgroundColor: `${color}22` }}
             >
               <Ionicons name={icon as keyof typeof Ionicons.glyphMap} size={30} color={color} />
@@ -170,7 +170,7 @@ export default function AddAccountModal() {
               {COLORS.map((c) => (
                 <Pressable key={c} onPress={() => setColor(c)} hitSlop={4}>
                   <View
-                    className="h-9 w-9 items-center justify-center rounded-full"
+                    className="h-10 w-10 items-center justify-center rounded-xl"
                     style={{ backgroundColor: c }}
                   >
                     {c === color ? <Ionicons name="checkmark" size={18} color="#FFFFFF" /> : null}

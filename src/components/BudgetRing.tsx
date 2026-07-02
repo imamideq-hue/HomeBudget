@@ -22,10 +22,9 @@ export function BudgetRing({
     <Pressable
       onPress={onPress}
       className="w-40 rounded-2xl bg-card p-4 active:opacity-70"
-      style={{ borderWidth: 1.5, borderColor: color }}
     >
       <View
-        className="h-11 w-11 items-center justify-center rounded-full"
+        className="h-11 w-11 items-center justify-center rounded-2xl"
         style={{ backgroundColor: `${color}22` }}
       >
         <Ionicons

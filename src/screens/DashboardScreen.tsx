@@ -166,10 +166,9 @@ export function DashboardScreen() {
                       })
                     }
                     className="w-24 items-center gap-2 rounded-2xl bg-card p-3 active:opacity-70"
-                    style={{ borderWidth: 1.5, borderColor: visual.color }}
                   >
                     <View
-                      className="h-12 w-12 items-center justify-center rounded-full"
+                      className="h-12 w-12 items-center justify-center rounded-2xl"
                       style={{ backgroundColor: `${visual.color}22` }}
                     >
                       <Ionicons
@@ -211,7 +210,7 @@ export function DashboardScreen() {
                 onPress={() => router.push('/add-account')}
                 className="w-32 items-center justify-center gap-2 rounded-2xl border border-dashed border-muted/40 p-4 active:opacity-70"
               >
-                <View className="h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                <View className="h-12 w-12 items-center justify-center rounded-2xl bg-primary/10">
                   <Ionicons name="add" size={26} color={accent} />
                 </View>
                 <Text className="text-sm font-medium text-primary">Add</Text>

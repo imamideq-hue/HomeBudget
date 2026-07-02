@@ -135,14 +135,11 @@ export default function AddGoalModal() {
                       selected ? 'border-primary bg-primary/10' : 'border-transparent bg-card'
                     }`}
                   >
-                    {owner.id ? (
-                      <View
-                        className="h-2.5 w-2.5 rounded-full"
-                        style={{ backgroundColor: owner.color }}
-                      />
-                    ) : (
-                      <Ionicons name="people" size={14} color={accent} />
-                    )}
+                    <Ionicons
+                      name={owner.id ? 'person' : 'people'}
+                      size={14}
+                      color={selected ? accent : '#8A8A9E'}
+                    />
                     <Text
                       className={`text-sm ${selected ? 'font-semibold text-surface-dark' : 'text-muted'}`}
                     >
