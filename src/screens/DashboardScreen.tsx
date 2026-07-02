@@ -300,7 +300,7 @@ export function DashboardScreen() {
 
         {/* Recent activity */}
         {sections.recent ? (
-          <View className="gap-1">
+          <View className="gap-3">
             <Text className="text-lg font-semibold text-surface-dark">Recent activity</Text>
             {recent.length > 0 ? (
               <>

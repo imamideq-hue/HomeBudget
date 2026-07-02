@@ -20,26 +20,28 @@ export function TransactionsScreen() {
   const sections = groups.map((g) => ({ title: g.label, data: g.transactions }));
 
   const renderItem = ({ item }: { item: Transaction }) => (
-    <ReanimatedSwipeable
-      friction={2}
-      rightThreshold={40}
-      renderRightActions={() => (
-        <Pressable
-          onPress={() => deleteTransaction(item.id)}
-          className="w-20 items-center justify-center bg-expense active:opacity-80"
-        >
-          <Ionicons name="trash" size={20} color="#FFFFFF" />
-          <Text className="mt-1 text-xs font-medium text-white">Delete</Text>
-        </Pressable>
-      )}
-    >
-      <TransactionItem
-        transaction={item}
-        onPress={(t) =>
-          router.push({ pathname: '/add-transaction', params: { transactionId: t.id } })
-        }
-      />
-    </ReanimatedSwipeable>
+    <View className="px-5 pb-3">
+      <ReanimatedSwipeable
+        friction={2}
+        rightThreshold={40}
+        renderRightActions={() => (
+          <Pressable
+            onPress={() => deleteTransaction(item.id)}
+            className="ml-2 w-20 items-center justify-center rounded-2xl bg-expense active:opacity-80"
+          >
+            <Ionicons name="trash" size={20} color="#FFFFFF" />
+            <Text className="mt-1 text-xs font-medium text-white">Delete</Text>
+          </Pressable>
+        )}
+      >
+        <TransactionItem
+          transaction={item}
+          onPress={(t) =>
+            router.push({ pathname: '/add-transaction', params: { transactionId: t.id } })
+          }
+        />
+      </ReanimatedSwipeable>
+    </View>
   );
 
   return (
