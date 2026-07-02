@@ -30,8 +30,7 @@ export function SettingsScreen() {
   const { currentSpace, allAccounts: accounts, accountBalance, setCurrency, currentUser, editUser } =
     useBudget();
   const { user, signOut } = useAuth();
-  const { accent, setAccent, jointColor, setJointColor, isDark, setDark, foreground } = useTheme();
-  const youColor = currentUser?.color ?? accent;
+  const { accent, jointColor, setJointColor, youColor, isDark, setDark, foreground } = useTheme();
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-surface">
@@ -200,35 +199,6 @@ export function SettingsScreen() {
             </View>
           </View>
 
-          {/* Accent color */}
-          <View className="rounded-2xl bg-card px-4 py-4">
-            <View className="flex-row items-center gap-3">
-              <Ionicons name="color-palette-outline" size={22} color={accent} />
-              <Text className="flex-1 text-lg text-surface-dark">Accent color</Text>
-            </View>
-            <View className="mt-3 flex-row flex-wrap gap-3">
-              {ACCENT_CHOICES.map((c) => {
-                const selected = accent.toLowerCase() === c.toLowerCase();
-                return (
-                  <Pressable
-                    key={c}
-                    onPress={() => setAccent(c)}
-                    hitSlop={4}
-                    accessibilityRole="button"
-                    accessibilityLabel={`Accent ${c}`}
-                    className="h-11 w-11 items-center justify-center rounded-xl"
-                    style={{
-                      backgroundColor: c,
-                      borderWidth: selected ? 3 : 0,
-                      borderColor: '#FFFFFF',
-                    }}
-                  >
-                    {selected ? <Ionicons name="checkmark" size={18} color="#FFFFFF" /> : null}
-                  </Pressable>
-                );
-              })}
-            </View>
-          </View>
         </Section>
 
         {/* Section colors: Joint vs You */}
