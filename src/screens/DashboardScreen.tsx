@@ -9,7 +9,6 @@ import { BalanceCard } from '@/components/BalanceCard';
 import { BudgetRing } from '@/components/BudgetRing';
 import { CategoryPill } from '@/components/CategoryPill';
 import { DonutChart } from '@/components/DonutChart';
-import { GlassButton } from '@/components/GlassButton';
 import { ScopeFilter } from '@/components/ScopeFilter';
 import { TransactionItem } from '@/components/TransactionItem';
 import { useBudget } from '@/hooks/useBudget';
@@ -82,20 +81,22 @@ export function DashboardScreen() {
             </Text>
           </View>
           <View className="flex-row items-center gap-2">
-            <GlassButton
+            <Pressable
               onPress={() => router.push('/add-member')}
+              accessibilityRole="button"
               accessibilityLabel="Add member"
-              className="h-14 w-14 items-center justify-center rounded-full"
+              className="h-14 w-14 items-center justify-center rounded-full bg-card active:opacity-70"
             >
               <Ionicons name="person-add-outline" size={24} color={accent} />
-            </GlassButton>
-            <GlassButton
+            </Pressable>
+            <Pressable
               onPress={() => router.push('/customize-dashboard')}
+              accessibilityRole="button"
               accessibilityLabel="Customize dashboard"
-              className="h-14 w-14 items-center justify-center rounded-full"
+              className="h-14 w-14 items-center justify-center rounded-full bg-card active:opacity-70"
             >
               <Ionicons name="options-outline" size={26} color={accent} />
-            </GlassButton>
+            </Pressable>
           </View>
         </View>
 
@@ -156,7 +157,7 @@ export function DashboardScreen() {
               {QUICK_ADD.map((subId) => {
                 const visual = resolveSubVisual(subId);
                 return (
-                  <GlassButton
+                  <Pressable
                     key={subId}
                     onPress={() =>
                       router.push({
@@ -164,7 +165,7 @@ export function DashboardScreen() {
                         params: { subCategoryId: subId, type: 'expense' },
                       })
                     }
-                    className="w-24 items-center gap-2 rounded-2xl p-3"
+                    className="w-24 items-center gap-2 rounded-2xl bg-card p-3 active:opacity-70"
                   >
                     <View className="h-12 w-12 items-center justify-center">
                       <Ionicons
@@ -176,7 +177,7 @@ export function DashboardScreen() {
                     <Text className="text-xs text-muted" numberOfLines={1}>
                       {visual.name}
                     </Text>
-                  </GlassButton>
+                  </Pressable>
                 );
               })}
             </ScrollView>

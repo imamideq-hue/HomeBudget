@@ -1,6 +1,5 @@
-import { ScrollView, Text } from 'react-native';
+import { Pressable, ScrollView, Text } from 'react-native';
 
-import { GlassButton } from '@/components/GlassButton';
 import { useScope } from '@/context/ScopeContext';
 import { useTheme } from '@/hooks/useTheme';
 import { SCOPE_JOINT, type ScopeFilter as Scope } from '@/lib/scope';
@@ -46,19 +45,18 @@ export function ScopeFilter({ users, currentUserId, variant = 'prominent' }: Pro
         {chips.map((chip) => {
           const active = scope === chip.key;
           return (
-            <GlassButton
+            <Pressable
               key={chip.key}
               onPress={() => setScope(chip.key)}
-              tint={active ? chip.color : undefined}
-              intensity={active ? 45 : 22}
-              className="rounded-2xl px-7 py-4"
+              className={`rounded-2xl px-7 py-4 ${active ? '' : 'bg-card'}`}
+              style={active ? { backgroundColor: chip.color } : undefined}
             >
               <Text
                 className={`text-lg font-bold ${active ? 'text-white' : 'text-surface-dark'}`}
               >
                 {chip.label}
               </Text>
-            </GlassButton>
+            </Pressable>
           );
         })}
       </ScrollView>
@@ -74,20 +72,19 @@ export function ScopeFilter({ users, currentUserId, variant = 'prominent' }: Pro
       {chips.map((chip) => {
         const active = scope === chip.key;
         return (
-          <GlassButton
+          <Pressable
             key={chip.key}
             onPress={() => setScope(chip.key)}
-            tint={active ? chip.color : undefined}
-            intensity={active ? 40 : 20}
-            className="rounded-full px-3.5 py-2"
+            className={`rounded-full border px-3.5 py-2 ${active ? '' : 'border-transparent bg-card'}`}
+            style={active ? { borderColor: chip.color, backgroundColor: `${chip.color}22` } : undefined}
           >
             <Text
               className="text-sm font-semibold"
-              style={{ color: active ? '#FFFFFF' : '#8A8A9E' }}
+              style={{ color: active ? chip.color : '#8A8A9E' }}
             >
               {chip.label}
             </Text>
-          </GlassButton>
+          </Pressable>
         );
       })}
     </ScrollView>
