@@ -12,16 +12,12 @@ export function CategoryPill({
   size?: number;
 }) {
   return (
-    <View
-      className="items-center justify-center"
-      style={{
-        width: size,
-        height: size,
-        borderRadius: Math.round(size * 0.32),
-        backgroundColor: `${color}22`,
-      }}
-    >
-      <Ionicons name={icon as keyof typeof Ionicons.glyphMap} size={size * 0.5} color={color} />
+    <View className="items-center justify-center" style={{ width: size, height: size }}>
+      <Ionicons
+        name={icon as keyof typeof Ionicons.glyphMap}
+        size={Math.round(size * 0.62)}
+        color={color}
+      />
     </View>
   );
 }

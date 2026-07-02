@@ -19,13 +19,10 @@ export function AccountCard({ account, balance, onPress }: Props) {
       onPress={onPress}
       className="w-40 items-center rounded-2xl bg-card p-4 active:opacity-70"
     >
-      <View
-        className="h-12 w-12 items-center justify-center rounded-2xl"
-        style={{ backgroundColor: `${accent}22` }}
-      >
+      <View className="h-12 w-12 items-center justify-center">
         <Ionicons
           name={account.icon as keyof typeof Ionicons.glyphMap}
-          size={24}
+          size={30}
           color={accent}
         />
       </View>

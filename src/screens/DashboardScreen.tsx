@@ -167,13 +167,10 @@ export function DashboardScreen() {
                     }
                     className="w-24 items-center gap-2 rounded-2xl bg-card p-3 active:opacity-70"
                   >
-                    <View
-                      className="h-12 w-12 items-center justify-center rounded-2xl"
-                      style={{ backgroundColor: `${visual.color}22` }}
-                    >
+                    <View className="h-12 w-12 items-center justify-center">
                       <Ionicons
                         name={visual.icon as keyof typeof Ionicons.glyphMap}
-                        size={26}
+                        size={32}
                         color={visual.color}
                       />
                     </View>

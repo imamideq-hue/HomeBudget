@@ -23,13 +23,10 @@ export function BudgetRing({
       onPress={onPress}
       className="w-40 items-center rounded-2xl bg-card p-4 active:opacity-70"
     >
-      <View
-        className="h-11 w-11 items-center justify-center rounded-2xl"
-        style={{ backgroundColor: `${color}22` }}
-      >
+      <View className="h-11 w-11 items-center justify-center">
         <Ionicons
           name={budget.group.icon as keyof typeof Ionicons.glyphMap}
-          size={22}
+          size={28}
           color={color}
         />
       </View>
