@@ -21,7 +21,7 @@ export function BudgetRing({
   return (
     <Pressable
       onPress={onPress}
-      className="w-40 rounded-2xl bg-card p-4 active:opacity-70"
+      className="w-40 items-center rounded-2xl bg-card p-4 active:opacity-70"
     >
       <View
         className="h-11 w-11 items-center justify-center rounded-2xl"
@@ -44,7 +44,7 @@ export function BudgetRing({
         {formatCurrency(budget.totalSpent)} / {formatCurrency(budget.budgetLimit)}
       </Text>
 
-      <View className="mt-3 h-1.5 overflow-hidden rounded-full bg-black/25">
+      <View className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-black/25">
         <View
           className="h-full rounded-full"
           style={{ width: `${pct * 100}%`, backgroundColor: color }}

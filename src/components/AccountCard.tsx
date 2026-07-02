@@ -15,7 +15,10 @@ interface Props {
 export function AccountCard({ account, balance, onPress }: Props) {
   const { accent } = useTheme();
   return (
-    <Pressable onPress={onPress} className="w-40 rounded-2xl bg-card p-4 active:opacity-70">
+    <Pressable
+      onPress={onPress}
+      className="w-40 items-center rounded-2xl bg-card p-4 active:opacity-70"
+    >
       <View
         className="h-12 w-12 items-center justify-center rounded-2xl"
         style={{ backgroundColor: `${accent}22` }}
